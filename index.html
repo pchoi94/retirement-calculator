@@ -51,11 +51,355 @@ button.secondary{background:#4b5563} button.green{background:var(--success)}
 @media(max-width:620px){header{padding:16px}main{padding:10px;gap:12px}.card{padding:12px;border-radius:12px}.mobile-help{display:block}.field{grid-template-columns:1fr;gap:5px;margin:10px 0}.field-label{font-size:13px}input,select{text-align:left;font-size:16px;min-height:42px}.summary-grid{grid-template-columns:1fr 1fr;gap:8px}.metric{padding:10px}.metric-title{font-size:11px}.chart-wrap{height:280px}.main-table{font-size:11.5px}.main-table th,.main-table td{padding:7px 5px}.info:hover::after,.info:focus::after{left:auto;right:-10px;transform:none;width:min(250px,78vw)}.info:hover::before,.info:focus::before{left:auto;right:-2px;transform:none}}
 @media(max-width:390px){.summary-grid{grid-template-columns:1fr}.buttons{grid-template-columns:1fr}}
 
-.info {
-  pointer-events: auto;
+.required-asterisk{color:#dc2626;font-weight:800;margin-left:2px}
+.field.missing input,.field.missing select{border:2px solid #dc2626;background:#fff1f2}
+.field.missing .field-label{color:#991b1b;font-weight:600}
+
+
+/* Prevent page-level horizontal overflow */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden !important;
 }
-.info:focus {
-  outline: none;
+
+main, .card, .inputs, .output, .summary-grid, .metric, .field {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.inputs {
+  overflow-x: hidden !important;
+}
+
+/* Make left-panel tooltips open inward instead of off the left edge */
+.inputs .info:hover::after,
+.inputs .info:focus::after {
+  left: auto !important;
+  right: 0 !important;
+  transform: none !important;
+  width: min(280px, calc(100vw - 32px)) !important;
+  max-width: calc(100vw - 32px) !important;
+  white-space: normal !important;
+}
+
+.inputs .info:hover::before,
+.inputs .info:focus::before {
+  left: auto !important;
+  right: 3px !important;
+  transform: none !important;
+}
+
+/* Keep table scrolling local to the table container only */
+.table-wrap,
+.mini-table-wrap {
+  max-width: 100%;
+  overflow-x: auto !important;
+}
+
+/* Prevent long labels/tooltips from forcing layout wider */
+.field-label,
+.metric-title,
+.note,
+h2,
+h3 {
+  overflow-wrap: anywhere;
+}
+
+
+/* Final tooltip overflow fix: use viewport-safe fixed positioning */
+.info:hover::after,
+.info:focus::after {
+  position: fixed !important;
+  left: 16px !important;
+  right: 16px !important;
+  top: auto !important;
+  bottom: 18px !important;
+  transform: none !important;
+  width: auto !important;
+  max-width: none !important;
+  white-space: normal !important;
+  z-index: 9999 !important;
+}
+
+/* Hide tooltip arrow because fixed bottom tooltip no longer anchors to icon */
+.info:hover::before,
+.info:focus::before {
+  display: none !important;
+}
+
+/* Remove unnecessary vertical scrollbars from small input tables */
+.mini-table-wrap {
+  overflow-y: visible !important;
+  max-height: none !important;
+}
+
+/* Keep only horizontal scrolling for compact tables when needed */
+.mini-table-wrap {
+  overflow-x: auto !important;
+}
+
+/* Prevent tiny vertical scrollbar caused by table/input line-height rounding */
+.mini-table,
+.mini-table tbody,
+.mini-table tr,
+.mini-table td,
+.mini-table th {
+  overflow-y: visible !important;
+}
+
+
+/* Restore tooltips inside the left input panel and keep them viewport-safe */
+.info {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.inputs,
+.inputs .card,
+.field,
+.field-label,
+h2,
+h3,
+.metric-title {
+  overflow: visible !important;
+}
+
+.info:hover::after,
+.info:focus::after {
+  content: attr(data-tooltip) !important;
+  display: block !important;
+  position: fixed !important;
+  left: 16px !important;
+  right: 16px !important;
+  bottom: 18px !important;
+  top: auto !important;
+  transform: none !important;
+  width: auto !important;
+  max-width: none !important;
+  background: #111827 !important;
+  color: #ffffff !important;
+  padding: 10px 12px !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  z-index: 2147483647 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.30) !important;
+  text-align: left !important;
+  white-space: normal !important;
+  pointer-events: none !important;
+}
+
+.info:hover::before,
+.info:focus::before {
+  display: none !important;
+  content: none !important;
+}
+
+
+/* Unified tooltip style for BOTH input and output sections */
+.info:hover::after,
+.info:focus::after,
+.inputs .info:hover::after,
+.inputs .info:focus::after,
+.output .info:hover::after,
+.output .info:focus::after {
+  content: attr(data-tooltip) !important;
+  display: block !important;
+  position: fixed !important;
+  left: 16px !important;
+  right: 16px !important;
+  bottom: 18px !important;
+  top: auto !important;
+  transform: none !important;
+  width: auto !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  background: #111827 !important;
+  color: #ffffff !important;
+  padding: 10px 12px !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  z-index: 2147483647 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.30) !important;
+  text-align: left !important;
+  white-space: normal !important;
+  pointer-events: none !important;
+}
+
+/* Remove all tooltip arrows so input/output popups are visually identical */
+.info:hover::before,
+.info:focus::before,
+.inputs .info:hover::before,
+.inputs .info:focus::before,
+.output .info:hover::before,
+.output .info:focus::before {
+  display: none !important;
+  content: none !important;
+}
+
+
+/* Split layout scroll behavior */
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+main {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.inputs, .output {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Ensure columns share space properly */
+.inputs {
+  flex: 0 0 380px;
+  max-width: 420px;
+}
+
+.output {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Remove internal output scroll if any nested */
+.output .card {
+  overflow: visible !important;
+}
+
+
+/* FIX left panel scroll */
+.inputs {
+  flex: 0 0 380px;
+  max-width: 420px;
+  height: 100vh;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  display: block;
+}
+
+/* Ensure nothing blocks scrolling */
+.inputs * {
+  overflow: visible;
+}
+
+
+/* Final split-scroll layout cleanup */
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden !important;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  flex: 0 0 auto;
+}
+
+main {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto !important;
+  max-height: none !important;
+  display: grid !important;
+  grid-template-columns: minmax(320px, 440px) minmax(0, 1fr) !important;
+  gap: 16px;
+  overflow: hidden !important;
+  width: 100%;
+  max-width: 1520px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* Both panels scroll independently and are not cut off */
+.inputs,
+.output {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-bottom: 32px !important;
+}
+
+/* Undo earlier flex sizing that caused layout issues */
+.inputs {
+  position: static !important;
+  flex: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Prevent horizontal scrollbars in the left panel */
+.inputs .mini-table-wrap,
+.inputs .table-wrap {
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+  max-width: 100% !important;
+}
+
+/* Let compact input tables shrink to panel width */
+.inputs .mini-table {
+  width: 100% !important;
+  min-width: 0 !important;
+  table-layout: fixed !important;
+}
+
+.inputs .mini-table th,
+.inputs .mini-table td {
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  padding: 4px 2px !important;
+}
+
+.inputs .mini-table input {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* Keep output table horizontal scrolling local */
+.output .table-wrap {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+
+/* Mobile: restore normal vertical page-like behavior within single panel stack */
+@media (max-width: 980px) {
+  html, body {
+    overflow: auto !important;
+    height: auto !important;
+  }
+
+  body {
+    display: block;
+  }
+
+  main {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 12px;
+  }
+
+  .inputs,
+  .output {
+    overflow: visible !important;
+    padding-bottom: 16px !important;
+  }
 }
 
 </style>
@@ -96,34 +440,6 @@ button.secondary{background:#4b5563} button.green{background:var(--success)}
 <div class="field"><div class="field-label">Your SS Monthly $ <span class="info" data-tooltip="Your estimated monthly Social Security benefit in today's dollars.">i</span></div><input id="ssMonthly" type="number" value="" step="100"></div>
 <div class="field"><div class="field-label">Spouse SS Monthly $ <span class="info" data-tooltip="Spouse's estimated monthly Social Security benefit in today's dollars.">i</span></div><input id="spouseSsMonthly" type="number" value="" step="100"></div>
 <div class="field"><div class="field-label">Rental Income Monthly $ <span class="info" data-tooltip="Net monthly rental income before any modeled property sale.">i</span></div><input id="rentalMonthly" type="number" value="" step="50"></div>
-
-<h3>Real Estate Sale <span class="info" data-tooltip="Optional rental or property sale module. Net sale proceeds are added to the investment portfolio in the sale year.">i</span></h3>
-<div class="field"><div class="field-label">Model Property Sale <span class="info" data-tooltip="Turns real estate sale modeling on or off.">i</span></div><select id="sellRealEstate"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
-<div class="field"><div class="field-label">Sale Age <span class="info" data-tooltip="Your age when the property is assumed to be sold.">i</span></div><input id="propertySaleAge" type="number" value=""></div>
-<div class="field"><div class="field-label">Current Property Value $ <span class="info" data-tooltip="Estimated current market value of the property.">i</span></div><input id="propertyValue" type="number" value="" step="10000"></div>
-<div class="field"><div class="field-label">Property Growth % <span class="info" data-tooltip="Annual property value appreciation assumption before the sale.">i</span></div><input id="propertyGrowth" type="number" value="" step="0.1"></div>
-<div class="field"><div class="field-label">Mortgage Balance $ <span class="info" data-tooltip="Current outstanding mortgage balance on the property.">i</span></div><input id="mortgageBalance" type="number" value="" step="1000"></div>
-<div class="field"><div class="field-label">Mortgage Annual Paydown $ <span class="info" data-tooltip="Estimated annual principal reduction before the property is sold.">i</span></div><input id="mortgagePaydown" type="number" value="" step="500"></div>
-<div class="field"><div class="field-label">Selling Costs % <span class="info" data-tooltip="Estimated transaction costs as a percentage of sale value, such as agent fees and closing costs.">i</span></div><input id="sellingCosts" type="number" value="" step="0.25"></div>
-<div class="field"><div class="field-label">Cost Basis $ <span class="info" data-tooltip="Tax basis used to estimate capital gain on sale.">i</span></div><input id="costBasis" type="number" value="" step="10000"></div>
-<div class="field"><div class="field-label">Cap Gains Exclusion $ <span class="info" data-tooltip="Capital gain amount excluded from taxation, if applicable. For investment property this may be zero.">i</span></div><input id="capGainExclusion" type="number" value="" step="10000"></div>
-<div class="field"><div class="field-label">Cap Gains Tax Rate % <span class="info" data-tooltip="Estimated tax rate applied to taxable capital gains after selling costs and exclusions.">i</span></div><input id="capGainTaxRate" type="number" value="" step="0.5"></div>
-<div class="field"><div class="field-label">Stop Rental Income After Sale <span class="info" data-tooltip="If Yes, rental income stops after the property is sold.">i</span></div><select id="stopRentalAfterSale"><option value="yes">Yes</option><option value="no">No</option></select></div>
-
-
-<h3>Real Estate Sale - Property 2 <span class="info" data-tooltip="Optional second property sale module. Net sale proceeds are added to the investment portfolio in the sale year.">i</span></h3>
-<div class="field"><div class="field-label">Model Property 2 Sale <span class="info" data-tooltip="Turns second property sale modeling on or off.">i</span></div><select id="sellRealEstate2"><option value="no">No</option><option value="yes">Yes</option></select></div>
-<div class="field"><div class="field-label">Property 2 Sale Age <span class="info" data-tooltip="Your age when property 2 is assumed to be sold.">i</span></div><input id="property2SaleAge" type="number" value=""></div>
-<div class="field"><div class="field-label">Property 2 Current Value $ <span class="info" data-tooltip="Estimated current market value of property 2.">i</span></div><input id="property2Value" type="number" value="" step="10000"></div>
-<div class="field"><div class="field-label">Property 2 Growth % <span class="info" data-tooltip="Annual appreciation assumption for property 2 before the sale.">i</span></div><input id="property2Growth" type="number" value="" step="0.1"></div>
-<div class="field"><div class="field-label">Property 2 Mortgage Balance $ <span class="info" data-tooltip="Current outstanding mortgage balance on property 2.">i</span></div><input id="mortgage2Balance" type="number" value="" step="1000"></div>
-<div class="field"><div class="field-label">Property 2 Annual Paydown $ <span class="info" data-tooltip="Estimated annual principal reduction before property 2 is sold.">i</span></div><input id="mortgage2Paydown" type="number" value="" step="500"></div>
-<div class="field"><div class="field-label">Property 2 Selling Costs % <span class="info" data-tooltip="Estimated transaction costs as a percentage of property 2 sale value.">i</span></div><input id="selling2Costs" type="number" value="" step="0.25"></div>
-<div class="field"><div class="field-label">Property 2 Cost Basis $ <span class="info" data-tooltip="Tax basis used to estimate capital gain on property 2 sale.">i</span></div><input id="cost2Basis" type="number" value="" step="10000"></div>
-<div class="field"><div class="field-label">Property 2 Cap Gains Exclusion $ <span class="info" data-tooltip="Capital gain amount excluded from taxation for property 2, if applicable.">i</span></div><input id="capGain2Exclusion" type="number" value="" step="10000"></div>
-<div class="field"><div class="field-label">Property 2 Cap Gains Tax Rate % <span class="info" data-tooltip="Estimated tax rate applied to taxable capital gains for property 2.">i</span></div><input id="capGain2TaxRate" type="number" value="" step="0.5"></div>
-<div class="field"><div class="field-label">Property 2 Rental Income Monthly $ <span class="info" data-tooltip="Optional net monthly rental income from property 2 before sale.">i</span></div><input id="rental2Monthly" type="number" value="" step="50"></div>
-<div class="field"><div class="field-label">Stop Property 2 Rent After Sale <span class="info" data-tooltip="If Yes, property 2 rental income stops after property 2 is sold.">i</span></div><select id="stopRental2AfterSale"><option value="yes">Yes</option><option value="no">No</option></select></div>
 
 <h3>Taxes / Costs <span class="info" data-tooltip="Simplified tax and fee assumptions applied to withdrawals and investment returns.">i</span></h3>
 <div class="field"><div class="field-label">Effective Tax Rate % <span class="info" data-tooltip="Approximate tax rate used to gross up retirement withdrawals. Example: at 15%, a $85k after-tax need requires a $100k gross withdrawal.">i</span></div><input id="taxRate" type="number" value="" step="0.5"></div>
@@ -172,6 +488,35 @@ button.secondary{background:#4b5563} button.green{background:var(--success)}
 </tbody></table></div>
 <div class="note">Use your age for the event age. Example labels: “Car replacement”, “Kitchen remodel”, “Japan trip”, “Wedding support”.</div>
 
+<h3>Rental Property Sale <span class="info" data-tooltip="Optional rental or property sale module. Net sale proceeds are added to the investment portfolio in the sale year.">i</span></h3>
+<div class="field"><div class="field-label">Model Property Sale <span class="info" data-tooltip="Turns real estate sale modeling on or off.">i</span></div><select id="sellRealEstate"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+<div class="field"><div class="field-label">Sale Age <span class="info" data-tooltip="Your age when the property is assumed to be sold.">i</span></div><input id="propertySaleAge" type="number" value=""></div>
+<div class="field"><div class="field-label">Current Property Value $ <span class="info" data-tooltip="Estimated current market value of the property.">i</span></div><input id="propertyValue" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Property Growth % <span class="info" data-tooltip="Annual property value appreciation assumption before the sale.">i</span></div><input id="propertyGrowth" type="number" value="" step="0.1"></div>
+<div class="field"><div class="field-label">Mortgage Balance $ <span class="info" data-tooltip="Current outstanding mortgage balance on the property.">i</span></div><input id="mortgageBalance" type="number" value="" step="1000"></div>
+<div class="field"><div class="field-label">Mortgage Annual Paydown $ <span class="info" data-tooltip="Estimated annual principal reduction before the property is sold.">i</span></div><input id="mortgagePaydown" type="number" value="" step="500"></div>
+<div class="field"><div class="field-label">Selling Costs % <span class="info" data-tooltip="Estimated transaction costs as a percentage of sale value, such as agent fees and closing costs.">i</span></div><input id="sellingCosts" type="number" value="" step="0.25"></div>
+<div class="field"><div class="field-label">Cost Basis $ <span class="info" data-tooltip="Tax basis used to estimate capital gain on sale.">i</span></div><input id="costBasis" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Cap Gains Exclusion $ <span class="info" data-tooltip="Capital gain amount excluded from taxation, if applicable. For investment property this may be zero.">i</span></div><input id="capGainExclusion" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Cap Gains Tax Rate % <span class="info" data-tooltip="Estimated tax rate applied to taxable capital gains after selling costs and exclusions.">i</span></div><input id="capGainTaxRate" type="number" value="" step="0.5"></div>
+<div class="field"><div class="field-label">Stop Rental Income After Sale <span class="info" data-tooltip="If Yes, rental income stops after the property is sold.">i</span></div><select id="stopRentalAfterSale"><option value="yes">Yes</option><option value="no">No</option></select></div>
+
+
+<h3>Primary Residence Sale <span class="info" data-tooltip="Optional second property sale module. Net sale proceeds are added to the investment portfolio in the sale year.">i</span></h3>
+<div class="field"><div class="field-label">Model Property 2 Sale <span class="info" data-tooltip="Turns second property sale modeling on or off.">i</span></div><select id="sellRealEstate2"><option value="no">No</option><option value="yes">Yes</option></select></div>
+<div class="field"><div class="field-label">Property 2 Sale Age <span class="info" data-tooltip="Your age when property 2 is assumed to be sold.">i</span></div><input id="property2SaleAge" type="number" value=""></div>
+<div class="field"><div class="field-label">Property 2 Current Value $ <span class="info" data-tooltip="Estimated current market value of property 2.">i</span></div><input id="property2Value" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Property 2 Growth % <span class="info" data-tooltip="Annual appreciation assumption for property 2 before the sale.">i</span></div><input id="property2Growth" type="number" value="" step="0.1"></div>
+<div class="field"><div class="field-label">Property 2 Mortgage Balance $ <span class="info" data-tooltip="Current outstanding mortgage balance on property 2.">i</span></div><input id="mortgage2Balance" type="number" value="" step="1000"></div>
+<div class="field"><div class="field-label">Property 2 Annual Paydown $ <span class="info" data-tooltip="Estimated annual principal reduction before property 2 is sold.">i</span></div><input id="mortgage2Paydown" type="number" value="" step="500"></div>
+<div class="field"><div class="field-label">Property 2 Selling Costs % <span class="info" data-tooltip="Estimated transaction costs as a percentage of property 2 sale value.">i</span></div><input id="selling2Costs" type="number" value="" step="0.25"></div>
+<div class="field"><div class="field-label">Property 2 Cost Basis $ <span class="info" data-tooltip="Tax basis used to estimate capital gain on property 2 sale.">i</span></div><input id="cost2Basis" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Property 2 Cap Gains Exclusion $ <span class="info" data-tooltip="Capital gain amount excluded from taxation for property 2, if applicable.">i</span></div><input id="capGain2Exclusion" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Property 2 Cap Gains Tax Rate % <span class="info" data-tooltip="Estimated tax rate applied to taxable capital gains for property 2.">i</span></div><input id="capGain2TaxRate" type="number" value="" step="0.5"></div>
+<div class="field"><div class="field-label">Property 2 Rental Income Monthly $ <span class="info" data-tooltip="Optional net monthly rental income from property 2 before sale.">i</span></div><input id="rental2Monthly" type="number" value="" step="50"></div>
+<div class="field"><div class="field-label">Stop Property 2 Rent After Sale <span class="info" data-tooltip="If Yes, property 2 rental income stops after property 2 is sold.">i</span></div><select id="stopRental2AfterSale"><option value="yes">Yes</option><option value="no">No</option></select></div>
+
+
 <div class="buttons"><button type="button" onclick="calculate()">Update Base</button><button type="button" class="green" onclick="runMonteCarlo()">Run Historical Monte Carlo</button><button type="button" class="secondary" onclick="resetDefaults()">Reset</button></div>
 </section>
 
@@ -213,8 +558,8 @@ button.secondary{background:#4b5563} button.green{background:var(--success)}
 </div>
 
 <div class="card"><h2>Portfolio Projection <span class="info" data-tooltip="Chart of projected ending portfolio value by year or age.">i</span></h2><div class="chart-wrap"><canvas id="portfolioChart"></canvas></div></div>
-<div class="card" style="margin-top:14px"><h2>Monte Carlo Distribution <span class="info" data-tooltip="Histogram showing the distribution of ending portfolio values across randomized simulations.">i</span></h2><div class="chart-wrap"><canvas id="mcChart"></canvas></div><div class="note" id="mcNote">Run Monte Carlo to populate this chart using 10,000 historical-return simulations.</div></div>
 <div class="card" style="margin-top:14px"><h2>Monte Carlo Percentile Paths <span class="info" data-tooltip="Shows how the 10th, 25th, 50th, 75th, and 90th percentile portfolio paths evolve over time across all simulations.">i</span></h2><div class="chart-wrap"><canvas id="mcPercentileChart"></canvas></div><div class="note">P10 = downside path, Median = typical path, P90 = upside path. Based on 10,000 historical-return simulations.</div></div>
+<div class="card" style="margin-top:14px"><h2>Monte Carlo Distribution <span class="info" data-tooltip="Histogram showing the distribution of ending portfolio values across randomized simulations.">i</span></h2><div class="chart-wrap"><canvas id="mcChart"></canvas></div><div class="note" id="mcNote">Run Monte Carlo to populate this chart using 10,000 historical-return simulations.</div></div>
 <div class="card" style="margin-top:14px"><h2>Annual Base Projection <span class="info" data-tooltip="Year-by-year table of the base-case calculation. On mobile, scroll sideways inside the table.">i</span></h2><div class="table-wrap"><table class="main-table"><thead><tr><th>Age/Year</th><th>Spouse Age</th><th>Start Portfolio</th><th>Property Sale</th><th>Property 2 Sale</th><th>Net Contribution</th><th>Interest</th><th>Base Spending</th><th>Extra Expenses</th><th>Total Spending</th><th>Base Income</th><th>Extra Income</th><th>Gross Withdrawal</th><th>End Portfolio</th></tr></thead><tbody id="projectionBody"></tbody></table></div></div>
 </section>
 </main>
@@ -252,6 +597,12 @@ function extraIncome(age,infFactor){return active(age,getVal("inc1Start"),getVal
 function extraExpenses(age,infFactor){return active(age,getVal("exp1Start"),getVal("exp1End"),getVal("exp1Amt"),infFactor)+active(age,getVal("exp2Start"),getVal("exp2End"),getVal("exp2Amt"),infFactor)+active(age,getVal("exp3Start"),getVal("exp3End"),getVal("exp3Amt"),infFactor)}
 function collegeExpenses(age,infFactor){return active(age,getVal("college1Start"),getVal("college1End"),getVal("college1Amt"),infFactor)+active(age,getVal("college2Start"),getVal("college2End"),getVal("college2Amt"),infFactor)}
 function oneTimeExpense(age,eventAge,amount,infFactor){return age===eventAge?amount*infFactor:0}
+
+function miscOneTimeExpensesAtMonth(age,month,infFactor){
+ if(month!==1)return 0;
+ return miscOneTimeExpenses(age,infFactor);
+}
+
 function miscOneTimeExpenses(age,infFactor){
  return oneTimeExpense(age,getVal("misc1Age"),getVal("misc1Amt"),infFactor)+
         oneTimeExpense(age,getVal("misc2Age"),getVal("misc2Amt"),infFactor)+
@@ -287,6 +638,21 @@ function updateSaleMetrics2(info){
 }
 
 
+
+const HISTORICAL_INFLATION_RATES = [
+-0.0116,0.0058,-0.0640,-0.0932,-0.1027,0.0076,0.0152,0.0296,0.0145,0.0286,-0.0278,0.0000,
+0.0072,0.0993,0.0903,0.0304,0.0229,0.0225,0.1813,0.0884,0.0299,-0.0207,0.0589,0.0600,0.0075,
+0.0075,-0.0074,0.0037,0.0299,0.0290,0.0176,0.0173,0.0136,0.0103,0.0097,0.0132,0.0164,0.0098,
+0.0192,0.0346,0.0304,0.0472,0.0619,0.0557,0.0327,0.0341,0.0871,0.1234,0.0694,0.0486,0.0670,
+0.0902,0.1329,0.1252,0.0892,0.0383,0.0379,0.0395,0.0380,0.0110,0.0443,0.0442,0.0465,0.0611,
+0.0306,0.0290,0.0275,0.0267,0.0254,0.0332,0.0170,0.0161,0.0268,0.0339,0.0283,0.0159,0.0227,
+0.0268,0.0339,0.0323,0.0285,0.0384,-0.0034,0.0164,0.0316,0.0207,0.0146,0.0162,0.0012,0.0126,
+0.0213,0.0244,0.0181,0.0123,0.0470,0.0650,0.0340
+];
+function randomHistoricalInflation(){
+ return HISTORICAL_INFLATION_RATES[Math.floor(Math.random()*HISTORICAL_INFLATION_RATES.length)];
+}
+
 const HISTORICAL_STOCK_RETURNS = [
 0.4381,-0.0830,-0.2512,-0.4384,-0.0864,0.4998,-0.0119,0.4674,0.3194,-0.3534,0.2928,-0.0110,
 -0.1067,-0.1277,0.1917,0.2506,0.1903,0.3582,-0.0843,0.0520,0.0570,0.1830,0.3081,0.2368,0.1815,
@@ -306,7 +672,7 @@ function randomReturn(mean){return sampleHistoricalStockReturn()}
 function randomInflation(mean){return mean}
 function randomPropertyGrowth(mean){return mean}
 function simulateSimple(returnAdjustmentPct=0){let portfolio=getVal("portfolio");const years=Math.max(0,Math.floor(getVal("simpleYears"))),annualRate=((getVal("returnRate")-getVal("feeRate"))/100)+returnAdjustmentPct,freq=parseFloat(getSelect("compoundFreq")),monthlyContribution=monthlyContributionAmount();const rows=[];for(let y=1;y<=years;y++){const startPortfolio=portfolio;let interestYear=0,contribYear=0;for(let m=1;m<=12;m++){const interest=applyInterestDiscrete(portfolio,annualRate,freq,m);portfolio+=interest;interestYear+=interest;portfolio+=monthlyContribution;contribYear+=monthlyContribution}rows.push({age:y,spouseAge:"—",startPortfolio,propertySale:0,propertySale2:0,propertyInfo:{saleProceeds:0,saleValue:0,remainingMortgage:0,tax:0},propertyInfo2:{saleProceeds:0,saleValue:0,remainingMortgage:0,tax:0},contribution:contribYear,growth:interestYear,bs:0,ee:0,totalSpend:0,bi:0,ei:0,withdrawal:monthlyContribution<0?Math.abs(contribYear):0,endPortfolio:portfolio})}return rows}
-function simulateFull(randomize,returnAdjustmentPct=0){const currentAge=getVal("currentAge"),spouseAge=getVal("spouseAge"),retireAge=getVal("retireAge"),endAge=getVal("endAge");let portfolio=getVal("portfolio");const baseReturn=getVal("returnRate")/100,baseInf=getVal("inflation")/100,ssAge=getVal("ssAge"),ssAnnual=(getVal("ssMonthly")+getVal("spouseSsMonthly"))*12,rentalAnnual=getVal("rentalMonthly")*12,taxRate=getVal("taxRate")/100,feeRate=getVal("feeRate")/100,freq=parseFloat(getSelect("compoundFreq"));let infFactor=1,propertyFactor=1,propertyFactor2=1,soldProperty=false,soldProperty2=false;const rows=[];for(let age=currentAge;age<=endAge;age++){const yearIndex=age-currentAge,spouseCurrent=spouseAge+yearIndex,startPortfolio=portfolio;let yearInterest=0,yearContribution=0,yearWithdrawal=0,bsAnnual=0,eeAnnual=0,totalSpendAnnual=0,biAnnual=0,eiAnnual=0,propertySale=0,propertySale2=0,propertyInfo={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0},propertyInfo2={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};let annualReturn=randomize?randomHistoricalStockReturn():(baseReturn+returnAdjustmentPct),annualInflation=randomize?randomInflation(baseInf):baseInf,annualPropertyGrowth=randomize?randomPropertyGrowth(getVal("propertyGrowth")/100):getVal("propertyGrowth")/100;const netAnnualReturn=annualReturn-feeRate,monthlyInflation=Math.pow(1+annualInflation,1/12)-1,monthlyPropertyGrowth=Math.pow(1+annualPropertyGrowth,1/12)-1,monthlyProperty2Growth=Math.pow(1+(randomize?randomPropertyGrowth(getVal("property2Growth")/100):getVal("property2Growth")/100),1/12)-1;for(let m=1;m<=12;m++){const currentMonthIndex=yearIndex*12+m;if(currentMonthIndex>1){infFactor*=1+monthlyInflation;propertyFactor*=1+monthlyPropertyGrowth;propertyFactor2*=1+monthlyProperty2Growth}if(getSelect("sellRealEstate")==="yes"&&age===getVal("propertySaleAge")&&m===1&&!soldProperty){propertyInfo=calcPropertySaleInfo(age,propertyFactor);propertySale=propertyInfo.saleProceeds;portfolio+=propertySale;soldProperty=true}if(getSelect("sellRealEstate2")==="yes"&&age===getVal("property2SaleAge")&&m===1&&!soldProperty2){propertyInfo2=calcPropertySaleInfo2(age,propertyFactor2);propertySale2=propertyInfo2.saleProceeds;portfolio+=propertySale2;soldProperty2=true}const interest=applyInterestDiscrete(portfolio,netAnnualReturn,freq,m);portfolio+=interest;yearInterest+=interest;if(age<retireAge){const c=monthlyContributionAmount();portfolio+=c;yearContribution+=c;const special=collegeExpenses(age,infFactor)+miscOneTimeExpenses(age,infFactor);if(special>0){const withdrawal=(special/12)/(1-taxRate);portfolio-=withdrawal;yearWithdrawal+=withdrawal;eeAnnual=special;totalSpendAnnual=special;}}else{const bs=baseSpending(age,infFactor),special=collegeExpenses(age,infFactor)+miscOneTimeExpenses(age,infFactor),ee=extraExpenses(age,infFactor)+special,totalSpend=bs+ee;const rentalStopped=soldProperty&&getSelect("stopRentalAfterSale")==="yes";let bi=rentalStopped?0:rentalAnnual*infFactor;const rental2Stopped=soldProperty2&&getSelect("stopRental2AfterSale")==="yes";if(!rental2Stopped)bi+=getVal("rental2Monthly")*12*infFactor;if(age>=ssAge)bi+=ssAnnual*infFactor;const ei=extraIncome(age,infFactor),withdrawal=Math.max(0,totalSpend-bi-ei)/(1-taxRate)/12;portfolio-=withdrawal;yearWithdrawal+=withdrawal;bsAnnual=bs;eeAnnual=ee;totalSpendAnnual=totalSpend;biAnnual=bi;eiAnnual=ei}}rows.push({age,spouseAge:spouseCurrent,startPortfolio,propertySale,propertySale2,propertyInfo,propertyInfo2,contribution:yearContribution,growth:yearInterest,bs:bsAnnual,ee:eeAnnual,totalSpend:totalSpendAnnual,bi:biAnnual,ei:eiAnnual,withdrawal:yearWithdrawal,endPortfolio:portfolio})}return rows}
+function simulateFull(randomize,returnAdjustmentPct=0){const currentAge=getVal("currentAge"),spouseAge=getVal("spouseAge"),retireAge=getVal("retireAge"),endAge=getVal("endAge");let portfolio=getVal("portfolio");const baseReturn=getVal("returnRate")/100,baseInf=getVal("inflation")/100,ssAge=getVal("ssAge"),ssAnnual=(getVal("ssMonthly")+getVal("spouseSsMonthly"))*12,rentalAnnual=getVal("rentalMonthly")*12,taxRate=getVal("taxRate")/100,feeRate=getVal("feeRate")/100,freq=parseFloat(getSelect("compoundFreq"));let infFactor=1,propertyFactor=1,propertyFactor2=1,soldProperty=false,soldProperty2=false;const rows=[];for(let age=currentAge;age<=endAge;age++){const yearIndex=age-currentAge,spouseCurrent=spouseAge+yearIndex,startPortfolio=portfolio;let yearInterest=0,yearContribution=0,yearWithdrawal=0,bsAnnual=0,eeAnnual=0,totalSpendAnnual=0,biAnnual=0,eiAnnual=0,propertySale=0,propertySale2=0,propertyInfo={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0},propertyInfo2={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};let annualReturn=randomize?randomHistoricalStockReturn():(baseReturn+returnAdjustmentPct),annualInflation=randomize?randomHistoricalInflation():baseInf,annualPropertyGrowth=randomize?randomPropertyGrowth(getVal("propertyGrowth")/100):getVal("propertyGrowth")/100;const netAnnualReturn=annualReturn-feeRate,monthlyInflation=Math.pow(1+annualInflation,1/12)-1,monthlyPropertyGrowth=Math.pow(1+annualPropertyGrowth,1/12)-1,monthlyProperty2Growth=Math.pow(1+(randomize?randomPropertyGrowth(getVal("property2Growth")/100):getVal("property2Growth")/100),1/12)-1;for(let m=1;m<=12;m++){const currentMonthIndex=yearIndex*12+m;if(currentMonthIndex>1){infFactor*=1+monthlyInflation;propertyFactor*=1+monthlyPropertyGrowth;propertyFactor2*=1+monthlyProperty2Growth}if(getSelect("sellRealEstate")==="yes"&&age===getVal("propertySaleAge")&&m===1&&!soldProperty){propertyInfo=calcPropertySaleInfo(age,propertyFactor);propertySale=propertyInfo.saleProceeds;portfolio+=propertySale;soldProperty=true}if(getSelect("sellRealEstate2")==="yes"&&age===getVal("property2SaleAge")&&m===1&&!soldProperty2){propertyInfo2=calcPropertySaleInfo2(age,propertyFactor2);propertySale2=propertyInfo2.saleProceeds;portfolio+=propertySale2;soldProperty2=true}const interest=applyInterestDiscrete(portfolio,netAnnualReturn,freq,m);portfolio+=interest;yearInterest+=interest;if(age<retireAge){const c=monthlyContributionAmount();portfolio+=c;yearContribution+=c;const college=collegeExpenses(age,infFactor);const misc=miscOneTimeExpensesAtMonth(age,m,infFactor);const monthlyCollege=(college/12)/(1-taxRate);const miscWithdrawal=misc/(1-taxRate);const withdrawal=monthlyCollege+miscWithdrawal;if(withdrawal>0){portfolio-=withdrawal;yearWithdrawal+=withdrawal;eeAnnual+=college/12+misc;totalSpendAnnual+=college/12+misc;}}else{const bs=baseSpending(age,infFactor),college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,m,infFactor),eeBase=extraExpenses(age,infFactor),ee=eeBase+college+misc,totalSpend=bs+ee;const rentalStopped=soldProperty;let bi=rentalStopped?0:rentalAnnual*infFactor;if(age>=ssAge)bi+=ssAnnual*infFactor;const ei=extraIncome(age,infFactor);const monthlyNetNeed=Math.max(0,(bs/12)+(eeBase/12)+(college/12)+misc-(bi/12)-(ei/12));const withdrawal=monthlyNetNeed/(1-taxRate);portfolio-=withdrawal;yearWithdrawal+=withdrawal;bsAnnual+=bs/12;eeAnnual+=(eeBase/12)+(college/12)+misc;totalSpendAnnual+=(bs/12)+(eeBase/12)+(college/12)+misc;biAnnual+=bi/12;eiAnnual+=ei/12}}rows.push({age,spouseAge:spouseCurrent,startPortfolio,propertySale,propertySale2,propertyInfo,propertyInfo2,contribution:yearContribution,growth:yearInterest,bs:bsAnnual,ee:eeAnnual,totalSpend:totalSpendAnnual,bi:biAnnual,ei:eiAnnual,withdrawal:yearWithdrawal,endPortfolio:portfolio})}return rows}
 function simulate(randomize,returnAdjustmentPct=0){return getSelect("simpleMode")==="yes"?simulateSimple(returnAdjustmentPct):simulateFull(randomize,returnAdjustmentPct)}
 
 function renderSensitivitySummary(lowRows,medRows,highRows,variancePct){
@@ -319,7 +685,7 @@ function renderSensitivitySummary(lowRows,medRows,highRows,variancePct){
  if(el("varianceRangeMetric")){el("varianceRangeMetric").textContent="±"+variancePct.toFixed(2)+"%";el("varianceRangeMetric").className="value";}
 }
 
-function calculate(){try{el("errorBox").style.display="none";validate();const variancePct=Math.max(0,getVal("growthVariance"));
+function calculate(){try{el("errorBox").style.display="none";if(typeof validateRequiredFields==="function"&&!validateRequiredFields()){renderEmptyState();return;}validate();const variancePct=Math.max(0,getVal("growthVariance"));
 const variance=variancePct/100;
 const lowRows=simulate(false,-variance),rows=simulate(false,0),highRows=simulate(false,variance);
 const ending=rows.length?rows[rows.length-1].endPortfolio:getVal("portfolio");
@@ -364,6 +730,16 @@ function runMonteCarlo(){
  }catch(e){el("errorBox").textContent=e.message;el("errorBox").style.display="block"}
 }
 function clearMC(){["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{el(id).textContent="—";el(id).className="value"});el("mcNote").textContent="Run Monte Carlo to populate this chart using 10,000 historical-return simulations.";if(el("mcChart"))if(el("mcChart"))clearCanvas("mcChart");if(el("mcPercentileChart"))clearCanvas("mcPercentileChart")}
+
+function renderEmptyState(){
+ ["result","endingPortfolio","lowestPortfolio","depletionAge","lowEndingPortfolio","mediumEndingPortfolio","highEndingPortfolio","varianceRangeMetric","saleProceedsMetric","saleValueMetric","mortgageMetric","saleTaxMetric","sale2ProceedsMetric","sale2ValueMetric","mortgage2Metric","sale2TaxMetric","mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el(id)){el(id).textContent="—";el(id).className="value";}});
+ if(el("projectionBody"))el("projectionBody").innerHTML="";
+ if(el("portfolioChart"))clearCanvas("portfolioChart");
+ if(el("mcChart"))clearCanvas("mcChart");
+ if(el("mcPercentileChart"))clearCanvas("mcPercentileChart");
+ if(el("mcNote"))el("mcNote").textContent="Enter required fields to calculate.";
+}
+
 function renderSummary(ending,lowest,depletionAge){const r=el("result"),e=el("endingPortfolio"),l=el("lowestPortfolio"),d=el("depletionAge");if(depletionAge===null){r.textContent="Funds Last";r.className="value success";d.textContent="None";d.className="value success"}else{r.textContent="Depletes";r.className="value danger";d.textContent=depletionAge;d.className="value danger"}e.textContent=fmtMoney(ending);e.className=ending>=0?"value success":"value danger";l.textContent=fmtMoney(lowest);l.className=lowest>=0?"value success":"value danger"}
 function renderTable(rows){const body=el("projectionBody");body.innerHTML="";rows.forEach(r=>{const tr=document.createElement("tr");[r.age,r.spouseAge,fmtMoney(r.startPortfolio),fmtMoney(r.propertySale),fmtMoney(r.propertySale2),fmtMoney(r.contribution),fmtMoney(r.growth),fmtMoney(r.bs),fmtMoney(r.ee),fmtMoney(r.totalSpend),fmtMoney(r.bi),fmtMoney(r.ei),fmtMoney(r.withdrawal),fmtMoney(r.endPortfolio)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td)});body.appendChild(tr)})}
 function prepCanvas(id){const canvas=el(id);if(!canvas){return {canvas:null,ctx:null,w:0,h:0};}const ctx=canvas.getContext("2d"),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,rect.width,rect.height);ctx.fillStyle="#fff";ctx.fillRect(0,0,rect.width,rect.height);return{canvas,ctx,w:rect.width,h:rect.height}}
@@ -451,6 +827,89 @@ document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("inp
 
   window.syncLinkedAges = syncLinkedAges;
 })();
+</script>
+
+
+<script>
+
+function requiredFields(){
+  const simple = getSelect("simpleMode")==="yes";
+  const useMonthly = getSelect("useMonthlyContribution")==="yes";
+  if(simple){
+    return ["simpleMode","simpleYears","portfolio","returnRate","compoundFreq"].concat(useMonthly?["monthlyContribution"]:["contrib"]);
+  }
+  let fields = ["simpleMode","currentAge","retireAge","endAge","portfolio","returnRate","growthVariance","compoundFreq","inflation","ssAge","taxRate"];
+  if(getSelect("sellRealEstate")==="yes"){
+    fields = fields.concat(["propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate"]);
+  }
+  if(getSelect("sellRealEstate2")==="yes"){
+    fields = fields.concat(["property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate"]);
+  }
+  return fields;
+}
+function markRequiredFields(){
+  document.querySelectorAll(".field").forEach(f=>{
+    f.classList.remove("required");
+    const existing=f.querySelector(".required-asterisk");
+    if(existing) existing.remove();
+  });
+  requiredFields().forEach(id=>{
+    const node=el(id); if(!node)return;
+    const field=node.closest(".field"); if(!field)return;
+    field.classList.add("required");
+    const label=field.querySelector(".field-label");
+    if(label && !label.querySelector(".required-asterisk")){
+      const star=document.createElement("span");
+      star.className="required-asterisk";
+      star.textContent="*";
+      label.appendChild(star);
+    }
+  });
+}
+function validateRequiredFields(){
+  markRequiredFields();
+  let missing=[];
+  requiredFields().forEach(id=>{
+    const node=el(id); if(!node)return;
+    const field=node.closest(".field");
+    const isMissing=String(node.value||"").trim()==="";
+    if(field) field.classList.toggle("missing",isMissing);
+    if(isMissing){
+      const label=field?field.querySelector(".field-label"):null;
+      missing.push(label?label.textContent.replace("*","").trim():id);
+    }
+  });
+  const box=el("validationBox");
+  if(box){
+    if(missing.length){
+      box.style.display="block";
+      box.innerHTML="<strong>Required fields missing:</strong> "+missing.join(", ")+".";
+    } else {
+      box.style.display="none";
+    }
+  }
+  return missing.length===0;
+}
+
+
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+  if(typeof markRequiredFields==="function") markRequiredFields();
+  if(typeof validateRequiredFields==="function") validateRequiredFields();
+  document.querySelectorAll("input,select").forEach(function(node){
+    node.addEventListener("input",function(){
+      if(typeof syncLinkedAges==="function") syncLinkedAges();
+      if(typeof validateRequiredFields==="function") validateRequiredFields();
+    });
+    node.addEventListener("change",function(){
+      if(typeof syncLinkedAges==="function") syncLinkedAges();
+      if(typeof validateRequiredFields==="function") validateRequiredFields();
+    });
+  });
+});
 </script>
 
 </body>
