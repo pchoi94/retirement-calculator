@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Retirement Planning Calculator - Full Mobile Tooltips</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#f6f7f8;--card:#fff;--text:#1f2937;--muted:#6b7280;--border:#d1d5db;--accent:#2563eb;--success:#047857;--danger:#b91c1c;--warn:#b45309;--soft:#dbeafe}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+header{padding:20px 24px;background:#111827;color:#fff}
+header h1{margin:0 0 6px;font-size:clamp(21px,3vw,28px)} header p{margin:0;color:#d1d5db;font-size:14px;line-height:1.4}
+main{padding:16px;display:grid;grid-template-columns:minmax(320px,450px) minmax(0,1fr);gap:16px;max-width:1520px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.04);min-width:0}
+.inputs{height:fit-content;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+h2{font-size:18px;margin:0 0 12px;display:flex;align-items:center;gap:6px} 
+h3{font-size:14px;margin:18px 0 9px;border-bottom:1px solid var(--border);padding-bottom:5px;color:#374151;display:flex;align-items:center;gap:6px}
+.field{display:grid;grid-template-columns:minmax(0,1fr) minmax(96px,132px);gap:8px;align-items:center;margin:8px 0}
+.field-label{display:flex;align-items:center;min-width:0;gap:6px;font-size:12.5px;color:#374151;line-height:1.25}
+input,select{width:100%;min-width:0;padding:8px 9px;border:1px solid var(--border);border-radius:8px;font-size:14px;text-align:right;background:#fff}
+select{text-align:left}
+.info{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:17px;height:17px;border-radius:50%;background:#e5e7eb;color:#111827;font-size:11px;font-weight:750;cursor:help;position:relative;line-height:1;user-select:none}
+.info:hover,.info:focus{background:var(--accent);color:#fff;outline:none}
+.info:hover::after,.info:focus::after{content:attr(data-tooltip);position:absolute;left:50%;top:23px;transform:translateX(-50%);width:min(270px,80vw);background:#111827;color:white;padding:9px 10px;border-radius:8px;font-size:12px;font-weight:400;line-height:1.35;z-index:100;box-shadow:0 8px 20px rgba(0,0,0,.25);text-align:left;white-space:normal}
+.info:hover::before,.info:focus::before{content:"";position:absolute;top:17px;left:50%;transform:translateX(-50%);border:6px solid transparent;border-bottom-color:#111827;z-index:101}
+.mini-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mini-table{width:100%;min-width:360px;border-collapse:collapse;font-size:12px;margin-top:8px;table-layout:fixed}
+.mini-table th,.mini-table td{border-bottom:1px solid var(--border);padding:5px 3px;text-align:right;white-space:nowrap}
+.mini-table th:first-child,.mini-table td:first-child{text-align:left;width:34%;position:static;background:transparent}
+.mini-table input{padding:7px 5px;font-size:13px;border-radius:7px}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px;min-width:0}
+.metric{background:#f9fafb;border:1px solid var(--border);border-radius:12px;padding:11px;min-width:0}
+.metric-title{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);margin-bottom:6px;line-height:1.2}
+.metric .value{font-size:clamp(16px,2.2vw,20px);font-weight:700;overflow-wrap:anywhere}
+.success{color:var(--success)}.danger{color:var(--danger)}.warn{color:var(--warn)}
+.chart-wrap{height:320px;margin-top:10px;min-width:0}
+canvas{width:100%;height:100%;border:1px solid var(--border);border-radius:12px;background:#fff;display:block}
+.table-wrap{max-height:520px;overflow:auto;border:1px solid var(--border);border-radius:12px;width:100%;-webkit-overflow-scrolling:touch}
+.main-table{width:100%;min-width:980px;border-collapse:collapse;font-size:12px}
+.main-table th,.main-table td{border-bottom:1px solid var(--border);padding:8px 6px;text-align:right;white-space:nowrap}
+.main-table th:first-child,.main-table td:first-child{text-align:left;position:sticky;left:0;background:#f9fafb;z-index:2}
+.main-table th{background:#f9fafb;color:#374151;position:sticky;top:0;z-index:3}
+.note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:10px}
+.mobile-help{display:none;background:var(--soft);border:1px solid #bfdbfe;color:#1e3a8a;border-radius:10px;padding:10px;font-size:12.5px;line-height:1.4;margin-bottom:12px}
+.buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px;margin-top:14px}
+button{border:0;border-radius:10px;padding:11px 10px;background:var(--accent);color:#fff;font-weight:650;cursor:pointer;font-size:14px;min-height:42px}
+button.secondary{background:#4b5563} button.green{background:var(--success)}
+.error{display:none;margin-bottom:12px;padding:11px;border-radius:10px;background:#fef2f2;color:#991b1b;border:1px solid #fecaca;font-size:12.5px}
+.output{min-width:0}
+@media(max-width:980px){main{grid-template-columns:1fr;padding:12px}.inputs{position:static;max-height:none;overflow:visible}.chart-wrap{height:280px}}
+@media(max-width:620px){header{padding:16px}main{padding:10px;gap:12px}.card{padding:12px;border-radius:12px}.mobile-help{display:block}.field{grid-template-columns:1fr;gap:5px;margin:10px 0}.field-label{font-size:13px}input,select{text-align:left;font-size:16px;min-height:42px}.summary-grid{grid-template-columns:1fr 1fr;gap:8px}.metric{padding:10px}.metric-title{font-size:11px}.chart-wrap{height:240px}.main-table{font-size:11.5px}.main-table th,.main-table td{padding:7px 5px}.info:hover::after,.info:focus::after{left:auto;right:-10px;transform:none;width:min(250px,78vw)}.info:hover::before,.info:focus::before{left:auto;right:-2px;transform:none}}
+@media(max-width:390px){.summary-grid{grid-template-columns:1fr}.buttons{grid-template-columns:1fr}}
+
+.required-asterisk{color:#b91c1c;font-weight:800;margin-left:2px}
+.field.missing input,.field.missing select{border-color:#b91c1c;background:#fff1f2;box-shadow:0 0 0 2px rgba(185,28,28,.12)}
+.field.missing .field-label{color:#991b1b;font-weight:650}
+.validation-summary{display:none;margin-bottom:12px;padding:11px;border-radius:10px;background:#fef2f2;color:#991b1b;border:1px solid #fecaca;font-size:12.5px;line-height:1.4}
+
+
+/* Mobile-safe required field styling */
+.req-star,
+.required-asterisk {
+  color: #dc2626 !important;
+  font-weight: 900 !important;
+  margin-left: 3px !important;
+  display: inline !important;
+}
+
+.field.required .field-label::after {
+  content: " *";
+  color: #dc2626;
+  font-weight: 900;
+}
+
+.field.missing input,
+.field.missing select {
+  border: 2px solid #dc2626 !important;
+  background: #fff1f2 !important;
+  box-shadow: 0 0 0 3px rgba(220,38,38,.16) !important;
+}
+
+.field.missing .field-label {
+  color: #991b1b !important;
+  font-weight: 700 !important;
+}
+
+.validation-summary {
+  display:none;
+  margin-bottom:12px;
+  padding:12px;
+  border-radius:10px;
+  background:#fef2f2;
+  color:#991b1b;
+  border:1px solid #fecaca;
+  font-size:13px;
+  line-height:1.4;
+}
+
+</style>
+</head>
+<body>
+<header>
+<h1>Retirement Planning Calculator</h1>
+<p>Full mobile-friendly version with Investor.gov match mode, retirement modeling, Monte Carlo, real estate sale modeling, and circular help icons.</p>
+</header>
+<main>
+<section class="card inputs">
+<h2>Inputs <span tabindex="0" class="info" data-tooltip="Editable assumptions used by the calculator. Changes update the projection immediately.">i</span></h2>
+<div class="mobile-help">On mobile, tap or focus a circular “i” icon to see what each field means. Tables scroll sideways inside their own panels.</div>
+
+<h3>Investor.gov Match Mode <span tabindex="0" class="info" data-tooltip="A simplified mode designed to compare directly against the Investor.gov compound interest calculator.">i</span></h3>
+<div class="field"><div class="field-label">Simple Match Mode <span tabindex="0" class="info" data-tooltip="When Yes, the app ignores retirement-specific items and uses only initial investment, monthly contribution, years, rate, and compounding frequency.">i</span></div><select id="simpleMode"><option value="">— Select —</option><option value="no">No - Full Retirement Model</option><option value="yes">Yes - Match Investor.gov</option></select></div>
+<div class="field"><div class="field-label">Length of Time in Years <span tabindex="0" class="info" data-tooltip="Number of years used in Investor.gov match mode.">i</span></div><input id="simpleYears" type="number" value="" step="1"></div>
+<div class="note">For 1:1 comparison: Simple Match Mode = Yes, Investment Fee = 0, Use Monthly Contribution Input = Yes.</div>
+
+<h3>Timeline <span tabindex="0" class="info" data-tooltip="Controls the ages and time horizon for the full retirement model.">i</span></h3>
+<div class="field"><div class="field-label">Current Age <span tabindex="0" class="info" data-tooltip="Your current age at the start of the projection.">i</span></div><input id="currentAge" type="number" value=""></div>
+<div class="field"><div class="field-label">Spouse Current Age <span tabindex="0" class="info" data-tooltip="Your spouse's current age, used for the annual projection table.">i</span></div><input id="spouseAge" type="number" value=""></div>
+<div class="field"><div class="field-label">Retirement Age <span tabindex="0" class="info" data-tooltip="Age when contributions stop and retirement spending begins.">i</span></div><input id="retireAge" type="number" value=""></div>
+<div class="field"><div class="field-label">Plan Until Your Age <span tabindex="0" class="info" data-tooltip="Final age included in the retirement projection.">i</span></div><input id="endAge" type="number" value=""></div>
+
+<h3>Portfolio / Investor.gov Inputs <span tabindex="0" class="info" data-tooltip="Core investment assumptions used by both simple and full modes.">i</span></h3>
+<div class="field"><div class="field-label">Initial Investment $ <span tabindex="0" class="info" data-tooltip="Starting portfolio balance before future contributions, withdrawals, growth, or property sale proceeds.">i</span></div><input id="portfolio" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Annual Contributions $ <span tabindex="0" class="info" data-tooltip="Annual amount added before retirement when monthly contribution input is not used.">i</span></div><input id="contrib" type="number" value="" step="1000"></div>
+<div class="field"><div class="field-label">Monthly Contribution $ <span tabindex="0" class="info" data-tooltip="Monthly contribution used in Investor.gov match mode or when Use Monthly Contribution Input is set to Yes. Can be negative to model withdrawals in simple mode.">i</span></div><input id="monthlyContribution" type="number" value="" step="100"></div>
+<div class="field"><div class="field-label">Use Monthly Contribution Input <span tabindex="0" class="info" data-tooltip="When Yes, the app uses the Monthly Contribution field instead of dividing Annual Contributions by 12.">i</span></div><select id="useMonthlyContribution"><option value="">— Select —</option><option value="no">No - Use Annual / 12</option><option value="yes">Yes</option></select></div>
+<div class="field"><div class="field-label">Annual Interest Rate % <span tabindex="0" class="info" data-tooltip="Expected nominal annual return before inflation. This is one of the most sensitive assumptions in the model.">i</span></div><input id="returnRate" type="number" value="" step="0.1"></div>
+<div class="field"><div class="field-label">Compound Frequency <span tabindex="0" class="info" data-tooltip="How often interest is credited: annually, semiannually, quarterly, monthly, or daily. In match mode this follows Investor.gov-style discrete compounding.">i</span></div><select id="compoundFreq"><option value="">— Select —</option><option value="1">Annually</option><option value="2">Semiannually</option><option value="4">Quarterly</option><option value="12">Monthly</option><option value="365">Daily</option></select></div>
+<div class="field"><div class="field-label">Inflation % <span tabindex="0" class="info" data-tooltip="Annual increase applied to future spending, income, and related cash-flow assumptions in the full model.">i</span></div><input id="inflation" type="number" value="" step="0.1"></div>
+
+<h3>Base Income <span tabindex="0" class="info" data-tooltip="Recurring income sources that reduce required portfolio withdrawals.">i</span></h3>
+<div class="field"><div class="field-label">Social Security Start Age <span tabindex="0" class="info" data-tooltip="Your age when Social Security benefits begin in the model.">i</span></div><input id="ssAge" type="number" value=""></div>
+<div class="field"><div class="field-label">Your SS Monthly $ <span tabindex="0" class="info" data-tooltip="Your estimated monthly Social Security benefit in today's dollars.">i</span></div><input id="ssMonthly" type="number" value="" step="100"></div>
+<div class="field"><div class="field-label">Spouse SS Monthly $ <span tabindex="0" class="info" data-tooltip="Spouse's estimated monthly Social Security benefit in today's dollars.">i</span></div><input id="spouseSsMonthly" type="number" value="" step="100"></div>
+<div class="field"><div class="field-label">Rental Income Monthly $ <span tabindex="0" class="info" data-tooltip="Net monthly rental income before any modeled property sale.">i</span></div><input id="rentalMonthly" type="number" value="" step="50"></div>
+
+<h3>Real Estate Sale <span tabindex="0" class="info" data-tooltip="Optional rental or property sale module. Net sale proceeds are added to the investment portfolio in the sale year.">i</span></h3>
+<div class="field"><div class="field-label">Model Property Sale <span tabindex="0" class="info" data-tooltip="Turns real estate sale modeling on or off.">i</span></div><select id="sellRealEstate"><option value="">— Select —</option><option value="no">No</option><option value="yes">Yes</option></select></div>
+<div class="field"><div class="field-label">Sale Age <span tabindex="0" class="info" data-tooltip="Your age when the property is assumed to be sold.">i</span></div><input id="propertySaleAge" type="number" value=""></div>
+<div class="field"><div class="field-label">Current Property Value $ <span tabindex="0" class="info" data-tooltip="Estimated current market value of the property.">i</span></div><input id="propertyValue" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Property Growth % <span tabindex="0" class="info" data-tooltip="Annual property value appreciation assumption before the sale.">i</span></div><input id="propertyGrowth" type="number" value="" step="0.1"></div>
+<div class="field"><div class="field-label">Mortgage Balance $ <span tabindex="0" class="info" data-tooltip="Current outstanding mortgage balance on the property.">i</span></div><input id="mortgageBalance" type="number" value="" step="1000"></div>
+<div class="field"><div class="field-label">Mortgage Annual Paydown $ <span tabindex="0" class="info" data-tooltip="Estimated annual principal reduction before the property is sold.">i</span></div><input id="mortgagePaydown" type="number" value="" step="500"></div>
+<div class="field"><div class="field-label">Selling Costs % <span tabindex="0" class="info" data-tooltip="Estimated transaction costs as a percentage of sale value, such as agent fees and closing costs.">i</span></div><input id="sellingCosts" type="number" value="" step="0.25"></div>
+<div class="field"><div class="field-label">Cost Basis $ <span tabindex="0" class="info" data-tooltip="Tax basis used to estimate capital gain on sale.">i</span></div><input id="costBasis" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Cap Gains Exclusion $ <span tabindex="0" class="info" data-tooltip="Capital gain amount excluded from taxation, if applicable. For investment property this may be zero.">i</span></div><input id="capGainExclusion" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Cap Gains Tax Rate % <span tabindex="0" class="info" data-tooltip="Estimated tax rate applied to taxable capital gains after selling costs and exclusions.">i</span></div><input id="capGainTaxRate" type="number" value="" step="0.5"></div>
+<div class="field"><div class="field-label">Stop Rental Income After Sale <span tabindex="0" class="info" data-tooltip="If Yes, rental income stops after the property is sold.">i</span></div><select id="stopRentalAfterSale"><option value="">— Select —</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+
+<h3>Taxes / Costs <span tabindex="0" class="info" data-tooltip="Simplified tax and fee assumptions applied to withdrawals and investment returns.">i</span></h3>
+<div class="field"><div class="field-label">Effective Tax Rate % <span tabindex="0" class="info" data-tooltip="Approximate tax rate used to gross up retirement withdrawals. Example: at 15%, a $85k after-tax need requires a $100k gross withdrawal.">i</span></div><input id="taxRate" type="number" value="" step="0.5"></div>
+<div class="field"><div class="field-label">Investment Fee % <span tabindex="0" class="info" data-tooltip="Annual fee or return drag subtracted from the annual interest rate. Set to 0 for Investor.gov comparison.">i</span></div><input id="feeRate" type="number" value="" step="0.05"></div>
+
+<h3>Monte Carlo Settings <span tabindex="0" class="info" data-tooltip="Randomized simulation assumptions used to estimate success probability and downside risk.">i</span></h3>
+<div class="field"><div class="field-label">Trials <span tabindex="0" class="info" data-tooltip="Number of random simulations to run. More trials are smoother but slower.">i</span></div><input id="mcTrials" type="number" value="" step="500"></div>
+<div class="field"><div class="field-label">Return Volatility % <span tabindex="0" class="info" data-tooltip="How much annual investment returns randomly vary around the average return assumption.">i</span></div><input id="mcVolatility" type="number" value="" step="0.5"></div>
+<div class="field"><div class="field-label">Inflation Volatility % <span tabindex="0" class="info" data-tooltip="How much annual inflation randomly varies around the average inflation assumption.">i</span></div><input id="mcInflationVol" type="number" value="" step="0.1"></div>
+<div class="field"><div class="field-label">Property Growth Volatility % <span tabindex="0" class="info" data-tooltip="How much property appreciation randomly varies in Monte Carlo simulations.">i</span></div><input id="mcPropertyVol" type="number" value="" step="0.5"></div>
+<div class="field"><div class="field-label">Worst Annual Return Floor % <span tabindex="0" class="info" data-tooltip="Lower bound for randomly generated annual returns. Prevents extreme negative outliers.">i</span></div><input id="mcReturnFloor" type="number" value="" step="1"></div>
+<div class="field"><div class="field-label">Best Annual Return Cap % <span tabindex="0" class="info" data-tooltip="Upper bound for randomly generated annual returns. Prevents extreme positive outliers.">i</span></div><input id="mcReturnCap" type="number" value="" step="1"></div>
+
+<h3>Age-Based Spending Phases <span tabindex="0" class="info" data-tooltip="Models different spending levels during early, middle, and late retirement. Amounts are in today's dollars.">i</span></h3>
+<div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Phase</th><th>Start</th><th>End</th><th>Annual $</th></tr></thead><tbody>
+<tr><td>Early <span tabindex="0" class="info" data-tooltip="Higher-spending early retirement phase, often driven by travel, activity, and lifestyle upgrades.">i</span></td><td><input id="spend1Start" type="number" value=""></td><td><input id="spend1End" type="number" value=""></td><td><input id="spend1Amt" type="number" value="" step="5000"></td></tr>
+<tr><td>Mid <span tabindex="0" class="info" data-tooltip="Middle retirement phase with more stable or moderate spending.">i</span></td><td><input id="spend2Start" type="number" value=""></td><td><input id="spend2End" type="number" value=""></td><td><input id="spend2Amt" type="number" value="" step="5000"></td></tr>
+<tr><td>Late <span tabindex="0" class="info" data-tooltip="Later retirement phase. Lifestyle spending may decline, but healthcare risk may rise.">i</span></td><td><input id="spend3Start" type="number" value=""></td><td><input id="spend3End" type="number" value=""></td><td><input id="spend3Amt" type="number" value="" step="5000"></td></tr>
+</tbody></table></div>
+
+<h3>Age-Based Extra Income <span tabindex="0" class="info" data-tooltip="Optional extra income streams by age range, such as part-time work, pension, annuity, or family support.">i</span></h3>
+<div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Item</th><th>Start</th><th>End</th><th>Annual $</th></tr></thead><tbody>
+<tr><td>Income 1 <span tabindex="0" class="info" data-tooltip="Additional annual income during this age range, in today's dollars.">i</span></td><td><input id="inc1Start" type="number" value=""></td><td><input id="inc1End" type="number" value=""></td><td><input id="inc1Amt" type="number" value="" step="1000"></td></tr>
+<tr><td>Income 2 <span tabindex="0" class="info" data-tooltip="Additional annual income during this age range, in today's dollars.">i</span></td><td><input id="inc2Start" type="number" value=""></td><td><input id="inc2End" type="number" value=""></td><td><input id="inc2Amt" type="number" value="" step="1000"></td></tr>
+<tr><td>Income 3 <span tabindex="0" class="info" data-tooltip="Additional annual income during this age range, in today's dollars.">i</span></td><td><input id="inc3Start" type="number" value=""></td><td><input id="inc3End" type="number" value=""></td><td><input id="inc3Amt" type="number" value="" step="1000"></td></tr>
+</tbody></table></div>
+
+<h3>Age-Based Extra Expenses <span tabindex="0" class="info" data-tooltip="Optional expenses by age range, such as college support, travel, healthcare, car replacement, or home projects.">i</span></h3>
+<div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Item</th><th>Start</th><th>End</th><th>Annual $</th></tr></thead><tbody>
+<tr><td>Expense 1 <span tabindex="0" class="info" data-tooltip="Additional annual expense during this age range, in today's dollars.">i</span></td><td><input id="exp1Start" type="number" value=""></td><td><input id="exp1End" type="number" value=""></td><td><input id="exp1Amt" type="number" value="" step="1000"></td></tr>
+<tr><td>Expense 2 <span tabindex="0" class="info" data-tooltip="Additional annual expense during this age range, in today's dollars.">i</span></td><td><input id="exp2Start" type="number" value=""></td><td><input id="exp2End" type="number" value=""></td><td><input id="exp2Amt" type="number" value="" step="1000"></td></tr>
+<tr><td>Expense 3 <span tabindex="0" class="info" data-tooltip="Additional annual expense during this age range, in today's dollars.">i</span></td><td><input id="exp3Start" type="number" value=""></td><td><input id="exp3End" type="number" value=""></td><td><input id="exp3Amt" type="number" value="" step="1000"></td></tr>
+</tbody></table></div>
+
+<div class="buttons"><button type="button" onclick="calculate()">Update Base</button><button type="button" class="green" onclick="runMonteCarlo()">Run Monte Carlo</button><button type="button" class="secondary" onclick="resetDefaults()">Reset</button></div>
+</section>
+
+<section class="output">
+<div id="validationBox" class="validation-summary"></div>
+<div id="errorBox" class="error"></div>
+<div class="summary-grid">
+<div class="metric"><div class="metric-title">Base Case Result <span tabindex="0" class="info" data-tooltip="Whether the deterministic base-case projection lasts through the plan period.">i</span></div><div id="result" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Base Ending Portfolio <span tabindex="0" class="info" data-tooltip="Final portfolio value at the end of the base-case projection.">i</span></div><div id="endingPortfolio" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Base Lowest Portfolio <span tabindex="0" class="info" data-tooltip="Lowest portfolio value reached at any point in the base-case projection. Shows how close the plan gets to failure.">i</span></div><div id="lowestPortfolio" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Base First Depletion Age <span tabindex="0" class="info" data-tooltip="First age when the portfolio falls to zero or below in the base-case projection.">i</span></div><div id="depletionAge" class="value">—</div></div>
+</div>
+
+<div class="summary-grid">
+<div class="metric"><div class="metric-title">Property Net Sale Proceeds <span tabindex="0" class="info" data-tooltip="Estimated amount added to the portfolio after sale price, selling costs, remaining mortgage, and estimated capital-gains tax.">i</span></div><div id="saleProceedsMetric" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Projected Sale Value <span tabindex="0" class="info" data-tooltip="Estimated property value at the modeled sale age.">i</span></div><div id="saleValueMetric" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Remaining Mortgage <span tabindex="0" class="info" data-tooltip="Estimated mortgage balance remaining at the sale age after modeled annual paydown.">i</span></div><div id="mortgageMetric" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Estimated Sale Tax <span tabindex="0" class="info" data-tooltip="Estimated capital-gains tax due from the modeled property sale.">i</span></div><div id="saleTaxMetric" class="value">—</div></div>
+</div>
+
+<div class="summary-grid">
+<div class="metric"><div class="metric-title">Monte Carlo Success Rate <span tabindex="0" class="info" data-tooltip="Percentage of simulations where the portfolio does not run out of money.">i</span></div><div id="mcSuccess" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Median Ending Portfolio <span tabindex="0" class="info" data-tooltip="Middle outcome from the Monte Carlo simulations. Half of simulations ended higher and half lower.">i</span></div><div id="mcMedian" class="value">—</div></div>
+<div class="metric"><div class="metric-title">10th Percentile Ending <span tabindex="0" class="info" data-tooltip="Downside outcome: 90% of simulations ended higher, 10% ended lower.">i</span></div><div id="mcP10" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Worst Case Ending <span tabindex="0" class="info" data-tooltip="Lowest ending portfolio value across the Monte Carlo simulations.">i</span></div><div id="mcWorst" class="value">—</div></div>
+</div>
+
+<div class="card"><h2>Portfolio Projection <span tabindex="0" class="info" data-tooltip="Chart of projected ending portfolio value by year or age.">i</span></h2><div class="chart-wrap"><canvas id="portfolioChart"></canvas></div></div>
+<div class="card" style="margin-top:14px"><h2>Monte Carlo Distribution <span tabindex="0" class="info" data-tooltip="Histogram showing the distribution of ending portfolio values across randomized simulations.">i</span></h2><div class="chart-wrap"><canvas id="mcChart"></canvas></div><div class="note" id="mcNote">Run Monte Carlo to populate this chart.</div></div>
+<div class="card" style="margin-top:14px"><h2>Annual Base Projection <span tabindex="0" class="info" data-tooltip="Year-by-year table of the base-case calculation. On mobile, scroll sideways inside the table.">i</span></h2><div class="table-wrap"><table class="main-table"><thead><tr><th>Age/Year</th><th>Spouse Age</th><th>Start Portfolio</th><th>Property Sale</th><th>Net Contribution</th><th>Interest</th><th>Base Spending</th><th>Extra Expenses</th><th>Total Spending</th><th>Base Income</th><th>Extra Income</th><th>Gross Withdrawal</th><th>End Portfolio</th></tr></thead><tbody id="projectionBody"></tbody></table></div></div>
+</section>
+</main>
+
+<script>
+const defaults={simpleMode:"no",simpleYears:40,currentAge:50,spouseAge:55,retireAge:57,endAge:90,portfolio:1900000,contrib:48500,monthlyContribution:4041.6667,useMonthlyContribution:"no",returnRate:6,compoundFreq:"12",inflation:3,ssAge:67,ssMonthly:4100,spouseSsMonthly:2050,rentalMonthly:500,sellRealEstate:"no",propertySaleAge:60,propertyValue:500000,propertyGrowth:3,mortgageBalance:154000,mortgagePaydown:6000,sellingCosts:7,costBasis:250000,capGainExclusion:0,capGainTaxRate:20,stopRentalAfterSale:"yes",taxRate:15,feeRate:.25,mcTrials:2000,mcVolatility:13,mcInflationVol:1.2,mcPropertyVol:5,mcReturnFloor:-45,mcReturnCap:35,spend1Start:57,spend1End:64,spend1Amt:150000,spend2Start:65,spend2End:79,spend2Amt:120000,spend3Start:80,spend3End:90,spend3Amt:105000,inc1Start:57,inc1End:60,inc1Amt:0,inc2Start:61,inc2End:66,inc2Amt:0,inc3Start:67,inc3End:90,inc3Amt:0,exp1Start:57,exp1End:60,exp1Amt:20000,exp2Start:61,exp2End:66,exp2Amt:0,exp3Start:80,exp3End:90,exp3Amt:15000};
+function el(id){return document.getElementById(id)}
+function getVal(id){return parseFloat(el(id).value)||0}
+function getSelect(id){return el(id).value}
+function fmtMoney(n){if(!isFinite(n))return"—";const s=n<0?"-":"";return s+"$"+Math.abs(n).toLocaleString(undefined,{maximumFractionDigits:0})}
+function fmtPct(n){return isFinite(n)?(n*100).toFixed(1)+"%":"—"}
+function resetDefaults(){Object.keys(defaults).forEach(k=>{if(el(k))el(k).value=defaults[k]});calculate();clearMC()}
+function active(age,start,end,amt,infFactor){return age>=start&&age<=end?amt*infFactor:0}
+function baseSpending(age,infFactor){const phases=[[getVal("spend1Start"),getVal("spend1End"),getVal("spend1Amt")],[getVal("spend2Start"),getVal("spend2End"),getVal("spend2Amt")],[getVal("spend3Start"),getVal("spend3End"),getVal("spend3Amt")]];for(let p of phases){if(age>=p[0]&&age<=p[1])return p[2]*infFactor}return 0}
+function extraIncome(age,infFactor){return active(age,getVal("inc1Start"),getVal("inc1End"),getVal("inc1Amt"),infFactor)+active(age,getVal("inc2Start"),getVal("inc2End"),getVal("inc2Amt"),infFactor)+active(age,getVal("inc3Start"),getVal("inc3End"),getVal("inc3Amt"),infFactor)}
+function extraExpenses(age,infFactor){return active(age,getVal("exp1Start"),getVal("exp1End"),getVal("exp1Amt"),infFactor)+active(age,getVal("exp2Start"),getVal("exp2End"),getVal("exp2Amt"),infFactor)+active(age,getVal("exp3Start"),getVal("exp3End"),getVal("exp3Amt"),infFactor)}
+function validate(){if(getVal("endAge")<getVal("currentAge"))throw new Error("Plan Until Your Age must be greater than or equal to Current Age.");if(getVal("taxRate")>=100)throw new Error("Effective Tax Rate must be less than 100%.");if(getVal("capGainTaxRate")>=100)throw new Error("Cap Gains Tax Rate must be less than 100%.");if(getVal("mcTrials")<100)throw new Error("Monte Carlo Trials should be at least 100.")}
+function monthlyContributionAmount(){return getSelect("useMonthlyContribution")==="yes"?getVal("monthlyContribution"):getVal("contrib")/12}
+function compoundingMonths(freq){if(freq===1)return 12;if(freq===2)return 6;if(freq===4)return 3;if(freq===12)return 1;return 0}
+function applyInterestDiscrete(balance,annualRate,freq,monthInYear){if(freq===365){const days=[31,28,31,30,31,30,31,31,30,31,30,31][monthInYear-1];return balance*(Math.pow(1+annualRate/365,days)-1)}const interval=compoundingMonths(freq);if(interval>0&&monthInYear%interval===0)return balance*(annualRate/freq);return 0}
+function calcPropertySaleInfo(age, propertyFactor){if(getSelect("sellRealEstate")!=="yes")return{saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};const currentAge=getVal("currentAge"),saleAge=getVal("propertySaleAge");if(age!==saleAge)return{saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};const years=Math.max(0,saleAge-currentAge);const saleValue=propertyFactor!==null?getVal("propertyValue")*propertyFactor:getVal("propertyValue")*Math.pow(1+getVal("propertyGrowth")/100,years);const remainingMortgage=Math.max(0,getVal("mortgageBalance")-(getVal("mortgagePaydown")*years));const sellingCost=saleValue*(getVal("sellingCosts")/100);const taxableGain=Math.max(0,saleValue-sellingCost-getVal("costBasis")-getVal("capGainExclusion"));const tax=taxableGain*(getVal("capGainTaxRate")/100);const saleProceeds=Math.max(0,saleValue-sellingCost-remainingMortgage-tax);return{saleProceeds,saleValue,remainingMortgage,sellingCost,tax,gain:taxableGain}}
+function updateSaleMetrics(info){el("saleProceedsMetric").textContent=fmtMoney(info.saleProceeds);el("saleValueMetric").textContent=fmtMoney(info.saleValue);el("mortgageMetric").textContent=fmtMoney(info.remainingMortgage);el("saleTaxMetric").textContent=fmtMoney(info.tax)}
+function randomNormal(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function randomReturn(mean){const vol=getVal("mcVolatility")/100,floor=getVal("mcReturnFloor")/100,cap=getVal("mcReturnCap")/100;return Math.max(floor,Math.min(cap,mean+randomNormal()*vol))}
+function randomInflation(mean){const vol=getVal("mcInflationVol")/100;return Math.max(0,mean+randomNormal()*vol)}
+function randomPropertyGrowth(mean){const vol=getVal("mcPropertyVol")/100;return Math.max(-.30,Math.min(.30,mean+randomNormal()*vol))}
+function simulateSimple(){let portfolio=getVal("portfolio");const years=Math.max(0,Math.floor(getVal("simpleYears"))),annualRate=(getVal("returnRate")-getVal("feeRate"))/100,freq=parseFloat(getSelect("compoundFreq")),monthlyContribution=monthlyContributionAmount();const rows=[];for(let y=1;y<=years;y++){const startPortfolio=portfolio;let interestYear=0,contribYear=0;for(let m=1;m<=12;m++){const interest=applyInterestDiscrete(portfolio,annualRate,freq,m);portfolio+=interest;interestYear+=interest;portfolio+=monthlyContribution;contribYear+=monthlyContribution}rows.push({age:y,spouseAge:"—",startPortfolio,propertySale:0,propertyInfo:{saleProceeds:0,saleValue:0,remainingMortgage:0,tax:0},contribution:contribYear,growth:interestYear,bs:0,ee:0,totalSpend:0,bi:0,ei:0,withdrawal:monthlyContribution<0?Math.abs(contribYear):0,endPortfolio:portfolio})}return rows}
+function simulateFull(randomize){const currentAge=getVal("currentAge"),spouseAge=getVal("spouseAge"),retireAge=getVal("retireAge"),endAge=getVal("endAge");let portfolio=getVal("portfolio");const baseReturn=getVal("returnRate")/100,baseInf=getVal("inflation")/100,ssAge=getVal("ssAge"),ssAnnual=(getVal("ssMonthly")+getVal("spouseSsMonthly"))*12,rentalAnnual=getVal("rentalMonthly")*12,taxRate=getVal("taxRate")/100,feeRate=getVal("feeRate")/100,freq=parseFloat(getSelect("compoundFreq"));let infFactor=1,propertyFactor=1,soldProperty=false;const rows=[];for(let age=currentAge;age<=endAge;age++){const yearIndex=age-currentAge,spouseCurrent=spouseAge+yearIndex,startPortfolio=portfolio;let yearInterest=0,yearContribution=0,yearWithdrawal=0,bsAnnual=0,eeAnnual=0,totalSpendAnnual=0,biAnnual=0,eiAnnual=0,propertySale=0,propertyInfo={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};let annualReturn=randomize?randomReturn(baseReturn):baseReturn,annualInflation=randomize?randomInflation(baseInf):baseInf,annualPropertyGrowth=randomize?randomPropertyGrowth(getVal("propertyGrowth")/100):getVal("propertyGrowth")/100;const netAnnualReturn=annualReturn-feeRate,monthlyInflation=Math.pow(1+annualInflation,1/12)-1,monthlyPropertyGrowth=Math.pow(1+annualPropertyGrowth,1/12)-1;for(let m=1;m<=12;m++){const currentMonthIndex=yearIndex*12+m;if(currentMonthIndex>1){infFactor*=1+monthlyInflation;propertyFactor*=1+monthlyPropertyGrowth}if(getSelect("sellRealEstate")==="yes"&&age===getVal("propertySaleAge")&&m===1&&!soldProperty){propertyInfo=calcPropertySaleInfo(age,propertyFactor);propertySale=propertyInfo.saleProceeds;portfolio+=propertySale;soldProperty=true}const interest=applyInterestDiscrete(portfolio,netAnnualReturn,freq,m);portfolio+=interest;yearInterest+=interest;if(age<retireAge){const c=monthlyContributionAmount();portfolio+=c;yearContribution+=c}else{const bs=baseSpending(age,infFactor),ee=extraExpenses(age,infFactor),totalSpend=bs+ee;const rentalStopped=soldProperty&&getSelect("stopRentalAfterSale")==="yes";let bi=rentalStopped?0:rentalAnnual*infFactor;if(age>=ssAge)bi+=ssAnnual*infFactor;const ei=extraIncome(age,infFactor),withdrawal=Math.max(0,totalSpend-bi-ei)/(1-taxRate)/12;portfolio-=withdrawal;yearWithdrawal+=withdrawal;bsAnnual=bs;eeAnnual=ee;totalSpendAnnual=totalSpend;biAnnual=bi;eiAnnual=ei}}rows.push({age,spouseAge:spouseCurrent,startPortfolio,propertySale,propertyInfo,contribution:yearContribution,growth:yearInterest,bs:bsAnnual,ee:eeAnnual,totalSpend:totalSpendAnnual,bi:biAnnual,ei:eiAnnual,withdrawal:yearWithdrawal,endPortfolio:portfolio})}return rows}
+function simulate(randomize){return getSelect("simpleMode")==="yes"?simulateSimple():simulateFull(randomize)}
+function calculate(){try{el("errorBox").style.display="none";if(!validateRequiredFields()){renderEmptyState();return;}validate();const rows=simulate(false),ending=rows.length?rows[rows.length-1].endPortfolio:getVal("portfolio");let lowest=rows.length?Math.min(...rows.map(r=>r.endPortfolio)):ending,depletion=rows.find(r=>r.endPortfolio<=0);const saleRow=rows.find(r=>r.propertySale>0);updateSaleMetrics(saleRow?saleRow.propertyInfo:calcPropertySaleInfo(getVal("propertySaleAge"),null));renderSummary(ending,lowest,depletion?depletion.age:null);renderTable(rows);drawLineChart("portfolioChart",rows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)})),"End Portfolio by Year/Age")}catch(e){el("errorBox").textContent=e.message;el("errorBox").style.display="block"}}
+function percentile(sorted,p){if(sorted.length===0)return 0;const idx=(sorted.length-1)*p,lo=Math.floor(idx),hi=Math.ceil(idx);return lo===hi?sorted[lo]:sorted[lo]+(sorted[hi]-sorted[lo])*(idx-lo)}
+function runMonteCarlo(){try{el("errorBox").style.display="none";if(!validateRequiredFields()){renderEmptyState();return;}validate();calculate();const trials=Math.min(20000,Math.max(100,Math.floor(getVal("mcTrials")))),endings=[],failureAges=[];let successes=0;for(let i=0;i<trials;i++){const rows=simulateFull(true),ending=rows[rows.length-1].endPortfolio,fail=rows.find(r=>r.endPortfolio<=0);endings.push(ending);if(!fail)successes++;else failureAges.push(fail.age)}endings.sort((a,b)=>a-b);const successRate=successes/trials,median=percentile(endings,.5),p10=percentile(endings,.1),worst=endings[0];el("mcSuccess").textContent=fmtPct(successRate);el("mcSuccess").className=successRate>=.85?"value success":successRate>=.70?"value warn":"value danger";el("mcMedian").textContent=fmtMoney(median);el("mcMedian").className=median>=0?"value success":"value danger";el("mcP10").textContent=fmtMoney(p10);el("mcP10").className=p10>=0?"value success":"value danger";el("mcWorst").textContent=fmtMoney(worst);el("mcWorst").className=worst>=0?"value success":"value danger";drawHistogram("mcChart",endings);const avgFailure=failureAges.length?failureAges.reduce((a,b)=>a+b,0)/failureAges.length:null;el("mcNote").textContent=failureAges.length?("Failures: "+failureAges.length+" of "+trials+". Average failure age among failed trials: "+avgFailure.toFixed(1)+"."):"No failures in "+trials+" trials."}catch(e){el("errorBox").textContent=e.message;el("errorBox").style.display="block"}}
+function clearMC(){["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{el(id).textContent="—";el(id).className="value"});el("mcNote").textContent="Run Monte Carlo to populate this chart.";clearCanvas("mcChart")}
+
+function renderEmptyState(){
+ ["result","endingPortfolio","lowestPortfolio","depletionAge","saleProceedsMetric","saleValueMetric","mortgageMetric","saleTaxMetric","mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el(id)){el(id).textContent="—";el(id).className="value"}});
+ if(el("projectionBody"))el("projectionBody").innerHTML="";
+ clearCanvas("portfolioChart");
+ clearCanvas("mcChart");
+ if(el("mcNote"))el("mcNote").textContent="Enter required fields to calculate.";
+}
+
+function renderSummary(ending,lowest,depletionAge){const r=el("result"),e=el("endingPortfolio"),l=el("lowestPortfolio"),d=el("depletionAge");if(depletionAge===null){r.textContent="Funds Last";r.className="value success";d.textContent="None";d.className="value success"}else{r.textContent="Depletes";r.className="value danger";d.textContent=depletionAge;d.className="value danger"}e.textContent=fmtMoney(ending);e.className=ending>=0?"value success":"value danger";l.textContent=fmtMoney(lowest);l.className=lowest>=0?"value success":"value danger"}
+function renderTable(rows){const body=el("projectionBody");body.innerHTML="";rows.forEach(r=>{const tr=document.createElement("tr");[r.age,r.spouseAge,fmtMoney(r.startPortfolio),fmtMoney(r.propertySale),fmtMoney(r.contribution),fmtMoney(r.growth),fmtMoney(r.bs),fmtMoney(r.ee),fmtMoney(r.totalSpend),fmtMoney(r.bi),fmtMoney(r.ei),fmtMoney(r.withdrawal),fmtMoney(r.endPortfolio)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td)});body.appendChild(tr)})}
+function prepCanvas(id){const canvas=el(id),ctx=canvas.getContext("2d"),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,rect.width,rect.height);ctx.fillStyle="#fff";ctx.fillRect(0,0,rect.width,rect.height);return{canvas,ctx,w:rect.width,h:rect.height}}
+function clearCanvas(id){prepCanvas(id)}
+function drawLineChart(id,points,title){const{ctx,w,h}=prepCanvas(id),p={left:70,right:18,top:24,bottom:42};if(points.length===0)return;const vals=points.map(pt=>pt.y),xs=points.map(pt=>pt.x),maxVal=Math.max(...vals,1),roundedMax=Math.ceil(maxVal/500000)*500000||500000;const xAt=i=>points.length===1?p.left:p.left+(i/(points.length-1))*(w-p.left-p.right),yAt=v=>p.top+(1-v/roundedMax)*(h-p.top-p.bottom);ctx.strokeStyle="#e5e7eb";ctx.lineWidth=1;ctx.fillStyle="#6b7280";ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";for(let i=0;i<=5;i++){const val=roundedMax*i/5,y=yAt(val);ctx.beginPath();ctx.moveTo(p.left,y);ctx.lineTo(w-p.right,y);ctx.stroke();ctx.textAlign="right";ctx.fillText("$"+Math.round(val/1000).toLocaleString()+"k",p.left-6,y+4)}const ticks=Math.min(6,points.length);for(let i=0;i<ticks;i++){const idx=Math.round(i*(points.length-1)/(ticks-1||1)),x=xAt(idx);ctx.beginPath();ctx.moveTo(x,p.top);ctx.lineTo(x,h-p.bottom);ctx.stroke();ctx.textAlign="center";ctx.fillText(xs[idx],x,h-20)}ctx.strokeStyle="#111827";ctx.beginPath();ctx.moveTo(p.left,p.top);ctx.lineTo(p.left,h-p.bottom);ctx.lineTo(w-p.right,h-p.bottom);ctx.stroke();ctx.strokeStyle="#2563eb";ctx.lineWidth=2.5;ctx.beginPath();vals.forEach((v,i)=>{const x=xAt(i),y=yAt(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();ctx.fillStyle="#111827";ctx.font="12px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="left";ctx.fillText(title,p.left,17)}
+function drawHistogram(id,values){const{ctx,w,h}=prepCanvas(id),p={left:70,right:18,top:24,bottom:42};const min=Math.min(...values),max=Math.max(...values),bins=30,range=max-min||1,counts=Array(bins).fill(0);values.forEach(v=>{let idx=Math.floor((v-min)/range*bins);if(idx>=bins)idx=bins-1;if(idx<0)idx=0;counts[idx]++});const maxCount=Math.max(...counts,1),barW=(w-p.left-p.right)/bins;ctx.strokeStyle="#e5e7eb";ctx.fillStyle="#6b7280";ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.lineWidth=1;for(let i=0;i<=5;i++){const y=p.top+(1-i/5)*(h-p.top-p.bottom);ctx.beginPath();ctx.moveTo(p.left,y);ctx.lineTo(w-p.right,y);ctx.stroke();ctx.textAlign="right";ctx.fillText(Math.round(maxCount*i/5),p.left-6,y+4)}ctx.fillStyle="#2563eb";counts.forEach((c,i)=>{const x=p.left+i*barW,y=p.top+(1-c/maxCount)*(h-p.top-p.bottom),bh=(c/maxCount)*(h-p.top-p.bottom);ctx.fillRect(x+1,y,Math.max(1,barW-2),bh)});ctx.strokeStyle="#111827";ctx.beginPath();ctx.moveTo(p.left,p.top);ctx.lineTo(p.left,h-p.bottom);ctx.lineTo(w-p.right,h-p.bottom);ctx.stroke();ctx.fillStyle="#111827";ctx.font="12px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="left";ctx.fillText("Ending Portfolio Distribution",p.left,17);ctx.fillStyle="#6b7280";ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="center";ctx.fillText(fmtMoney(min),p.left,h-20);ctx.fillText(fmtMoney(max),w-p.right,h-20);ctx.fillText("Ending Portfolio",w/2,h-20)}
+
+function setFieldRequired(id,isRequired){
+ const input=el(id); if(!input)return;
+ const field=input.closest(".field"); if(!field)return;
+ const label=field.querySelector(".field-label"); if(!label)return;
+ let star=label.querySelector(".required-asterisk");
+ if(isRequired && !star){star=document.createElement("span");star.className="required-asterisk";star.textContent="*";label.appendChild(star)}
+ if(!isRequired && star){star.remove()}
+}
+function requiredFieldIds(){
+ const simple=getSelect("simpleMode")==="yes";
+ const useMonthly=getSelect("useMonthlyContribution")==="yes";
+ if(simple){
+   return ["simpleMode","simpleYears","portfolio","returnRate","compoundFreq"].concat(useMonthly?["monthlyContribution"]:["contrib"]);
+ }
+ return ["simpleMode","currentAge","retireAge","endAge","portfolio","returnRate","compoundFreq","inflation","taxRate"];
+}
+function markRequiredFields(){
+ const all=["simpleMode","simpleYears","currentAge","spouseAge","retireAge","endAge","portfolio","contrib","monthlyContribution","useMonthlyContribution","returnRate","compoundFreq","inflation","ssAge","ssMonthly","spouseSsMonthly","rentalMonthly","sellRealEstate","propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate","stopRentalAfterSale","taxRate","feeRate","mcTrials","mcVolatility","mcInflationVol","mcPropertyVol","mcReturnFloor","mcReturnCap","spend1Start","spend1End","spend1Amt","spend2Start","spend2End","spend2Amt","spend3Start","spend3End","spend3Amt","inc1Start","inc1End","inc1Amt","inc2Start","inc2End","inc2Amt","inc3Start","inc3End","inc3Amt","exp1Start","exp1End","exp1Amt","exp2Start","exp2End","exp2Amt","exp3Start","exp3End","exp3Amt"];
+ const required=new Set(requiredFieldIds());
+ all.forEach(id=>setFieldRequired(id,required.has(id)));
+}
+function validateRequiredFields(){
+ markRequiredFields();
+ const required=requiredFieldIds();
+ let missing=[];
+ required.forEach(id=>{
+   const input=el(id); if(!input)return;
+   const field=input.closest(".field");
+   const isMissing=(input.value===null || String(input.value).trim()==="");
+   if(field)field.classList.toggle("missing",isMissing);
+   if(isMissing){
+     const label=field?field.querySelector(".field-label"):null;
+     let labelText=label?label.textContent.replace("*","").trim():id;
+     missing.push(labelText);
+   }
+ });
+ const box=el("validationBox");
+ if(missing.length){
+   box.style.display="block";
+   box.innerHTML="<strong>Required fields missing:</strong> "+missing.join(", ")+".";
+   return false;
+ }
+ box.style.display="none";
+ return true;
+}
+
+window.addEventListener("resize",()=>calculate());
+document.addEventListener("DOMContentLoaded",()=>{markRequiredFields();document.querySelectorAll("input,select").forEach(input=>input.addEventListener("input",()=>{markRequiredFields();calculate();clearMC()}));calculate();clearMC()});
+</script>
+
+<script>
+(function(){
+  const REQUIRED_IDS = [
+    "simpleMode","currentAge","retireAge","endAge","portfolio",
+    "returnRate","compoundFreq","inflation","taxRate"
+  ];
+
+  const SIMPLE_REQUIRED_IDS = [
+    "simpleMode","simpleYears","portfolio","returnRate","compoundFreq"
+  ];
+
+  function byId(id){ return document.getElementById(id); }
+
+  function getValue(id){
+    const node = byId(id);
+    return node ? String(node.value || "").trim() : "";
+  }
+
+  function fieldFor(id){
+    const node = byId(id);
+    return node ? node.closest(".field") : null;
+  }
+
+  function labelFor(id){
+    const field = fieldFor(id);
+    return field ? field.querySelector(".field-label") : null;
+  }
+
+  function currentRequiredIds(){
+    const simpleMode = getValue("simpleMode") === "yes";
+    const useMonthly = getValue("useMonthlyContribution") === "yes";
+    if (simpleMode) {
+      return SIMPLE_REQUIRED_IDS.concat(useMonthly ? ["monthlyContribution"] : ["contrib"]);
+    }
+    return REQUIRED_IDS;
+  }
+
+  function markRequiredFieldsMobileSafe(){
+    const allFields = document.querySelectorAll(".field");
+    allFields.forEach(f => {
+      f.classList.remove("required");
+      f.classList.remove("missing");
+    });
+
+    currentRequiredIds().forEach(id => {
+      const field = fieldFor(id);
+      if (field) field.classList.add("required");
+    });
+  }
+
+  function validateRequiredFieldsMobileSafe(){
+    markRequiredFieldsMobileSafe();
+    const missing = [];
+
+    currentRequiredIds().forEach(id => {
+      const field = fieldFor(id);
+      if (!field) return;
+
+      const isMissing = getValue(id) === "";
+      field.classList.toggle("missing", isMissing);
+
+      if (isMissing) {
+        const label = labelFor(id);
+        const text = label ? label.textContent.replace(/[*i]+$/g,"").trim() : id;
+        missing.push(text);
+      }
+    });
+
+    let box = byId("validationBox");
+    if (!box) {
+      const output = document.querySelector(".output");
+      box = document.createElement("div");
+      box.id = "validationBox";
+      box.className = "validation-summary";
+      if (output) output.prepend(box);
+    }
+
+    if (missing.length) {
+      box.style.display = "block";
+      box.innerHTML = "<strong>Required fields missing:</strong> " + missing.join(", ") + ".";
+      return false;
+    }
+
+    box.style.display = "none";
+    return true;
+  }
+
+  window.markRequiredFields = markRequiredFieldsMobileSafe;
+  window.validateRequiredFields = validateRequiredFieldsMobileSafe;
+
+  document.addEventListener("DOMContentLoaded", function(){
+    markRequiredFieldsMobileSafe();
+    validateRequiredFieldsMobileSafe();
+
+    document.querySelectorAll("input, select").forEach(function(input){
+      input.addEventListener("input", function(){
+        validateRequiredFieldsMobileSafe();
+      });
+      input.addEventListener("change", function(){
+        validateRequiredFieldsMobileSafe();
+      });
+      input.addEventListener("blur", function(){
+        validateRequiredFieldsMobileSafe();
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
