@@ -430,6 +430,28 @@ main {
   color: #6b7280 !important;
 }
 
+
+/* Hide optional sections/fields when their controlling toggle is off */
+.field.hidden-by-toggle,
+.hidden-by-toggle {
+  display: none !important;
+}
+
+
+.field.hidden-by-advanced-toggle,
+.hidden-by-advanced-toggle {
+  display: none !important;
+}
+
+
+.misc-remove-btn {
+  padding: 7px 8px !important;
+  min-height: 32px !important;
+  font-size: 12px !important;
+  background: #6b7280 !important;
+  white-space: nowrap;
+}
+
 </style>
 </head>
 <body>
@@ -454,11 +476,11 @@ main {
 <div class="field"><div class="field-label">Plan Until Your Age <span class="info" data-tooltip="Final age included in the retirement projection.">i</span></div><input id="endAge" value="90"></div>
 
 <h3>Portfolio / Investor.gov Inputs <span class="info" data-tooltip="Core investment assumptions used by both simple and full modes.">i</span></h3>
-<div class="field"><div class="field-label">Initial Investment $ <span class="info" data-tooltip="Starting portfolio balance before future contributions, withdrawals, growth, or property sale proceeds.">i</span></div><input id="portfolio" type="number" value="" step="10000"></div>
-<div class="field"><div class="field-label">Annual Contributions $ <span class="info" data-tooltip="Annual amount added before retirement when monthly contribution input is not used.">i</span></div><input id="contrib" type="number" value="" step="1000"></div>
-<div class="field"><div class="field-label">Monthly Contribution $ <span class="info" data-tooltip="Monthly contribution used in Investor.gov match mode or when Use Monthly Contribution Input is set to Yes. Can be negative to model withdrawals in simple mode.">i</span></div><input id="monthlyContribution" type="number" value="" step="100"></div>
+<div class="field"><div class="field-label">Initial Investment $ <span class="info" data-tooltip="Starting portfolio balance before future contributions, withdrawals, growth, or property sale proceeds.">i</span></div><input id="portfolio" type="text" inputmode="decimal" value="" step="10000"></div>
+<div class="field"><div class="field-label">Annual Contributions $ <span class="info" data-tooltip="Annual amount added before retirement when monthly contribution input is not used.">i</span></div><input id="contrib" type="text" inputmode="decimal" value="" step="1000"></div>
+<div class="field"><div class="field-label">Monthly Contribution $ <span class="info" data-tooltip="Monthly contribution used in Investor.gov match mode or when Use Monthly Contribution Input is set to Yes. Can be negative to model withdrawals in simple mode.">i</span></div><input id="monthlyContribution" type="text" inputmode="decimal" value="" step="100"></div>
 <div class="field"><div class="field-label">Use Monthly Contribution Input <span class="info" data-tooltip="When Yes, the app uses the Monthly Contribution field instead of dividing Annual Contributions by 12.">i</span></div><select id="useMonthlyContribution"><option value="no">No - Use Annual / 12</option><option value="yes">Yes</option></select></div>
-<div class="field"><div class="field-label">Annual Interest Rate % <span class="info" data-tooltip="Expected nominal annual return before inflation. This is one of the most sensitive assumptions in the model.">i</span></div><input id="returnRate" value="8" step="0.1"></div>
+<div class="field"><div class="field-label" id="returnRateLabel">Annual Interest Rate % <span class="info" id="returnRateInfo" data-tooltip="Expected nominal annual return before inflation. This is one of the most sensitive assumptions in the model.">i</span></div><input id="returnRate" value="8" step="0.1"></div>
 <div class="field"><div class="field-label">Growth Variance Range ± % <span class="info" data-tooltip="Used for the non-Monte-Carlo base sensitivity view. Example: 1 means low = return minus 1%, medium = return, high = return plus 1%.">i</span></div><input id="growthVariance" value="2" step="0.1"></div>
 <div class="field"><div class="field-label">Compound Frequency <span class="info" data-tooltip="How often interest is credited: annually, semiannually, quarterly, monthly, or daily. In match mode this follows Investor.gov-style discrete compounding.">i</span></div><select id="compoundFreq"><option value="1" selected>Annually</option><option value="2">Semiannually</option><option value="4">Quarterly</option><option value="12">Monthly</option><option value="365">Daily</option></select></div>
 <div class="field"><div class="field-label">Inflation % <span class="info" data-tooltip="Annual increase applied to future spending, income, and related cash-flow assumptions in the full model.">i</span></div><input id="inflation" type="number" value="" step="0.1"></div>
@@ -466,14 +488,14 @@ main {
 
 <h3>Investment Account Types <span class="info" data-tooltip="Optional account-level modeling. If enabled, the calculator uses these account balances and growth rates instead of only a single portfolio total.">i</span></h3>
 <div class="field"><div class="field-label">Use Account-Level Modeling <span class="info" data-tooltip="When Yes, portfolio projection uses the account balances below: 401(k)/Traditional IRA, Roth IRA, taxable investments, and cash savings.">i</span></div><select id="useAccountModeling"><option value="no">No</option><option value="yes">Yes</option></select></div>
-<div class="field"><div class="field-label">401(k) / Traditional IRA Balance $ <span class="info" data-tooltip="Pre-tax retirement account balance. Withdrawals are taxable and RMDs may apply.">i</span></div><input id="tradBalance" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">401(k) / Traditional IRA Balance $ <span class="info" data-tooltip="Pre-tax retirement account balance. Withdrawals are taxable and RMDs may apply.">i</span></div><input id="tradBalance" type="text" inputmode="decimal" value="" step="10000"></div>
 <div class="field"><div class="field-label">401(k) / Traditional IRA Growth % <span class="info" data-tooltip="Expected annual growth rate for pre-tax retirement accounts.">i</span></div><input id="tradReturn" type="number" value="8" step="0.1"></div>
-<div class="field"><div class="field-label">Roth IRA Balance $ <span class="info" data-tooltip="Roth account balance. Withdrawals are modeled as tax-free and generally preserved longest.">i</span></div><input id="rothBalance" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Roth IRA Balance $ <span class="info" data-tooltip="Roth account balance. Withdrawals are modeled as tax-free and generally preserved longest.">i</span></div><input id="rothBalance" type="text" inputmode="decimal" value="" step="10000"></div>
 <div class="field"><div class="field-label">Roth IRA Growth % <span class="info" data-tooltip="Expected annual growth rate for Roth accounts.">i</span></div><input id="rothReturn" type="number" value="8" step="0.1"></div>
-<div class="field"><div class="field-label">Taxable Investments Balance $ <span class="info" data-tooltip="Taxable brokerage or other non-retirement investment balance.">i</span></div><input id="taxableBalance" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Taxable Investments Balance $ <span class="info" data-tooltip="Taxable brokerage or other non-retirement investment balance.">i</span></div><input id="taxableBalance" type="text" inputmode="decimal" value="" step="10000"></div>
 <div class="field"><div class="field-label">Taxable Investments Growth % <span class="info" data-tooltip="Expected annual growth rate for taxable investments.">i</span></div><input id="taxableReturn" type="number" value="8" step="0.1"></div>
-<div class="field"><div class="field-label">Cash Savings Balance $ <span class="info" data-tooltip="Cash, checking, savings, money market, or emergency reserve balance.">i</span></div><input id="cashBalance" type="number" value="" step="1000"></div>
-<div class="field"><div class="field-label">Total Across Accounts $ <span class="info" data-tooltip="Automatically calculated sum of all account balances when account-level modeling is enabled.">i</span></div><input id="totalAccounts" type="number" value="" readonly></div>
+<div class="field"><div class="field-label">Cash Savings Balance $ <span class="info" data-tooltip="Cash, checking, savings, money market, or emergency reserve balance.">i</span></div><input id="cashBalance" type="text" inputmode="decimal" value="" step="1000"></div>
+<div class="field"><div class="field-label">Total Across Accounts $ <span class="info" data-tooltip="Automatically calculated sum of all account balances when account-level modeling is enabled.">i</span></div><input id="totalAccounts" type="text" inputmode="decimal" value="" readonly></div>
 <div class="field"><div class="field-label">Cash Savings Growth % <span class="info" data-tooltip="Expected annual interest rate for cash savings.">i</span></div><input id="cashReturn" type="number" value="4" step="0.1"></div>
 <div class="field"><div class="field-label">RMD Start Age <span class="info" data-tooltip="Age when required minimum distributions begin for pre-tax retirement accounts.">i</span></div><input id="rmdStartAge" type="number" value="73"></div>
 <div class="field"><div class="field-label">Taxable Withdrawal Tax Rate % <span class="info" data-tooltip="Simplified tax rate applied to taxable-investment withdrawals.">i</span></div><input id="taxableWithdrawalTaxRate" type="number" value="10" step="0.5"></div>
@@ -482,13 +504,43 @@ main {
 <h3>Base Income <span class="info" data-tooltip="Recurring income sources that reduce required portfolio withdrawals.">i</span></h3>
 <div class="field"><div class="field-label">Social Security Start Age <span class="info" data-tooltip="Your age when Social Security benefits begin in the model.">i</span></div><input id="ssAge" value="67"></div>
 <div class="field"><div class="field-label">Spouse Social Security Start Age <span class="info" data-tooltip="Your spouse’s age when their Social Security benefit begins in the model.">i</span></div><input id="spouseSsAge" type="number" value="67"></div>
-<div class="field"><div class="field-label">Your SS Monthly $ <span class="info" data-tooltip="Your estimated monthly Social Security benefit in today's dollars.">i</span></div><input id="ssMonthly" type="number" value="" step="100"></div>
-<div class="field"><div class="field-label">Spouse SS Monthly $ <span class="info" data-tooltip="Spouse's estimated monthly Social Security benefit in today's dollars.">i</span></div><input id="spouseSsMonthly" type="number" value="" step="100"></div>
-<div class="field"><div class="field-label">Rental Income Monthly $ <span class="info" data-tooltip="Net monthly rental income before any modeled property sale.">i</span></div><input id="rentalMonthly" type="number" value="" step="50"></div>
+<div class="field"><div class="field-label">Your SS Monthly $ <span class="info" data-tooltip="Your estimated monthly Social Security benefit in today's dollars.">i</span></div><input id="ssMonthly" type="text" inputmode="decimal" value="" step="100"></div>
+<div class="field"><div class="field-label">Spouse SS Monthly $ <span class="info" data-tooltip="Spouse's estimated monthly Social Security benefit in today's dollars.">i</span></div><input id="spouseSsMonthly" type="text" inputmode="decimal" value="" step="100"></div>
+<div class="field"><div class="field-label">Rental Income Monthly $ <span class="info" data-tooltip="Net monthly rental income before any modeled property sale.">i</span></div><input id="rentalMonthly" type="text" inputmode="decimal" value="" step="50"></div>
 
 <h3>Taxes / Costs <span class="info" data-tooltip="Simplified tax and fee assumptions applied to withdrawals and investment returns.">i</span></h3>
-<div class="field"><div class="field-label">Effective Tax Rate % <span class="info" data-tooltip="Approximate tax rate used to gross up retirement withdrawals. Example: at 15%, a $85k after-tax need requires a $100k gross withdrawal.">i</span></div><input id="taxRate" type="number" value="" step="0.5"></div>
+
+<div class="field"><div class="field-label">Retirement State <span class="info" data-tooltip="State where you plan to retire. Selecting a state pre-populates Effective Tax Rate % with a planning estimate that considers federal tax, state income tax treatment of retirement income, Social Security taxability, RMDs, withdrawals, and other taxable retirement income.">i</span></div><select id="retirementState"><option value="">— Select State —</option><option value="Alabama">Alabama</option><option value="Alaska">Alaska</option><option value="Arizona">Arizona</option><option value="Arkansas">Arkansas</option><option value="California">California</option><option value="Colorado">Colorado</option><option value="Connecticut">Connecticut</option><option value="Delaware">Delaware</option><option value="Florida">Florida</option><option value="Georgia">Georgia</option><option value="Hawaii">Hawaii</option><option value="Idaho">Idaho</option><option value="Illinois">Illinois</option><option value="Indiana">Indiana</option><option value="Iowa">Iowa</option><option value="Kansas">Kansas</option><option value="Kentucky">Kentucky</option><option value="Louisiana">Louisiana</option><option value="Maine">Maine</option><option value="Maryland">Maryland</option><option value="Massachusetts">Massachusetts</option><option value="Michigan">Michigan</option><option value="Minnesota">Minnesota</option><option value="Mississippi">Mississippi</option><option value="Missouri">Missouri</option><option value="Montana">Montana</option><option value="Nebraska">Nebraska</option><option value="Nevada">Nevada</option><option value="New Hampshire">New Hampshire</option><option value="New Jersey">New Jersey</option><option value="New Mexico">New Mexico</option><option value="New York">New York</option><option value="North Carolina">North Carolina</option><option value="North Dakota">North Dakota</option><option value="Ohio">Ohio</option><option value="Oklahoma">Oklahoma</option><option value="Oregon">Oregon</option><option value="Pennsylvania">Pennsylvania</option><option value="Rhode Island">Rhode Island</option><option value="South Carolina">South Carolina</option><option value="South Dakota">South Dakota</option><option value="Tennessee">Tennessee</option><option value="Texas">Texas</option><option value="Utah">Utah</option><option value="Vermont">Vermont</option><option value="Virginia">Virginia</option><option value="Washington">Washington</option><option value="West Virginia">West Virginia</option><option value="Wisconsin">Wisconsin</option><option value="Wyoming">Wyoming</option></select></div>
+<div class="field"><div class="field-label">Effective Tax Rate % <span class="info" data-tooltip="Approximate effective tax rate used to gross up retirement withdrawals. Selecting a Retirement State pre-populates this estimate, but you can override it manually.">i</span></div><input id="taxRate" type="number" value="" step="0.5"></div>
 <div class="field"><div class="field-label">Investment Fee % <span class="info" data-tooltip="Annual fee or return drag subtracted from the annual interest rate. Set to 0 for Investor.gov comparison.">i</span></div><input id="feeRate" type="number" value="" step="0.05"></div>
+
+
+
+
+<h3>Advanced Planning Assumptions <span class="info" data-tooltip="Optional higher-fidelity planning assumptions for taxes, healthcare, Roth conversions, historical sequence stress tests, and survivor scenarios.">i</span></h3>
+
+<div class="field"><div class="field-label">Use Advanced Planning Assumptions <span class="info" data-tooltip="When No, advanced planning assumptions are hidden and ignored. When Yes, you can model taxes, healthcare, Roth conversions, historical stress tests, and survivor scenarios.">i</span></div><select id="useAdvancedPlanning"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+
+<div class="field"><div class="field-label">Use Detailed Tax Estimate <span class="info" data-tooltip="When Yes, the model estimates annual federal/state taxes for reporting and applies Roth-conversion tax drag. This is still a planning estimate, not a tax return.">i</span></div><select id="useDetailedTaxModel"><option value="yes" selected>Yes</option><option value="no">No</option></select></div>
+<div class="field"><div class="field-label">Filing Status <span class="info" data-tooltip="Used for estimated federal tax brackets, Social Security taxation estimate, and IRMAA thresholds. Survivor scenario can switch this to Single after first death.">i</span></div><select id="filingStatus"><option value="mfj" selected>Married Filing Jointly</option><option value="single">Single</option></select></div>
+<div class="field"><div class="field-label">State Tax Rate % <span class="info" data-tooltip="Estimated state income tax rate applied to taxable ordinary income and modeled taxable gains.">i</span></div><input id="stateTaxRate" type="number" value="4.4" step="0.1"></div>
+
+<div class="field"><div class="field-label">Pre-Medicare Healthcare Annual $ <span class="info" data-tooltip="Estimated annual household healthcare cost before Medicare. Used for people under Medicare age.">i</span></div><input id="preMedHealthcareAnnual" type="text" inputmode="decimal" value="" step="1000"></div>
+<div class="field"><div class="field-label">Medicare Healthcare Annual / Person $ <span class="info" data-tooltip="Estimated annual Medicare premiums and out-of-pocket healthcare cost per person after Medicare age, before IRMAA.">i</span></div><input id="medicareAnnualPerPerson" type="text" inputmode="decimal" value="" step="1000"></div>
+<div class="field"><div class="field-label">Medicare Start Age <span class="info" data-tooltip="Age Medicare-based healthcare costs begin for each person. Usually 65.">i</span></div><input id="medicareAge" type="number" value="65"></div>
+<div class="field"><div class="field-label">Include IRMAA Estimate <span class="info" data-tooltip="When Yes, adds an estimated Medicare premium surcharge when modeled income crosses simplified IRMAA thresholds.">i</span></div><select id="includeIRMAA"><option value="yes" selected>Yes</option><option value="no">No</option></select></div>
+
+<div class="field"><div class="field-label">Annual Roth Conversion $ <span class="info" data-tooltip="Optional annual Roth conversion amount from pre-tax retirement accounts. Conversion taxes are modeled as an additional cash need.">i</span></div><input id="annualRothConversion" type="text" inputmode="decimal" value="" step="1000"></div>
+<div class="field"><div class="field-label">Roth Conversion Start Age <span class="info" data-tooltip="Your age when annual Roth conversions begin.">i</span></div><input id="rothConversionStartAge" type="number" value=""></div>
+<div class="field"><div class="field-label">Roth Conversion End Age <span class="info" data-tooltip="Your age when annual Roth conversions end.">i</span></div><input id="rothConversionEndAge" type="number" value=""></div>
+
+<div class="field"><div class="field-label">Run Historical Sequence Stress <span class="info" data-tooltip="When Yes, the app tests every historical return/inflation sequence window and reports the weakest outcome.">i</span></div><select id="runSequenceStress"><option value="yes" selected>Yes</option><option value="no">No</option></select></div>
+
+<div class="field"><div class="field-label">Enable Survivor Scenario <span class="info" data-tooltip="When Yes, models a first-death scenario with reduced household spending, one Social Security benefit, and single filing status after death.">i</span></div><select id="enableSurvivorScenario"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+<div class="field"><div class="field-label">First Death <span class="info" data-tooltip="Which spouse is assumed to die first for the survivor scenario.">i</span></div><select id="firstDeathPerson"><option value="you" selected>You</option><option value="spouse">Spouse</option></select></div>
+<div class="field"><div class="field-label">First Death at Your Age <span class="info" data-tooltip="Your age in the year the first death occurs. After this year, survivor assumptions apply.">i</span></div><input id="firstDeathAge" type="number" value=""></div>
+<div class="field"><div class="field-label">Survivor Spending % <span class="info" data-tooltip="Percent of household retirement spending retained after first death. Many plans use 70%–85%, not 50%.">i</span></div><input id="survivorSpendingPct" type="number" value="80" step="1"></div>
+
 
 <h3>Monte Carlo Simulation <span class="info" data-tooltip="Runs 10,000 simulations using historical S&P 500 annual total return years sampled randomly with replacement. No user volatility inputs are required.">i</span></h3>
 <div class="note"><strong>Historical mode:</strong> Monte Carlo uses 10,000 simulations and samples annual stock returns from historical S&P 500 total-return data from 1928–2024. User-entered volatility, return floor, return cap, and trial count are not used.</div>
@@ -496,58 +548,60 @@ main {
 
 <h3>Retirement Spending <span class="info" data-tooltip="Choose constant spending throughout retirement or use custom age-based spending phases. Amounts are in today's dollars and are inflated over time.">i</span></h3>
 <div class="field"><div class="field-label">Use Age-Based Spending Phases <span class="info" data-tooltip="When No, the calculator uses one constant annual spending amount throughout retirement. When Yes, it uses the Early/Mid/Late phase table below.">i</span></div><select id="useAgeBasedSpending"><option value="no" selected>No - Constant Spending</option><option value="yes">Yes - Age-Based Phases</option></select></div>
-<div class="field"><div class="field-label">Constant Annual Retirement Spending $ <span class="info" data-tooltip="Annual retirement spending in today's dollars, used every retirement year when age-based phases are turned off.">i</span></div><input id="constantRetirementSpending" type="number" value="" step="5000"></div>
+<div class="field"><div class="field-label">Constant Annual Retirement Spending $ <span class="info" data-tooltip="Annual retirement spending in today's dollars, used every retirement year when age-based phases are turned off.">i</span></div><input id="constantRetirementSpending" type="text" inputmode="decimal" value="" step="5000"></div>
 
 <h3>Age-Based Spending Phases <span class="info" data-tooltip="Models different spending levels during early, middle, and late retirement. Amounts are in today's dollars.">i</span></h3>
 <div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Phase</th><th>Start</th><th>End</th><th>Annual $</th></tr></thead><tbody>
-<tr><td>Early <span class="info" data-tooltip="Higher-spending early retirement phase, often driven by travel, activity, and lifestyle upgrades.">i</span></td><td><input id="spend1Start" type="number" value=""></td><td><input id="spend1End" value="70"></td><td><input id="spend1Amt" type="number" value="" step="5000"></td></tr>
-<tr><td>Mid <span class="info" data-tooltip="Middle retirement phase with more stable or moderate spending.">i</span></td><td><input id="spend2Start" value="71"></td><td><input id="spend2End" value="75"></td><td><input id="spend2Amt" type="number" value="" step="5000"></td></tr>
-<tr><td>Late <span class="info" data-tooltip="Later retirement phase. Lifestyle spending may decline, but healthcare risk may rise.">i</span></td><td><input id="spend3Start" value="75"></td><td><input id="spend3End" value="90"></td><td><input id="spend3Amt" type="number" value="" step="5000"></td></tr>
+<tr><td>Early <span class="info" data-tooltip="Higher-spending early retirement phase, often driven by travel, activity, and lifestyle upgrades.">i</span></td><td><input id="spend1Start" type="number" value=""></td><td><input id="spend1End" value="70"></td><td><input id="spend1Amt" type="text" inputmode="decimal" value="" step="5000"></td></tr>
+<tr><td>Mid <span class="info" data-tooltip="Middle retirement phase with more stable or moderate spending.">i</span></td><td><input id="spend2Start" value="71"></td><td><input id="spend2End" value="75"></td><td><input id="spend2Amt" type="text" inputmode="decimal" value="" step="5000"></td></tr>
+<tr><td>Late <span class="info" data-tooltip="Later retirement phase. Lifestyle spending may decline, but healthcare risk may rise.">i</span></td><td><input id="spend3Start" value="75"></td><td><input id="spend3End" value="90"></td><td><input id="spend3Amt" type="text" inputmode="decimal" value="" step="5000"></td></tr>
 </tbody></table></div>
 
 <h3>Age-Based Extra Income <span class="info" data-tooltip="Optional extra income streams by age range, such as part-time work, pension, annuity, or family support.">i</span></h3>
 <div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Item</th><th>Start</th><th>End</th><th>Annual $</th></tr></thead><tbody>
-<tr><td>Income 1 <span class="info" data-tooltip="Additional annual income during this age range, in today's dollars.">i</span></td><td><input id="inc1Start" type="number" value=""></td><td><input id="inc1End" type="number" value=""></td><td><input id="inc1Amt" type="number" value="" step="1000"></td></tr>
-<tr><td>Income 2 <span class="info" data-tooltip="Additional annual income during this age range, in today's dollars.">i</span></td><td><input id="inc2Start" type="number" value=""></td><td><input id="inc2End" type="number" value=""></td><td><input id="inc2Amt" type="number" value="" step="1000"></td></tr>
-<tr><td>Income 3 <span class="info" data-tooltip="Additional annual income during this age range, in today's dollars.">i</span></td><td><input id="inc3Start" type="number" value=""></td><td><input id="inc3End" type="number" value=""></td><td><input id="inc3Amt" type="number" value="" step="1000"></td></tr>
+<tr><td>Income 1 <span class="info" data-tooltip="Additional annual income during this age range, in today's dollars.">i</span></td><td><input id="inc1Start" type="number" value=""></td><td><input id="inc1End" type="number" value=""></td><td><input id="inc1Amt" type="text" inputmode="decimal" value="" step="1000"></td></tr>
+<tr><td>Income 2 <span class="info" data-tooltip="Additional annual income during this age range, in today's dollars.">i</span></td><td><input id="inc2Start" type="number" value=""></td><td><input id="inc2End" type="number" value=""></td><td><input id="inc2Amt" type="text" inputmode="decimal" value="" step="1000"></td></tr>
+<tr><td>Income 3 <span class="info" data-tooltip="Additional annual income during this age range, in today's dollars.">i</span></td><td><input id="inc3Start" type="number" value=""></td><td><input id="inc3End" type="number" value=""></td><td><input id="inc3Amt" type="text" inputmode="decimal" value="" step="1000"></td></tr>
 </tbody></table></div>
 
 <h3>Age-Based Extra Expenses <span class="info" data-tooltip="Optional expenses by age range, such as college support, travel, healthcare, car replacement, or home projects.">i</span></h3>
 <div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Item</th><th>Start</th><th>End</th><th>Annual $</th></tr></thead><tbody>
-<tr><td>Expense 1 <span class="info" data-tooltip="Additional annual expense during this age range, in today's dollars.">i</span></td><td><input id="exp1Start" type="number" value=""></td><td><input id="exp1End" type="number" value=""></td><td><input id="exp1Amt" type="number" value="" step="1000"></td></tr>
-<tr><td>Expense 2 <span class="info" data-tooltip="Additional annual expense during this age range, in today's dollars.">i</span></td><td><input id="exp2Start" type="number" value=""></td><td><input id="exp2End" type="number" value=""></td><td><input id="exp2Amt" type="number" value="" step="1000"></td></tr>
-<tr><td>Expense 3 <span class="info" data-tooltip="Additional annual expense during this age range, in today's dollars.">i</span></td><td><input id="exp3Start" type="number" value=""></td><td><input id="exp3End" type="number" value=""></td><td><input id="exp3Amt" type="number" value="" step="1000"></td></tr>
+<tr><td>Expense 1 <span class="info" data-tooltip="Additional annual expense during this age range, in today's dollars.">i</span></td><td><input id="exp1Start" type="number" value=""></td><td><input id="exp1End" type="number" value=""></td><td><input id="exp1Amt" type="text" inputmode="decimal" value="" step="1000"></td></tr>
+<tr><td>Expense 2 <span class="info" data-tooltip="Additional annual expense during this age range, in today's dollars.">i</span></td><td><input id="exp2Start" type="number" value=""></td><td><input id="exp2End" type="number" value=""></td><td><input id="exp2Amt" type="text" inputmode="decimal" value="" step="1000"></td></tr>
+<tr><td>Expense 3 <span class="info" data-tooltip="Additional annual expense during this age range, in today's dollars.">i</span></td><td><input id="exp3Start" type="number" value=""></td><td><input id="exp3End" type="number" value=""></td><td><input id="exp3Amt" type="text" inputmode="decimal" value="" step="1000"></td></tr>
 </tbody></table></div>
 
 
 <h3>College Payments for Children <span class="info" data-tooltip="Optional college expense modeling for two children. Amounts are annual out-of-pocket costs in today's dollars and are inflated over time.">i</span></h3>
 <div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Child</th><th>Start Age</th><th>End Age</th><th>Annual $</th></tr></thead><tbody>
-<tr><td>Child 1 <span class="info" data-tooltip="Annual college cost for child 1 during the selected age range. Use your age, not the child's age.">i</span></td><td><input id="college1Start" type="number" value=""></td><td><input id="college1End" type="number" value=""></td><td><input id="college1Amt" type="number" value="" step="1000"></td></tr>
-<tr><td>Child 2 <span class="info" data-tooltip="Annual college cost for child 2 during the selected age range. Use your age, not the child's age.">i</span></td><td><input id="college2Start" type="number" value=""></td><td><input id="college2End" type="number" value=""></td><td><input id="college2Amt" type="number" value="" step="1000"></td></tr>
+<tr><td>Child 1 <span class="info" data-tooltip="Annual college cost for child 1 during the selected age range. Use your age, not the child's age.">i</span></td><td><input id="college1Start" type="number" value=""></td><td><input id="college1End" type="number" value=""></td><td><input id="college1Amt" type="text" inputmode="decimal" value="" step="1000"></td></tr>
+<tr><td>Child 2 <span class="info" data-tooltip="Annual college cost for child 2 during the selected age range. Use your age, not the child's age.">i</span></td><td><input id="college2Start" type="number" value=""></td><td><input id="college2End" type="number" value=""></td><td><input id="college2Amt" type="text" inputmode="decimal" value="" step="1000"></td></tr>
 </tbody></table></div>
 <div class="note">Use your age, not the child’s age. Example: if you are 50 now and college payments run while you are 50–54, enter Start Age 50 and End Age 54.</div>
 
 
 <h3>Miscellaneous One-Time Expenses <span class="info" data-tooltip="Optional one-time expenses such as a car, remodel, wedding, large trip, family support, medical event, or other custom item. Amounts are in today's dollars and inflated to the event age.">i</span></h3>
-<div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Label</th><th>Age</th><th>Amount $</th></tr></thead><tbody>
-<tr><td><input id="misc1Label" type="text" value="" placeholder="Expense 1"></td><td><input id="misc1Age" type="number" value=""></td><td><input id="misc1Amt" type="number" value="" step="1000"></td></tr>
-<tr><td><input id="misc2Label" type="text" value="" placeholder="Expense 2"></td><td><input id="misc2Age" type="number" value=""></td><td><input id="misc2Amt" type="number" value="" step="1000"></td></tr>
-<tr><td><input id="misc3Label" type="text" value="" placeholder="Expense 3"></td><td><input id="misc3Age" type="number" value=""></td><td><input id="misc3Amt" type="number" value="" step="1000"></td></tr>
-<tr><td><input id="misc4Label" type="text" value="" placeholder="Expense 4"></td><td><input id="misc4Age" type="number" value=""></td><td><input id="misc4Amt" type="number" value="" step="1000"></td></tr>
-<tr><td><input id="misc5Label" type="text" value="" placeholder="Expense 5"></td><td><input id="misc5Age" type="number" value=""></td><td><input id="misc5Amt" type="number" value="" step="1000"></td></tr>
+<div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Label</th><th>Age</th><th>Amount $</th><th>Action</th></tr></thead><tbody id="miscExpenseBody">
+<tr><td><input id="misc1Label" type="text" value="" placeholder="Expense 1"></td><td><input id="misc1Age" type="number" value="0"></td><td><input id="misc1Amt" type="text" inputmode="decimal" value="0" step="1000"></td><td><button type="button" class="secondary misc-remove-btn">Remove</button></td></tr>
+<tr><td><input id="misc2Label" type="text" value="" placeholder="Expense 2"></td><td><input id="misc2Age" type="number" value="0"></td><td><input id="misc2Amt" type="text" inputmode="decimal" value="0" step="1000"></td><td><button type="button" class="secondary misc-remove-btn">Remove</button></td></tr>
+<tr><td><input id="misc3Label" type="text" value="" placeholder="Expense 3"></td><td><input id="misc3Age" type="number" value="0"></td><td><input id="misc3Amt" type="text" inputmode="decimal" value="0" step="1000"></td><td><button type="button" class="secondary misc-remove-btn">Remove</button></td></tr>
 </tbody></table></div>
+<div class="buttons" style="margin-top:8px;">
+  <button type="button" class="secondary" id="addMiscExpenseBtn">Add Expense</button>
+</div>
+
 <div class="note">Use your age for the event age. Example labels: “Car replacement”, “Kitchen remodel”, “Japan trip”, “Wedding support”.</div>
 
 <h3>Rental Property Sale <span class="info" data-tooltip="Optional rental or property sale module. Net sale proceeds are added to the investment portfolio in the sale year.">i</span></h3>
 <div class="field"><div class="field-label">Model Property Sale <span class="info" data-tooltip="Turns real estate sale modeling on or off.">i</span></div><select id="sellRealEstate"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
 <div class="field"><div class="field-label">Sale Age <span class="info" data-tooltip="Your age when the property is assumed to be sold.">i</span></div><input id="propertySaleAge" type="number" value=""></div>
-<div class="field"><div class="field-label">Current Property Value $ <span class="info" data-tooltip="Estimated current market value of the property.">i</span></div><input id="propertyValue" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Current Property Value $ <span class="info" data-tooltip="Estimated current market value of the property.">i</span></div><input id="propertyValue" type="text" inputmode="decimal" value="" step="10000"></div>
 <div class="field"><div class="field-label">Property Growth % <span class="info" data-tooltip="Annual property value appreciation assumption before the sale.">i</span></div><input id="propertyGrowth" type="number" value="" step="0.1"></div>
-<div class="field"><div class="field-label">Mortgage Balance $ <span class="info" data-tooltip="Current outstanding mortgage balance on the property.">i</span></div><input id="mortgageBalance" type="number" value="" step="1000"></div>
-<div class="field"><div class="field-label">Mortgage Annual Paydown $ <span class="info" data-tooltip="Estimated annual principal reduction before the property is sold.">i</span></div><input id="mortgagePaydown" type="number" value="" step="500"></div>
+<div class="field"><div class="field-label">Mortgage Balance $ <span class="info" data-tooltip="Current outstanding mortgage balance on the property.">i</span></div><input id="mortgageBalance" type="text" inputmode="decimal" value="" step="1000"></div>
+<div class="field"><div class="field-label">Mortgage Annual Paydown $ <span class="info" data-tooltip="Estimated annual principal reduction before the property is sold.">i</span></div><input id="mortgagePaydown" type="text" inputmode="decimal" value="" step="500"></div>
 <div class="field"><div class="field-label">Selling Costs % <span class="info" data-tooltip="Estimated transaction costs as a percentage of sale value, such as agent fees and closing costs.">i</span></div><input id="sellingCosts" type="number" value="" step="0.25"></div>
-<div class="field"><div class="field-label">Cost Basis $ <span class="info" data-tooltip="Tax basis used to estimate capital gain on sale.">i</span></div><input id="costBasis" type="number" value="" step="10000"></div>
-<div class="field"><div class="field-label">Cap Gains Exclusion $ <span class="info" data-tooltip="Capital gain amount excluded from taxation, if applicable. For investment property this may be zero.">i</span></div><input id="capGainExclusion" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Cost Basis $ <span class="info" data-tooltip="Tax basis used to estimate capital gain on sale.">i</span></div><input id="costBasis" type="text" inputmode="decimal" value="" step="10000"></div>
+<div class="field"><div class="field-label">Cap Gains Exclusion $ <span class="info" data-tooltip="Capital gain amount excluded from taxation, if applicable. For investment property this may be zero.">i</span></div><input id="capGainExclusion" type="text" inputmode="decimal" value="" step="10000"></div>
 <div class="field"><div class="field-label">Cap Gains Tax Rate % <span class="info" data-tooltip="Estimated tax rate applied to taxable capital gains after selling costs and exclusions.">i</span></div><input id="capGainTaxRate" type="number" value="" step="0.5"></div>
 <div class="field"><div class="field-label">Stop Rental Income After Sale <span class="info" data-tooltip="If Yes, rental income stops after the property is sold.">i</span></div><select id="stopRentalAfterSale"><option value="yes">Yes</option><option value="no">No</option></select></div>
 
@@ -555,15 +609,15 @@ main {
 <h3>Primary Residence Sale <span class="info" data-tooltip="Optional second property sale module. Net sale proceeds are added to the investment portfolio in the sale year.">i</span></h3>
 <div class="field"><div class="field-label">Model Property 2 Sale <span class="info" data-tooltip="Turns second property sale modeling on or off.">i</span></div><select id="sellRealEstate2"><option value="no">No</option><option value="yes">Yes</option></select></div>
 <div class="field"><div class="field-label">Property 2 Sale Age <span class="info" data-tooltip="Your age when property 2 is assumed to be sold.">i</span></div><input id="property2SaleAge" type="number" value=""></div>
-<div class="field"><div class="field-label">Property 2 Current Value $ <span class="info" data-tooltip="Estimated current market value of property 2.">i</span></div><input id="property2Value" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Property 2 Current Value $ <span class="info" data-tooltip="Estimated current market value of property 2.">i</span></div><input id="property2Value" type="text" inputmode="decimal" value="" step="10000"></div>
 <div class="field"><div class="field-label">Property 2 Growth % <span class="info" data-tooltip="Annual appreciation assumption for property 2 before the sale.">i</span></div><input id="property2Growth" type="number" value="" step="0.1"></div>
-<div class="field"><div class="field-label">Property 2 Mortgage Balance $ <span class="info" data-tooltip="Current outstanding mortgage balance on property 2.">i</span></div><input id="mortgage2Balance" type="number" value="" step="1000"></div>
-<div class="field"><div class="field-label">Property 2 Annual Paydown $ <span class="info" data-tooltip="Estimated annual principal reduction before property 2 is sold.">i</span></div><input id="mortgage2Paydown" type="number" value="" step="500"></div>
+<div class="field"><div class="field-label">Property 2 Mortgage Balance $ <span class="info" data-tooltip="Current outstanding mortgage balance on property 2.">i</span></div><input id="mortgage2Balance" type="text" inputmode="decimal" value="" step="1000"></div>
+<div class="field"><div class="field-label">Property 2 Annual Paydown $ <span class="info" data-tooltip="Estimated annual principal reduction before property 2 is sold.">i</span></div><input id="mortgage2Paydown" type="text" inputmode="decimal" value="" step="500"></div>
 <div class="field"><div class="field-label">Property 2 Selling Costs % <span class="info" data-tooltip="Estimated transaction costs as a percentage of property 2 sale value.">i</span></div><input id="selling2Costs" type="number" value="" step="0.25"></div>
-<div class="field"><div class="field-label">Property 2 Cost Basis $ <span class="info" data-tooltip="Tax basis used to estimate capital gain on property 2 sale.">i</span></div><input id="cost2Basis" type="number" value="" step="10000"></div>
-<div class="field"><div class="field-label">Property 2 Cap Gains Exclusion $ <span class="info" data-tooltip="Capital gain amount excluded from taxation for property 2, if applicable.">i</span></div><input id="capGain2Exclusion" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Property 2 Cost Basis $ <span class="info" data-tooltip="Tax basis used to estimate capital gain on property 2 sale.">i</span></div><input id="cost2Basis" type="text" inputmode="decimal" value="" step="10000"></div>
+<div class="field"><div class="field-label">Property 2 Cap Gains Exclusion $ <span class="info" data-tooltip="Capital gain amount excluded from taxation for property 2, if applicable.">i</span></div><input id="capGain2Exclusion" type="text" inputmode="decimal" value="" step="10000"></div>
 <div class="field"><div class="field-label">Property 2 Cap Gains Tax Rate % <span class="info" data-tooltip="Estimated tax rate applied to taxable capital gains for property 2.">i</span></div><input id="capGain2TaxRate" type="number" value="" step="0.5"></div>
-<div class="field"><div class="field-label">Property 2 Rental Income Monthly $ <span class="info" data-tooltip="Optional net monthly rental income from property 2 before sale.">i</span></div><input id="rental2Monthly" type="number" value="" step="50"></div>
+<div class="field"><div class="field-label">Property 2 Rental Income Monthly $ <span class="info" data-tooltip="Optional net monthly rental income from property 2 before sale.">i</span></div><input id="rental2Monthly" type="text" inputmode="decimal" value="" step="50"></div>
 <div class="field"><div class="field-label">Stop Property 2 Rent After Sale <span class="info" data-tooltip="If Yes, property 2 rental income stops after property 2 is sold.">i</span></div><select id="stopRental2AfterSale"><option value="yes">Yes</option><option value="no">No</option></select></div>
 
 
@@ -616,9 +670,24 @@ main {
 <div class="metric"><div class="metric-title">Worst Case Ending <span class="info" data-tooltip="Lowest ending portfolio value across the Monte Carlo simulations.">i</span></div><div id="mcWorst" class="value">—</div></div>
 </div>
 
+
+<div class="summary-grid">
+<div class="metric"><div class="metric-title">Last-Year Est. Tax <span class="info" data-tooltip="Estimated tax in the final projected year using simplified federal/state tax logic.">i</span></div><div id="lastYearTaxEstimate" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Last-Year Healthcare <span class="info" data-tooltip="Estimated healthcare cost in the final projected year, including simplified IRMAA if enabled.">i</span></div><div id="lastYearHealthcareEstimate" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Total Roth Conversions <span class="info" data-tooltip="Total gross pre-tax dollars converted to Roth across the projection.">i</span></div><div id="totalRothConversions" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Historical Worst Sequence <span class="info" data-tooltip="Worst ending portfolio from historical rolling-sequence stress tests, if enabled.">i</span></div><div id="historicalWorstSequence" class="value">—</div></div>
+</div>
+
+<div class="summary-grid">
+<div class="metric"><div class="metric-title">Worst Sequence Start Year <span class="info" data-tooltip="Starting historical return year that produced the weakest sequence outcome.">i</span></div><div id="historicalWorstStartYear" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Historical Sequence Success <span class="info" data-tooltip="Percent of historical rolling sequences where the portfolio did not deplete.">i</span></div><div id="historicalSequenceSuccess" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Survivor Scenario Ending <span class="info" data-tooltip="Ending portfolio under the selected survivor scenario, if enabled.">i</span></div><div id="survivorScenarioEnding" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Survivor Depletion Age <span class="info" data-tooltip="First depletion age under the survivor scenario, if any.">i</span></div><div id="survivorDepletionAge" class="value">—</div></div>
+</div>
+
 <div class="card"><h2>Portfolio Projection <span class="info" data-tooltip="Chart of projected ending portfolio value by year or age.">i</span></h2><div class="chart-wrap"><canvas id="portfolioChart"></canvas></div></div>
 <div class="card" style="margin-top:14px"><h2>Monte Carlo Percentile Paths <span class="info" data-tooltip="Shows how the 10th, 25th, 50th, 75th, and 90th percentile portfolio paths evolve over time across all simulations.">i</span></h2><div class="chart-wrap"><canvas id="mcPercentileChart"></canvas></div><div class="note">P10 = downside path, Median = typical path, P90 = upside path. Based on 10,000 historical-return simulations.</div></div>
-<div class="card" style="margin-top:14px"><h2>Annual Base Projection <span class="info" data-tooltip="Year-by-year table of the base-case calculation. On mobile, scroll sideways inside the table.">i</span></h2><div class="table-wrap"><table class="main-table"><thead><tr><th>Age/Year</th><th>Spouse Age</th><th>Start Portfolio</th><th>Property Sale</th><th>Property 2 Sale</th><th>Net Contribution</th><th>Interest</th><th>Base Spending</th><th>Extra Expenses</th><th>Total Spending</th><th>Base Income</th><th>Social Security Income</th><th>Extra Income</th><th>Gross Withdrawal</th><th>RMD</th><th>401(k)/Trad End</th><th>Roth End</th><th>Taxable End</th><th>Cash End</th><th>Low End Portfolio</th><th>Medium End Portfolio</th><th>High End Portfolio</th><th>End Portfolio</th></tr></thead><tbody id="projectionBody"></tbody></table></div></div>
+<div class="card" style="margin-top:14px"><h2>Annual Base Projection <span class="info" data-tooltip="Year-by-year table of the base-case calculation. On mobile, scroll sideways inside the table.">i</span></h2><div class="table-wrap"><table class="main-table"><thead><tr><th>Age/Year</th><th>Spouse Age</th><th>Start Portfolio</th><th>Property Sale</th><th>Property 2 Sale</th><th>Net Contribution</th><th>Interest</th><th>Base Spending</th><th>Extra Expenses</th><th>Total Spending</th><th>Base Income</th><th>Social Security Income</th><th>Healthcare</th><th>Est. Tax</th><th>Roth Conversion</th><th>Extra Income</th><th>Gross Withdrawal</th><th>RMD</th><th>401(k)/Trad End</th><th>Roth End</th><th>Taxable End</th><th>Cash End</th><th>Low End Portfolio</th><th>Medium End Portfolio</th><th>High End Portfolio</th><th>End Portfolio</th></tr></thead><tbody id="projectionBody"></tbody></table></div></div>
 </section>
 </main>
 
@@ -644,7 +713,7 @@ function sampleHistoricalStockReturn(){
 }
 
 function el(id){return document.getElementById(id)}
-function getVal(id){const node=document.getElementById(id);return node?parseFloat(node.value)||0:0}
+function getVal(id){const node=document.getElementById(id);if(!node)return 0;const raw=String(node.value||"").replace(/[$,\s]/g,"");return parseFloat(raw)||0}
 function getSelect(id){const node=document.getElementById(id);return node?node.value:""}
 function fmtMoney(n){if(!isFinite(n))return"—";const s=n<0?"-":"";return s+"$"+Math.abs(n).toLocaleString(undefined,{maximumFractionDigits:0})}
 function fmtPct(n){return isFinite(n)?(n*100).toFixed(1)+"%":"—"}
@@ -675,13 +744,17 @@ function miscOneTimeExpensesAtMonth(age,month,infFactor){
 }
 
 function miscOneTimeExpenses(age,infFactor){
- return oneTimeExpense(age,getVal("misc1Age"),getVal("misc1Amt"),infFactor)+
-        oneTimeExpense(age,getVal("misc2Age"),getVal("misc2Amt"),infFactor)+
-        oneTimeExpense(age,getVal("misc3Age"),getVal("misc3Amt"),infFactor)+
-        oneTimeExpense(age,getVal("misc4Age"),getVal("misc4Amt"),infFactor)+
-        oneTimeExpense(age,getVal("misc5Age"),getVal("misc5Amt"),infFactor)
+ let total=0;
+ document.querySelectorAll("#miscExpenseBody tr").forEach(row=>{
+   const ageInput=row.querySelector('input[id$="Age"]');
+   const amtInput=row.querySelector('input[id$="Amt"]');
+   if(!ageInput || !amtInput) return;
+   const eventAge=parseFloat(String(ageInput.value||"").replace(/[$,\s]/g,""))||0;
+   const amount=parseFloat(String(amtInput.value||"").replace(/[$,\s]/g,""))||0;
+   if(age===eventAge) total+=amount*infFactor;
+ });
+ return total;
 }
-
 function validate(){if(getVal("endAge")<getVal("currentAge"))throw new Error("Plan Until Your Age must be greater than or equal to Current Age.");if(getVal("taxRate")>=100)throw new Error("Effective Tax Rate must be less than 100%.");if(getVal("capGainTaxRate")>=100)throw new Error("Cap Gains Tax Rate must be less than 100%.");if(getVal("capGain2TaxRate")>=100)throw new Error("Property 2 Cap Gains Tax Rate must be less than 100%.");}
 function monthlyContributionAmount(){return getSelect("useMonthlyContribution")==="yes"?getVal("monthlyContribution"):getVal("contrib")/12}
 function compoundingMonths(freq){if(freq===1)return 12;if(freq===2)return 6;if(freq===4)return 3;if(freq===12)return 1;return 0}
@@ -1108,18 +1181,20 @@ function requiredFields(){
   const useMonthly = getSelect("useMonthlyContribution")==="yes";
   const useAccounts = getSelect("useAccountModeling")==="yes";
   const usePhases = getSelect("useAgeBasedSpending")==="yes";
+  const useAdvanced = getSelect("useAdvancedPlanning")==="yes";
 
   if(simple){
-    return ["simpleMode","simpleYears","returnRate","compoundFreq"].concat(useMonthly?["monthlyContribution"]:["contrib"]).concat(useAccounts?["tradBalance","tradReturn","rothBalance","rothReturn","taxableBalance","taxableReturn","cashBalance","cashReturn"]:["portfolio"]);
+    let fields = ["simpleMode","simpleYears","returnRate","compoundFreq"];
+    fields = fields.concat(useMonthly?["monthlyContribution"]:["contrib"]);
+    fields = fields.concat(useAccounts?["tradBalance","tradReturn","rothBalance","rothReturn","taxableBalance","taxableReturn","cashBalance","cashReturn"]:["portfolio"]);
+    return fields;
   }
 
-  let fields = ["simpleMode","currentAge","retireAge","endAge","returnRate","growthVariance","compoundFreq","inflation","ssAge","spouseSsAge","taxRate"];
+  let fields = ["simpleMode","currentAge","retireAge","endAge","returnRate","growthVariance","compoundFreq","inflation","ssAge","taxRate"];
 
-  if(useMonthly){
-    fields.push("monthlyContribution");
-  } else {
-    fields.push("contrib");
-  }
+  if(document.getElementById("spouseSsAge")) fields.push("spouseSsAge");
+
+  fields.push(useMonthly?"monthlyContribution":"contrib");
 
   if(useAccounts){
     fields = fields.concat(["tradBalance","tradReturn","rothBalance","rothReturn","taxableBalance","taxableReturn","cashBalance","cashReturn","rmdStartAge","taxableWithdrawalTaxRate"]);
@@ -1129,16 +1204,28 @@ function requiredFields(){
 
   if(usePhases){
     fields = fields.concat(["spend1Amt","spend2Amt","spend3Amt"]);
-  } else {
+  } else if(document.getElementById("constantRetirementSpending")) {
     fields.push("constantRetirementSpending");
   }
 
   if(getSelect("sellRealEstate")==="yes"){
-    fields = fields.concat(["propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate","rentalMonthly"]);
+    fields = fields.concat(["propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate"]);
   }
 
   if(getSelect("sellRealEstate2")==="yes"){
     fields = fields.concat(["property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate"]);
+  }
+
+  if(useAdvanced){
+    if(getSelect("useDetailedTaxEstimate")==="yes"){
+      fields = fields.concat(["filingStatus","stateTaxRate"]);
+    }
+    if(document.getElementById("preMedicareHealthcareAnnual")) fields.push("preMedicareHealthcareAnnual");
+    if(document.getElementById("medicareHealthcareAnnual")) fields.push("medicareHealthcareAnnual");
+    if(document.getElementById("medicareStartAge")) fields.push("medicareStartAge");
+    if(getSelect("enableSurvivorScenario")==="yes"){
+      fields = fields.concat(["firstDeath","firstDeathAge","survivorSpendingPct"]);
+    }
   }
 
   return fields;
@@ -1163,11 +1250,14 @@ function markRequiredFields(){
   });
 }
 function validateRequiredFields(){
-  markRequiredFields();
+  if(typeof markRequiredFields === "function") markRequiredFields();
   let missing=[];
   requiredFields().forEach(id=>{
-    const node=el(id); if(!node)return;
+    const node=el(id);
+    if(!node || node.disabled) return;
     const field=node.closest(".field");
+    const isHidden=field && (field.classList.contains("hidden-by-toggle") || field.classList.contains("hidden-by-advanced-toggle") || window.getComputedStyle(field).display==="none");
+    if(isHidden) return;
     const isMissing=String(node.value||"").trim()==="";
     if(field) field.classList.toggle("missing",isMissing);
     if(isMissing){
@@ -1564,6 +1654,867 @@ document.addEventListener("DOMContentLoaded", function(){
       if(typeof validateRequiredFields==="function") validateRequiredFields();
     });
   });
+});
+</script>
+
+
+<script>
+function setFieldHidden(id, hidden){
+  const node = document.getElementById(id);
+  if(!node) return;
+  const field = node.closest(".field");
+  if(field){
+    field.classList.toggle("hidden-by-toggle", !!hidden);
+    if(hidden) field.classList.remove("missing");
+  }
+  node.disabled = !!hidden;
+}
+
+function setIdsHidden(ids, hidden){
+  ids.forEach(id => setFieldHidden(id, hidden));
+}
+
+function restoreToggleControlledFields(){
+  const ids = [
+    "simpleYears",
+    "currentAge","spouseAge","retireAge","endAge","inflation",
+    "ssAge","spouseSsAge","ssMonthly","spouseSsMonthly","rentalMonthly",
+    "taxRate",
+    "contrib","monthlyContribution",
+    "portfolio",
+    "tradBalance","tradReturn","rothBalance","rothReturn",
+    "taxableBalance","taxableReturn","cashBalance","cashReturn",
+    "rmdStartAge","taxableWithdrawalTaxRate","withdrawalStrategy","totalAccounts",
+    "useAgeBasedSpending","constantRetirementSpending",
+    "spend1Start","spend1End","spend1Amt",
+    "spend2Start","spend2End","spend2Amt",
+    "spend3Start","spend3End","spend3Amt",
+    "inc1Start","inc1End","inc1Amt",
+    "inc2Start","inc2End","inc2Amt",
+    "inc3Start","inc3End","inc3Amt",
+    "exp1Start","exp1End","exp1Amt",
+    "exp2Start","exp2End","exp2Amt",
+    "exp3Start","exp3End","exp3Amt",
+    "college1Start","college1End","college1Amt",
+    "college2Start","college2End","college2Amt",
+    "misc1Age","misc1Amt","misc2Age","misc2Amt","misc3Age","misc3Amt","misc4Age","misc4Amt","misc5Age","misc5Amt",
+    "sellRealEstate","propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate","stopRentalAfterSale",
+    "sellRealEstate2","property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate","rental2Monthly","stopRental2AfterSale"
+  ];
+
+  ids.forEach(id=>{
+    const node = document.getElementById(id);
+    if(!node) return;
+    const field = node.closest(".field");
+    if(field){
+      field.classList.remove("hidden-by-toggle");
+      field.classList.remove("disabled-by-toggle");
+    }
+    node.disabled = false;
+    node.readOnly = false;
+    node.style.opacity = "1";
+  });
+}
+
+function updateToggleDependentFields(){
+  const simple = getSelect("simpleMode")==="yes";
+  const useMonthly = getSelect("useMonthlyContribution")==="yes";
+  const useAccounts = getSelect("useAccountModeling")==="yes";
+  const usePhases = getSelect("useAgeBasedSpending")==="yes";
+  const sellRental = getSelect("sellRealEstate")==="yes";
+  const sellPrimary = getSelect("sellRealEstate2")==="yes";
+
+  restoreToggleControlledFields();
+
+  const fullOnlyIds = [
+    "currentAge","spouseAge","retireAge","endAge","inflation",
+    "ssAge","spouseSsAge","ssMonthly","spouseSsMonthly","rentalMonthly",
+    "taxRate",
+    "useAgeBasedSpending","constantRetirementSpending",
+    "spend1Start","spend1End","spend1Amt","spend2Start","spend2End","spend2Amt","spend3Start","spend3End","spend3Amt",
+    "inc1Start","inc1End","inc1Amt","inc2Start","inc2End","inc2Amt","inc3Start","inc3End","inc3Amt",
+    "exp1Start","exp1End","exp1Amt","exp2Start","exp2End","exp2Amt","exp3Start","exp3End","exp3Amt",
+    "college1Start","college1End","college1Amt","college2Start","college2End","college2Amt",
+    "misc1Age","misc1Amt","misc2Age","misc2Amt","misc3Age","misc3Amt","misc4Age","misc4Amt","misc5Age","misc5Amt",
+    "sellRealEstate","propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate","stopRentalAfterSale",
+    "sellRealEstate2","property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate","rental2Monthly","stopRental2AfterSale"
+  ];
+
+  if(simple){
+    setIdsHidden(["simpleYears"], false);
+    setIdsHidden(fullOnlyIds, true);
+  } else {
+    setIdsHidden(["simpleYears"], true);
+  }
+
+  setIdsHidden(["contrib"], useMonthly);
+  setIdsHidden(["monthlyContribution"], !useMonthly);
+
+  setIdsHidden(["portfolio"], useAccounts);
+  setIdsHidden([
+    "tradBalance","tradReturn","rothBalance","rothReturn",
+    "taxableBalance","taxableReturn","cashBalance","cashReturn",
+    "rmdStartAge","taxableWithdrawalTaxRate","withdrawalStrategy","totalAccounts"
+  ], !useAccounts);
+
+  if(!simple){
+    setIdsHidden(["constantRetirementSpending"], usePhases);
+    setIdsHidden([
+      "spend1Start","spend1End","spend1Amt",
+      "spend2Start","spend2End","spend2Amt",
+      "spend3Start","spend3End","spend3Amt"
+    ], !usePhases);
+
+    setIdsHidden([
+      "propertySaleAge","propertyValue","propertyGrowth","mortgageBalance",
+      "mortgagePaydown","sellingCosts","costBasis","capGainExclusion",
+      "capGainTaxRate","stopRentalAfterSale"
+    ], !sellRental);
+
+    setIdsHidden([
+      "property2SaleAge","property2Value","property2Growth","mortgage2Balance",
+      "mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion",
+      "capGain2TaxRate","rental2Monthly","stopRental2AfterSale"
+    ], !sellPrimary);
+  }
+
+  if(typeof updateAccountTotal === "function") updateAccountTotal();
+  if(typeof syncSpendingPhaseStarts === "function") syncSpendingPhaseStarts();
+  if(typeof markRequiredFields === "function") markRequiredFields();
+  if(typeof validateRequiredFields === "function") validateRequiredFields();
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  updateToggleDependentFields();
+
+  ["simpleMode","useMonthlyContribution","useAccountModeling","useAgeBasedSpending","sellRealEstate","sellRealEstate2"].forEach(id=>{
+    const node=document.getElementById(id);
+    if(node){
+      node.addEventListener("change", function(){
+        updateToggleDependentFields();
+        if(typeof calculate==="function") calculate();
+      });
+    }
+  });
+});
+</script>
+
+
+<script>
+const MONEY_FIELD_IDS = ["portfolio", "contrib", "monthlyContribution", "ssMonthly", "spouseSsMonthly", "rentalMonthly", "propertyValue", "mortgageBalance", "mortgagePaydown", "costBasis", "capGainExclusion", "property2Value", "mortgage2Balance", "mortgage2Paydown", "cost2Basis", "capGain2Exclusion", "rental2Monthly", "spend1Amt", "spend2Amt", "spend3Amt", "constantRetirementSpending", "inc1Amt", "inc2Amt", "inc3Amt", "exp1Amt", "exp2Amt", "exp3Amt", "college1Amt", "college2Amt", "misc1Amt", "misc2Amt", "misc3Amt", "misc4Amt", "misc5Amt", "tradBalance", "rothBalance", "taxableBalance", "cashBalance", "totalAccounts", "preMedHealthcareAnnual", "medicareAnnualPerPerson", "annualRothConversion"];
+
+function formatMoneyInputValue(value){
+  const raw = String(value || "").replace(/[^0-9.-]/g, "");
+  if(raw === "" || raw === "-" || raw === "." || raw === "-.") return raw;
+  const isNegative = raw.startsWith("-");
+  const cleaned = raw.replace(/-/g, "");
+  const parts = cleaned.split(".");
+  const whole = parts[0] || "";
+  const decimals = parts.length > 1 ? "." + parts.slice(1).join("").slice(0, 2) : "";
+  const formattedWhole = whole.replace(/^0+(?=\d)/, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return (isNegative ? "-" : "") + (formattedWhole || "0") + decimals;
+}
+
+function formatMoneyInputNode(node){
+  if(!node) return;
+  node.value = formatMoneyInputValue(node.value);
+}
+
+function setupMoneyFormatting(){
+  MONEY_FIELD_IDS.forEach(id => {
+    const node = document.getElementById(id);
+    if(!node) return;
+
+    node.addEventListener("input", function(){
+      const cursorAtEnd = node.selectionStart === node.value.length;
+      formatMoneyInputNode(node);
+      if(cursorAtEnd && node.setSelectionRange) node.setSelectionRange(node.value.length, node.value.length);
+      if(typeof updateAccountTotal === "function") updateAccountTotal();
+      if(typeof validateRequiredFields === "function") validateRequiredFields();
+    });
+
+    node.addEventListener("blur", function(){
+      formatMoneyInputNode(node);
+    });
+
+    formatMoneyInputNode(node);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", setupMoneyFormatting);
+</script>
+
+
+<script>
+let INITIAL_PAGE_VALUES = null;
+
+function captureInitialPageValues(){
+  INITIAL_PAGE_VALUES = {};
+  document.querySelectorAll("input, select, textarea").forEach(node=>{
+    if(!node.id) return;
+    INITIAL_PAGE_VALUES[node.id] = {
+      value: node.value,
+      selectedIndex: node.tagName === "SELECT" ? node.selectedIndex : null,
+      checked: node.type === "checkbox" || node.type === "radio" ? node.checked : null
+    };
+  });
+}
+
+function resetToInitialPageValues(){
+  if(!INITIAL_PAGE_VALUES) captureInitialPageValues();
+
+  Object.keys(INITIAL_PAGE_VALUES).forEach(id=>{
+    const node = document.getElementById(id);
+    if(!node) return;
+
+    const saved = INITIAL_PAGE_VALUES[id];
+
+    if(node.tagName === "SELECT" && saved.selectedIndex !== null) {
+      node.selectedIndex = saved.selectedIndex;
+    }
+
+    node.value = saved.value;
+
+    if(saved.checked !== null) {
+      node.checked = saved.checked;
+    }
+  });
+
+  if(typeof setupMoneyFormatting === "function") setupMoneyFormatting();
+  if(typeof updateAccountTotal === "function") updateAccountTotal();
+  if(typeof syncLinkedAges === "function") syncLinkedAges();
+  if(typeof syncSpendingPhaseStarts === "function") syncSpendingPhaseStarts();
+  if(typeof updateToggleDependentFields === "function") updateToggleDependentFields();
+  if(typeof updateSpendingModeUI === "function") updateSpendingModeUI();
+
+  if(typeof clearMC === "function") clearMC();
+  if(typeof calculate === "function") calculate();
+  if(typeof markRequiredFields === "function") markRequiredFields();
+  if(typeof validateRequiredFields === "function") validateRequiredFields();
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  // Capture after all default values are loaded, but before user interaction.
+  setTimeout(captureInitialPageValues, 0);
+
+  document.querySelectorAll("button").forEach(btn=>{
+    if(btn.textContent && btn.textContent.toLowerCase().includes("reset")){
+      btn.onclick = function(evt){
+        if(evt) evt.preventDefault();
+        resetToInitialPageValues();
+      };
+    }
+  });
+});
+</script>
+
+
+<script>
+function updateReturnRateLabelForAccountMode(){
+  const label = document.getElementById("returnRateLabel");
+  const info = document.getElementById("returnRateInfo");
+  const useAccounts = (typeof getSelect === "function" ? getSelect("useAccountModeling") : "") === "yes";
+
+  if(!label) return;
+
+  const icon = info || label.querySelector(".info");
+
+  if(useAccounts){
+    label.childNodes[0].nodeValue = "Fallback Growth Rate % ";
+    if(icon){
+      icon.setAttribute("data-tooltip", "Fallback annual growth rate used only when an account-specific growth rate is blank or zero. Low/Medium/High scenarios still use Growth Variance Range ± %.");
+    }
+  } else {
+    label.childNodes[0].nodeValue = "Annual Interest Rate % ";
+    if(icon){
+      icon.setAttribute("data-tooltip", "Expected nominal annual return before inflation. This is the primary portfolio return assumption when account-level modeling is off.");
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  updateReturnRateLabelForAccountMode();
+
+  const accountToggle = document.getElementById("useAccountModeling");
+  if(accountToggle){
+    accountToggle.addEventListener("change", updateReturnRateLabelForAccountMode);
+  }
+});
+</script>
+
+
+<script>
+/* Advanced planning extension: tax estimate, healthcare/IRMAA, Roth conversions, historical sequence stress, survivor scenario. */
+const HISTORICAL_START_YEAR = 1928;
+
+function estimateFederalTaxFromTaxable(taxableIncome, filingStatus){
+  const income = Math.max(0, taxableIncome || 0);
+  const mfj = filingStatus !== "single";
+  const brackets = mfj
+    ? [[23200,0.10],[94300,0.12],[201050,0.22],[383900,0.24],[487450,0.32],[731200,0.35],[Infinity,0.37]]
+    : [[11600,0.10],[47150,0.12],[100525,0.22],[191950,0.24],[243725,0.32],[609350,0.35],[Infinity,0.37]];
+  let tax = 0, prev = 0;
+  for(const [limit,rate] of brackets){
+    if(income > prev){
+      const amt = Math.min(income, limit) - prev;
+      tax += amt * rate;
+      prev = limit;
+    }
+    if(income <= limit) break;
+  }
+  return tax;
+}
+
+function estimateTax(ordinaryIncome, ssIncome, taxableGainIncome, filingStatus){
+  if(getSelect("useDetailedTaxModel") !== "yes"){
+    return Math.max(0, ordinaryIncome || 0) * (getVal("taxRate")/100);
+  }
+  const mfj = filingStatus !== "single";
+  const standardDeduction = mfj ? 29200 : 14600;
+  const provisional = Math.max(0, ordinaryIncome || 0) + Math.max(0, taxableGainIncome || 0) + 0.5*Math.max(0, ssIncome || 0);
+  const ssBase1 = mfj ? 32000 : 25000;
+  const ssBase2 = mfj ? 44000 : 34000;
+  let taxableSS = 0;
+  if(provisional > ssBase2) taxableSS = Math.min(0.85*ssIncome, 0.85*(provisional-ssBase2) + Math.min(0.5*ssIncome, mfj ? 6000 : 4500));
+  else if(provisional > ssBase1) taxableSS = Math.min(0.5*ssIncome, 0.5*(provisional-ssBase1));
+  const taxableIncome = Math.max(0, ordinaryIncome + taxableGainIncome + taxableSS - standardDeduction);
+  const federal = estimateFederalTaxFromTaxable(taxableIncome, filingStatus);
+  const state = Math.max(0, ordinaryIncome + taxableGainIncome + taxableSS) * (getVal("stateTaxRate")/100);
+  return federal + state;
+}
+
+function estimateHealthcareCost(age, spouseCurrent, filingStatus, ordinaryIncome, ssIncome, taxableGainIncome, survivorActive){
+  const preMed = getVal("preMedHealthcareAnnual");
+  const medicarePer = getVal("medicareAnnualPerPerson");
+  const medicareAge = getVal("medicareAge") || 65;
+  const people = survivorActive ? 1 : 2;
+  let cost = 0;
+  if(people === 1){
+    const survivorAge = age;
+    cost = survivorAge >= medicareAge ? medicarePer : preMed/2;
+  } else {
+    cost += age >= medicareAge ? medicarePer : preMed/2;
+    cost += spouseCurrent >= medicareAge ? medicarePer : preMed/2;
+  }
+  if(getSelect("includeIRMAA") === "yes"){
+    const magi = Math.max(0, ordinaryIncome + taxableGainIncome + Math.min(ssIncome*0.85, ssIncome));
+    const threshold = filingStatus === "single" ? 109000 : 218000;
+    const medicarePeople = people === 1 ? (age >= medicareAge ? 1 : 0) : (age >= medicareAge ? 1 : 0) + (spouseCurrent >= medicareAge ? 1 : 0);
+    let surcharge = 0;
+    if(magi > threshold*2.5) surcharge = 5000;
+    else if(magi > threshold*1.5) surcharge = 3000;
+    else if(magi > threshold) surcharge = 1000;
+    cost += surcharge * medicarePeople;
+  }
+  return Math.max(0, cost);
+}
+
+function getAnnualReturnForMode(randomize, returnAdjustmentPct, yearIndex, options){
+  if(randomize === "sequence"){
+    const idx = ((options && options.sequenceStart ? options.sequenceStart : 0) + yearIndex) % HISTORICAL_STOCK_RETURNS.length;
+    return HISTORICAL_STOCK_RETURNS[idx];
+  }
+  if(randomize === true) return randomHistoricalStockReturn();
+  return getVal("returnRate")/100 + (returnAdjustmentPct || 0);
+}
+
+function getAnnualInflationForMode(randomize, yearIndex, options){
+  if(randomize === "sequence"){
+    const idx = ((options && options.sequenceStart ? options.sequenceStart : 0) + yearIndex) % HISTORICAL_INFLATION_RATES.length;
+    return HISTORICAL_INFLATION_RATES[idx];
+  }
+  if(randomize === true) return randomHistoricalInflation();
+  return getVal("inflation")/100;
+}
+
+function simulateFull(randomize, returnAdjustmentPct=0, options={}){
+ const currentAge=getVal("currentAge"),spouseAge=getVal("spouseAge"),retireAge=getVal("retireAge"),endAge=getVal("endAge");
+ let accounts=getStartingAccounts();
+ const baseInf=getVal("inflation")/100,ssAge=getVal("ssAge"),spouseSsAge=getVal("spouseSsAge")||getVal("ssAge"),yourSsMonthly=getVal("ssMonthly"),spouseSsMonthly=getVal("spouseSsMonthly"),rentalAnnual=getVal("rentalMonthly")*12,taxRate=getVal("taxRate")/100,feeRate=getVal("feeRate")/100,taxableTaxRate=getVal("taxableWithdrawalTaxRate")/100,strategy=getSelect("withdrawalStrategy")||"taxAware";
+ let infFactor=1,propertyFactor=1,propertyFactor2=1,soldProperty=false,soldProperty2=false,totalRothConversions=0,totalEstimatedTax=0;
+ const survivorScenario = options.survivor === true || getSelect("enableSurvivorScenario")==="yes";
+ const firstDeathPerson = getSelect("firstDeathPerson") || "you";
+ const firstDeathAge = getVal("firstDeathAge");
+ const survivorPct = (getVal("survivorSpendingPct") || 80) / 100;
+ const rows=[];
+ for(let age=currentAge;age<=endAge;age++){
+  const yearIndex=age-currentAge,spouseCurrent=spouseAge+yearIndex,startPortfolio=accountTotal(accounts);
+  let yearInterest=0,yearContribution=0,yearWithdrawal=0,bsAnnual=0,eeAnnual=0,totalSpendAnnual=0,biAnnual=0,ssIncomeAnnual=0,eiAnnual=0,rmdAnnual=0,healthcareAnnual=0,estimatedTaxAnnual=0,rothConversionAnnual=0,ordinaryIncomeAnnual=0,taxableGainIncomeAnnual=0,propertySale=0,propertySale2=0;
+  let propertyInfo={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0},propertyInfo2={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};
+  const survivorActive = survivorScenario && firstDeathAge>0 && age>=firstDeathAge;
+  const filingStatus = survivorActive ? "single" : (getSelect("filingStatus") || "mfj");
+  const annualReturn=getAnnualReturnForMode(randomize, returnAdjustmentPct, yearIndex, options),annualInflation=getAnnualInflationForMode(randomize, yearIndex, options),monthlyInflation=Math.pow(1+annualInflation,1/12)-1;
+  const monthlyPropertyGrowth=Math.pow(1+(randomize===true?randomPropertyGrowth(getVal("propertyGrowth")/100):getVal("propertyGrowth")/100),1/12)-1;
+  const monthlyProperty2Growth=Math.pow(1+(randomize===true?randomPropertyGrowth(getVal("property2Growth")/100):getVal("property2Growth")/100),1/12)-1;
+  for(let m=1;m<=12;m++){
+   const currentMonthIndex=yearIndex*12+m;
+   if(currentMonthIndex>1){infFactor*=1+monthlyInflation;propertyFactor*=1+monthlyPropertyGrowth;propertyFactor2*=1+monthlyProperty2Growth;}
+   if(getSelect("sellRealEstate")==="yes"&&age===getVal("propertySaleAge")&&m===1&&!soldProperty){propertyInfo=calcPropertySaleInfo(age,propertyFactor);propertySale=propertyInfo.saleProceeds;accounts.taxable+=propertySale;soldProperty=true;taxableGainIncomeAnnual+=propertyInfo.gain||0;}
+   if(getSelect("sellRealEstate2")==="yes"&&age===getVal("property2SaleAge")&&m===1&&!soldProperty2){propertyInfo2=calcPropertySaleInfo2(age,propertyFactor2);propertySale2=propertyInfo2.saleProceeds;accounts.taxable+=propertySale2;soldProperty2=true;taxableGainIncomeAnnual+=propertyInfo2.gain||0;}
+   yearInterest+=applyAccountMonthlyGrowth(accounts,annualReturn,feeRate);
+   if(age<retireAge){
+     const c=monthlyContributionAmount();if(accountModelEnabled())accounts.trad+=c;else accounts.taxable+=c;yearContribution+=c;
+     const college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,m,infFactor),need=college/12+misc;
+     if(need>0){const w=withdrawForNetNeed(accounts,need,taxRate,taxableTaxRate,strategy);yearWithdrawal+=w.grossWithdrawal;ordinaryIncomeAnnual+=w.details.trad||0;taxableGainIncomeAnnual+=(w.details.taxable||0)*0.5;eeAnnual+=need;totalSpendAnnual+=need;}
+   }else{
+     let bs=baseSpending(age,infFactor),college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,m,infFactor),eeBase=extraExpenses(age,infFactor);
+     if(survivorActive){bs*=survivorPct;eeBase*=survivorPct;}
+     let bi=soldProperty?0:rentalAnnual*infFactor;
+     let yourSS = age>=ssAge ? yourSsMonthly : 0;
+     let spouseSS = spouseCurrent>=spouseSsAge ? spouseSsMonthly : 0;
+     if(survivorActive){
+       const survivorSS = Math.max(yourSS, spouseSS);
+       yourSS = survivorSS; spouseSS = 0;
+       if(firstDeathPerson === "you" && spouseSS > yourSS) { yourSS = spouseSS; spouseSS = 0; }
+     }
+     const monthlySsIncome=(survivorActive?Math.max(yourSS,spouseSS):yourSS+spouseSS),ssGrowthFactor=Math.pow(1+(typeof SS_COLA_RATE==="number"?SS_COLA_RATE:0.025),age-currentAge),annualSsIncome=monthlySsIncome*12*ssGrowthFactor;
+     bi+=annualSsIncome;const ei=extraIncome(age,infFactor);
+     const projectedOrdinaryForHealth = ordinaryIncomeAnnual + annualSsIncome*0.85;
+     const healthAnnual = estimateHealthcareCost(age, spouseCurrent, filingStatus, projectedOrdinaryForHealth, annualSsIncome, taxableGainIncomeAnnual, survivorActive);
+     const healthMonthly = healthAnnual/12;
+     healthcareAnnual += healthMonthly;
+     let monthlyNeed=Math.max(0,(bs/12)+(eeBase/12)+(college/12)+misc+healthMonthly-(bi/12)-(ei/12));
+     const rmdStart=getVal("rmdStartAge")||73;
+     if(age>=rmdStart&&m===1&&accounts.trad>0){
+       const divisor=rmdDivisor(age),rmd=divisor?accounts.trad/divisor:0,actual=withdrawFromAccount(accounts,"trad",rmd);
+       rmdAnnual+=actual;yearWithdrawal+=actual;ordinaryIncomeAnnual+=actual;const rmdNet=actual*(1-taxRate);
+       monthlyNeed=Math.max(0,monthlyNeed-rmdNet);
+       if(rmdNet>monthlyNeed)accounts.taxable+=Math.max(0,rmdNet-monthlyNeed);
+     }
+     if(m===1 && getVal("annualRothConversion")>0 && age>=getVal("rothConversionStartAge") && age<=getVal("rothConversionEndAge") && accounts.trad>0){
+       const conversion=Math.min(accounts.trad,getVal("annualRothConversion"));
+       accounts.trad-=conversion;accounts.roth+=conversion;rothConversionAnnual+=conversion;totalRothConversions+=conversion;ordinaryIncomeAnnual+=conversion;
+       const conversionTax=estimateTax(conversion,0,0,filingStatus);
+       const taxPay=withdrawForNetNeed(accounts,conversionTax, taxRate, taxableTaxRate, strategy);
+       yearWithdrawal+=taxPay.grossWithdrawal;estimatedTaxAnnual+=conversionTax;
+     }
+     const w=withdrawForNetNeed(accounts,monthlyNeed,taxRate,taxableTaxRate,strategy);yearWithdrawal+=w.grossWithdrawal;ordinaryIncomeAnnual+=w.details.trad||0;taxableGainIncomeAnnual+=(w.details.taxable||0)*0.5;
+     bsAnnual+=bs/12;eeAnnual+=(eeBase/12)+(college/12)+misc+healthMonthly;totalSpendAnnual+=(bs/12)+(eeBase/12)+(college/12)+misc+healthMonthly;biAnnual+=bi/12;ssIncomeAnnual+=annualSsIncome/12;eiAnnual+=ei/12;
+   }
+  }
+  estimatedTaxAnnual += estimateTax(ordinaryIncomeAnnual, ssIncomeAnnual, taxableGainIncomeAnnual, filingStatus);
+  totalEstimatedTax += estimatedTaxAnnual;
+  const endPortfolio=accountTotal(accounts);
+  rows.push({age,spouseAge:spouseCurrent,startPortfolio,propertySale,propertySale2,propertyInfo,propertyInfo2,contribution:yearContribution,growth:yearInterest,bs:bsAnnual,ee:eeAnnual,totalSpend:totalSpendAnnual,bi:biAnnual,ssIncome:ssIncomeAnnual,ei:eiAnnual,withdrawal:yearWithdrawal,rmd:rmdAnnual,tradEnd:accounts.trad,rothEnd:accounts.roth,taxableEnd:accounts.taxable,cashEnd:accounts.cash,healthcare:healthcareAnnual,estimatedTax:estimatedTaxAnnual,rothConversion:rothConversionAnnual,totalEstimatedTax,totalRothConversions,endPortfolio});
+ }
+ return rows;
+}
+
+function runHistoricalSequenceStress(){
+ if(getSelect("runSequenceStress")!=="yes") return null;
+ let worstEnding=Infinity,worstStart=HISTORICAL_START_YEAR,successes=0,count=0;
+ for(let i=0;i<HISTORICAL_STOCK_RETURNS.length;i++){
+   const rows=simulateFull("sequence",0,{sequenceStart:i});
+   if(!rows.length) continue;
+   const ending=rows[rows.length-1].endPortfolio;
+   const failed=rows.some(r=>r.endPortfolio<=0);
+   if(!failed) successes++;
+   if(ending<worstEnding){worstEnding=ending;worstStart=HISTORICAL_START_YEAR+i;}
+   count++;
+ }
+ return {worstEnding,worstStart,successRate:count?successes/count:0};
+}
+
+function renderAdvancedMetrics(rows){
+ const last=rows&&rows.length?rows[rows.length-1]:null;
+ if(el("lastYearTaxEstimate"))el("lastYearTaxEstimate").textContent=fmtMoney(last?last.estimatedTax||0:0);
+ if(el("lastYearHealthcareEstimate"))el("lastYearHealthcareEstimate").textContent=fmtMoney(last?last.healthcare||0:0);
+ if(el("totalRothConversions"))el("totalRothConversions").textContent=fmtMoney(last?last.totalRothConversions||0:0);
+ const stress=runHistoricalSequenceStress();
+ if(el("historicalWorstSequence"))el("historicalWorstSequence").textContent=stress?fmtMoney(stress.worstEnding):"—";
+ if(el("historicalWorstStartYear"))el("historicalWorstStartYear").textContent=stress?String(stress.worstStart):"—";
+ if(el("historicalSequenceSuccess"))el("historicalSequenceSuccess").textContent=stress?fmtPct(stress.successRate):"—";
+ if(getSelect("enableSurvivorScenario")==="yes"){
+   const survivorRows=simulateFull(false,0,{survivor:true});
+   const survivorLast=survivorRows.length?survivorRows[survivorRows.length-1]:null;
+   const dep=survivorRows.find(r=>r.endPortfolio<=0);
+   if(el("survivorScenarioEnding"))el("survivorScenarioEnding").textContent=survivorLast?fmtMoney(survivorLast.endPortfolio):"—";
+   if(el("survivorDepletionAge"))el("survivorDepletionAge").textContent=dep?String(dep.age):"None";
+ } else {
+   if(el("survivorScenarioEnding"))el("survivorScenarioEnding").textContent="—";
+   if(el("survivorDepletionAge"))el("survivorDepletionAge").textContent="—";
+ }
+}
+
+if(typeof renderTable === "function" && !window.__advancedRenderTableWrapped){
+  window.__advancedRenderTableWrapped=true;
+  const oldRenderTable=renderTable;
+  renderTable=function(rows,lowRows=[],highRows=[]){
+    oldRenderTable(rows,lowRows,highRows);
+    const body=el("projectionBody");
+    if(body && rows && rows.length){
+      Array.from(body.rows).forEach((tr,i)=>{
+        const r=rows[i]||{};
+        const cells=Array.from(tr.cells);
+        const ssIdx=cells.findIndex((td,idx)=>idx>0 && td.textContent===fmtMoney(r.ssIncome||0));
+        // Append extra values near the end if header was extended but old renderer did not include them.
+        const expectedMin=23;
+        if(cells.length<expectedMin){
+          [fmtMoney(r.healthcare||0),fmtMoney(r.estimatedTax||0),fmtMoney(r.rothConversion||0)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td);});
+        }
+      });
+    }
+    renderAdvancedMetrics(rows);
+  };
+}
+</script>
+
+
+<script>
+/* Correct annual table rendering with advanced planning columns in the same order as the header. */
+renderTable = function(rows,lowRows=[],highRows=[]){
+ const body=el("projectionBody");
+ if(!body) return;
+ body.innerHTML="";
+ rows.forEach((r,i)=>{
+  const low=(lowRows&&lowRows[i])?lowRows[i].endPortfolio:r.endPortfolio;
+  const med=r.endPortfolio;
+  const high=(highRows&&highRows[i])?highRows[i].endPortfolio:r.endPortfolio;
+  const tr=document.createElement("tr");
+  [
+    r.age,
+    r.spouseAge,
+    fmtMoney(r.startPortfolio),
+    fmtMoney(r.propertySale),
+    fmtMoney(r.propertySale2),
+    fmtMoney(r.contribution),
+    fmtMoney(r.growth),
+    fmtMoney(r.bs),
+    fmtMoney(r.ee),
+    fmtMoney(r.totalSpend),
+    fmtMoney(r.bi),
+    fmtMoney(r.ssIncome||0),
+    fmtMoney(r.healthcare||0),
+    fmtMoney(r.estimatedTax||0),
+    fmtMoney(r.rothConversion||0),
+    fmtMoney(r.ei),
+    fmtMoney(r.withdrawal),
+    fmtMoney(r.rmd||0),
+    fmtMoney(r.tradEnd||0),
+    fmtMoney(r.rothEnd||0),
+    fmtMoney(r.taxableEnd||0),
+    fmtMoney(r.cashEnd||0),
+    fmtMoney(low),
+    fmtMoney(med),
+    fmtMoney(high),
+    fmtMoney(r.endPortfolio)
+  ].forEach(v=>{
+    const td=document.createElement("td");
+    td.textContent=v;
+    tr.appendChild(td);
+  });
+  body.appendChild(tr);
+ });
+ if(typeof renderAdvancedMetrics==="function") renderAdvancedMetrics(rows);
+};
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+const ADVANCED_EXCLUDED_CORE_IDS = new Set([
+  "useAgeBasedSpending","constantRetirementSpending",
+  "spend1Start","spend1End","spend1Amt","spend2Start","spend2End","spend2Amt","spend3Start","spend3End","spend3Amt",
+  "inc1Start","inc1End","inc1Amt","inc2Start","inc2End","inc2Amt","inc3Start","inc3End","inc3Amt",
+  "exp1Start","exp1End","exp1Amt","exp2Start","exp2End","exp2Amt","exp3Start","exp3End","exp3Amt",
+  "college1Start","college1End","college1Amt","college2Start","college2End","college2Amt",
+  "misc1Label","misc1Age","misc1Amt","misc2Label","misc2Age","misc2Amt","misc3Label","misc3Age","misc3Amt","misc4Label","misc4Age","misc4Amt","misc5Label","misc5Age","misc5Amt"
+]);
+
+const ADVANCED_EXACT_IDS = new Set([
+  "useDetailedTaxEstimate","filingStatus","stateTaxRate",
+  "preMedicareHealthcareAnnual","medicareHealthcareAnnual","medicareStartAge","includeIrmaaEstimate",
+  "annualRothConversion","rothConversionStartAge","rothConversionEndAge",
+  "runHistoricalSequenceStress",
+  "enableSurvivorScenario","firstDeath","firstDeathAge","survivorSpendingPct",
+  // fallback variants from prior builds
+  "useDetailedTaxes","detailedTaxEstimate","stateTaxPct","healthcareAnnual","medicareAnnual",
+  "irmaaEstimate","rothConversionAnnual","rothConversionStart","rothConversionEnd",
+  "historicalSequenceStress","survivorScenario","deathScenario","survivorSpendingPercent"
+]);
+
+const ADVANCED_LABEL_PATTERNS = [
+  /detailed tax/i,
+  /filing status/i,
+  /state tax/i,
+  /pre[-\s]?medicare/i,
+  /medicare healthcare/i,
+  /medicare start/i,
+  /irmaa/i,
+  /roth conversion/i,
+  /historical sequence/i,
+  /survivor scenario/i,
+  /first death/i,
+  /survivor spending/i
+];
+
+function isAdvancedOnlyField(field){
+  if(!field || !field.querySelectorAll) return false;
+
+  const controls = Array.from(field.querySelectorAll("input, select, textarea"));
+  if(!controls.length) return false;
+
+  // Never hide the master toggle itself.
+  if(controls.some(c => c.id === "useAdvancedPlanning")) return false;
+
+  // Never hide core-independent fields.
+  if(controls.some(c => ADVANCED_EXCLUDED_CORE_IDS.has(c.id))) return false;
+
+  // Hide known advanced IDs.
+  if(controls.some(c => ADVANCED_EXACT_IDS.has(c.id))) return true;
+
+  const text = (field.textContent || "").trim();
+  return ADVANCED_LABEL_PATTERNS.some(pattern => pattern.test(text));
+}
+
+function getAdvancedOnlyFields(){
+  return Array.from(document.querySelectorAll(".field")).filter(isAdvancedOnlyField);
+}
+
+function updateAdvancedPlanningVisibility(){
+  const master = document.getElementById("useAdvancedPlanning");
+  const useAdvanced = master && master.value === "yes";
+
+  getAdvancedOnlyFields().forEach(field => {
+    field.classList.toggle("hidden-by-advanced-toggle", !useAdvanced);
+    if(!useAdvanced) field.classList.remove("missing");
+
+    field.querySelectorAll("input, select, textarea").forEach(node => {
+      node.disabled = !useAdvanced;
+      if(!useAdvanced && ["useDetailedTaxEstimate","includeIrmaaEstimate","runHistoricalSequenceStress","enableSurvivorScenario"].includes(node.id)) {
+        node.value = "no";
+      }
+    });
+  });
+
+  // Unhide core-independent fields in case older code marked them.
+  ADVANCED_EXCLUDED_CORE_IDS.forEach(id => {
+    const node = document.getElementById(id);
+    if(!node) return;
+    const field = node.closest(".field");
+    if(field) field.classList.remove("hidden-by-advanced-toggle");
+  });
+
+  // Unhide core section headers in case older code marked them.
+  const coreTitles = [
+    "Monte Carlo Simulation",
+    "Retirement Spending",
+    "Age-Based Spending Phases",
+    "Age-Based Extra Income",
+    "Age-Based Extra Expenses",
+    "College Payments for Children",
+    "Miscellaneous One-Time Expenses"
+  ];
+  document.querySelectorAll("h3").forEach(h => {
+    const text = (h.textContent || "").trim();
+    if(coreTitles.some(title => text.startsWith(title))) {
+      h.classList.remove("hidden-by-advanced-toggle");
+      h.style.display = "";
+    }
+  });
+
+  if(typeof markRequiredFields === "function") markRequiredFields();
+  if(typeof validateRequiredFields === "function") validateRequiredFields();
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  updateAdvancedPlanningVisibility();
+
+  const node = document.getElementById("useAdvancedPlanning");
+  if(node){
+    node.addEventListener("change", function(){
+      updateAdvancedPlanningVisibility();
+      if(typeof calculate === "function") calculate();
+    });
+  }
+});
+</script>
+
+
+
+
+
+<script>
+function getNextMiscExpenseIndex(){
+  let max=0;
+  document.querySelectorAll("#miscExpenseBody input[id^='misc']").forEach(node=>{
+    const m=node.id.match(/^misc(\d+)/);
+    if(m) max=Math.max(max,parseInt(m[1],10));
+  });
+  return max+1;
+}
+
+function wireMiscRowInputs(row){
+  if(!row) return;
+
+  row.querySelectorAll("input").forEach(node=>{
+    node.addEventListener("input", function(){
+      if(node.id && node.id.endsWith("Amt") && typeof formatMoneyInputNode === "function"){
+        const cursorAtEnd = node.selectionStart === node.value.length;
+        formatMoneyInputNode(node);
+        if(cursorAtEnd && node.setSelectionRange) node.setSelectionRange(node.value.length, node.value.length);
+      }
+      if(typeof validateRequiredFields === "function") validateRequiredFields();
+      if(typeof calculate === "function") calculate();
+    });
+
+    node.addEventListener("change", function(){
+      if(typeof calculate === "function") calculate();
+    });
+
+    node.addEventListener("blur", function(){
+      if(node.id && node.id.endsWith("Amt") && typeof formatMoneyInputNode === "function"){
+        formatMoneyInputNode(node);
+      }
+    });
+
+    if(node.id && node.id.endsWith("Amt") && typeof formatMoneyInputNode === "function"){
+      formatMoneyInputNode(node);
+    }
+  });
+}
+
+function addMiscExpenseRow(){
+  const body=document.getElementById("miscExpenseBody");
+  if(!body) return;
+
+  const idx=getNextMiscExpenseIndex();
+  const tr=document.createElement("tr");
+  tr.innerHTML =
+    '<td><input id="misc'+idx+'Label" type="text" value="" placeholder="Expense '+idx+'"></td>' +
+    '<td><input id="misc'+idx+'Age" type="number" value="0"></td>' +
+    '<td><input id="misc'+idx+'Amt" type="text" inputmode="decimal" value="0" step="1000"></td>' +
+    '<td><button type="button" class="secondary misc-remove-btn">Remove</button></td>';
+
+  body.appendChild(tr);
+  wireMiscRowInputs(tr);
+
+  if(typeof calculate === "function") calculate();
+}
+
+function removeMiscExpenseRow(button){
+  const row=button ? button.closest("tr") : null;
+  if(!row) return;
+  row.remove();
+
+  if(typeof validateRequiredFields === "function") validateRequiredFields();
+  if(typeof calculate === "function") calculate();
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  document.querySelectorAll("#miscExpenseBody tr").forEach(wireMiscRowInputs);
+
+  const btn=document.getElementById("addMiscExpenseBtn");
+  if(btn){
+    btn.addEventListener("click", function(evt){
+      evt.preventDefault();
+      addMiscExpenseRow();
+    });
+  }
+
+  const body=document.getElementById("miscExpenseBody");
+  if(body){
+    body.addEventListener("click", function(evt){
+      const target=evt.target;
+      if(target && target.classList && target.classList.contains("misc-remove-btn")){
+        evt.preventDefault();
+        removeMiscExpenseRow(target);
+      }
+    });
+  }
+});
+</script>
+
+
+<script>
+const RETIREMENT_STATE_TAX_RATE_ESTIMATES = {
+  "Alabama": 14.0,
+  "Alaska": 11.0,
+  "Arizona": 13.5,
+  "Arkansas": 14.0,
+  "California": 17.5,
+  "Colorado": 15.0,
+  "Connecticut": 16.0,
+  "Delaware": 14.5,
+  "Florida": 11.0,
+  "Georgia": 14.0,
+  "Hawaii": 15.5,
+  "Idaho": 14.5,
+  "Illinois": 12.0,
+  "Indiana": 14.5,
+  "Iowa": 11.5,
+  "Kansas": 14.5,
+  "Kentucky": 15.0,
+  "Louisiana": 13.5,
+  "Maine": 15.0,
+  "Maryland": 16.5,
+  "Massachusetts": 16.0,
+  "Michigan": 14.0,
+  "Minnesota": 17.0,
+  "Mississippi": 11.0,
+  "Missouri": 13.5,
+  "Montana": 15.0,
+  "Nebraska": 14.5,
+  "Nevada": 11.0,
+  "New Hampshire": 11.0,
+  "New Jersey": 15.5,
+  "New Mexico": 14.5,
+  "New York": 16.5,
+  "North Carolina": 14.0,
+  "North Dakota": 12.5,
+  "Ohio": 13.5,
+  "Oklahoma": 13.5,
+  "Oregon": 17.0,
+  "Pennsylvania": 11.5,
+  "Rhode Island": 15.0,
+  "South Carolina": 13.5,
+  "South Dakota": 11.0,
+  "Tennessee": 11.0,
+  "Texas": 11.0,
+  "Utah": 15.0,
+  "Vermont": 16.0,
+  "Virginia": 14.5,
+  "Washington": 11.0,
+  "West Virginia": 13.5,
+  "Wisconsin": 14.0,
+  "Wyoming": 11.0
+};
+
+function estimateEffectiveTaxRateForState(state){
+  if(!state || !RETIREMENT_STATE_TAX_RATE_ESTIMATES.hasOwnProperty(state)) return null;
+  return RETIREMENT_STATE_TAX_RATE_ESTIMATES[state];
+}
+
+function updateEffectiveTaxRateFromState(){
+  const stateNode = document.getElementById("retirementState");
+  const taxNode = document.getElementById("taxRate");
+  if(!stateNode || !taxNode) return;
+
+  const rate = estimateEffectiveTaxRateForState(stateNode.value);
+  if(rate === null) return;
+
+  taxNode.value = rate.toFixed(1);
+
+  if(typeof validateRequiredFields === "function") validateRequiredFields();
+  if(typeof calculate === "function") calculate();
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  const stateNode = document.getElementById("retirementState");
+  if(stateNode){
+    stateNode.addEventListener("change", updateEffectiveTaxRateFromState);
+  }
 });
 </script>
 
