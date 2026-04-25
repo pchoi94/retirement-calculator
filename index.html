@@ -452,6 +452,22 @@ main {
 <div class="field"><div class="field-label">Compound Frequency <span class="info" data-tooltip="How often interest is credited: annually, semiannually, quarterly, monthly, or daily. In match mode this follows Investor.gov-style discrete compounding.">i</span></div><select id="compoundFreq"><option value="1" selected>Annually</option><option value="2">Semiannually</option><option value="4">Quarterly</option><option value="12">Monthly</option><option value="365">Daily</option></select></div>
 <div class="field"><div class="field-label">Inflation % <span class="info" data-tooltip="Annual increase applied to future spending, income, and related cash-flow assumptions in the full model.">i</span></div><input id="inflation" type="number" value="" step="0.1"></div>
 
+
+<h3>Investment Account Types <span class="info" data-tooltip="Optional account-level modeling. If enabled, the calculator uses these account balances and growth rates instead of only a single portfolio total.">i</span></h3>
+<div class="field"><div class="field-label">Use Account-Level Modeling <span class="info" data-tooltip="When Yes, portfolio projection uses the account balances below: 401(k)/Traditional IRA, Roth IRA, taxable investments, and cash savings.">i</span></div><select id="useAccountModeling"><option value="no">No</option><option value="yes">Yes</option></select></div>
+<div class="field"><div class="field-label">401(k) / Traditional IRA Balance $ <span class="info" data-tooltip="Pre-tax retirement account balance. Withdrawals are taxable and RMDs may apply.">i</span></div><input id="tradBalance" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">401(k) / Traditional IRA Growth % <span class="info" data-tooltip="Expected annual growth rate for pre-tax retirement accounts.">i</span></div><input id="tradReturn" type="number" value="8" step="0.1"></div>
+<div class="field"><div class="field-label">Roth IRA Balance $ <span class="info" data-tooltip="Roth account balance. Withdrawals are modeled as tax-free and generally preserved longest.">i</span></div><input id="rothBalance" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Roth IRA Growth % <span class="info" data-tooltip="Expected annual growth rate for Roth accounts.">i</span></div><input id="rothReturn" type="number" value="8" step="0.1"></div>
+<div class="field"><div class="field-label">Taxable Investments Balance $ <span class="info" data-tooltip="Taxable brokerage or other non-retirement investment balance.">i</span></div><input id="taxableBalance" type="number" value="" step="10000"></div>
+<div class="field"><div class="field-label">Taxable Investments Growth % <span class="info" data-tooltip="Expected annual growth rate for taxable investments.">i</span></div><input id="taxableReturn" type="number" value="8" step="0.1"></div>
+<div class="field"><div class="field-label">Cash Savings Balance $ <span class="info" data-tooltip="Cash, checking, savings, money market, or emergency reserve balance.">i</span></div><input id="cashBalance" type="number" value="" step="1000"></div>
+<div class="field"><div class="field-label">Total Across Accounts $ <span class="info" data-tooltip="Automatically calculated sum of all account balances when account-level modeling is enabled.">i</span></div><input id="totalAccounts" type="number" value="" readonly></div>
+<div class="field"><div class="field-label">Cash Savings Growth % <span class="info" data-tooltip="Expected annual interest rate for cash savings.">i</span></div><input id="cashReturn" type="number" value="4" step="0.1"></div>
+<div class="field"><div class="field-label">RMD Start Age <span class="info" data-tooltip="Age when required minimum distributions begin for pre-tax retirement accounts.">i</span></div><input id="rmdStartAge" type="number" value="73"></div>
+<div class="field"><div class="field-label">Taxable Withdrawal Tax Rate % <span class="info" data-tooltip="Simplified tax rate applied to taxable-investment withdrawals.">i</span></div><input id="taxableWithdrawalTaxRate" type="number" value="10" step="0.5"></div>
+<div class="field"><div class="field-label">Withdrawal Strategy <span class="info" data-tooltip="Tax-aware default uses RMDs first, then cash, taxable investments, pre-tax accounts, and Roth last.">i</span></div><select id="withdrawalStrategy"><option value="taxAware">Tax-Aware Default</option><option value="proRata">Pro Rata</option></select></div>
+
 <h3>Base Income <span class="info" data-tooltip="Recurring income sources that reduce required portfolio withdrawals.">i</span></h3>
 <div class="field"><div class="field-label">Social Security Start Age <span class="info" data-tooltip="Your age when Social Security benefits begin in the model.">i</span></div><input id="ssAge" value="67"></div>
 <div class="field"><div class="field-label">Spouse Social Security Start Age <span class="info" data-tooltip="Your spouse’s age when their Social Security benefit begins in the model.">i</span></div><input id="spouseSsAge" type="number" value="67"></div>
@@ -541,7 +557,16 @@ main {
 <section class="output">
 <div id="errorBox" class="error"></div>
 <div class="summary-grid">
-<div class="metric"><div class="metric-title">Base Case Result <span class="info" data-tooltip="Whether the deterministic base-case projection lasts through the plan period.">i</span></div><div id="result" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Base Case Result <span class="info" data-tooltip="Whether the deterministic base-case projection lasts through the plan period.">i</span></div>
+
+
+<div class="summary-grid">
+<div class="metric"><div class="metric-title">Ending 401(k) / Traditional <span class="info" data-tooltip="Projected ending balance in pre-tax retirement accounts after growth, withdrawals, and RMDs.">i</span></div><div id="endingTradBalance" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Ending Roth IRA <span class="info" data-tooltip="Projected ending Roth balance. Roth is preserved longest under the tax-aware strategy.">i</span></div><div id="endingRothBalance" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Ending Taxable <span class="info" data-tooltip="Projected ending taxable investment balance.">i</span></div><div id="endingTaxableBalance" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Ending Cash <span class="info" data-tooltip="Projected ending cash savings balance.">i</span></div><div id="endingCashBalance" class="value">—</div></div>
+</div>
+<div id="result" class="value">—</div></div>
 <div class="metric"><div class="metric-title">Base Ending Portfolio <span class="info" data-tooltip="Final portfolio value at the end of the base-case projection.">i</span></div><div id="endingPortfolio" class="value">—</div></div>
 <div class="metric"><div class="metric-title">Base Lowest Portfolio <span class="info" data-tooltip="Lowest portfolio value reached at any point in the base-case projection. Shows how close the plan gets to failure.">i</span></div><div id="lowestPortfolio" class="value">—</div></div>
 <div class="metric"><div class="metric-title">Base First Depletion Age <span class="info" data-tooltip="First age when the portfolio falls to zero or below in the base-case projection.">i</span></div><div id="depletionAge" class="value">—</div></div>
@@ -577,7 +602,7 @@ main {
 
 <div class="card"><h2>Portfolio Projection <span class="info" data-tooltip="Chart of projected ending portfolio value by year or age.">i</span></h2><div class="chart-wrap"><canvas id="portfolioChart"></canvas></div></div>
 <div class="card" style="margin-top:14px"><h2>Monte Carlo Percentile Paths <span class="info" data-tooltip="Shows how the 10th, 25th, 50th, 75th, and 90th percentile portfolio paths evolve over time across all simulations.">i</span></h2><div class="chart-wrap"><canvas id="mcPercentileChart"></canvas></div><div class="note">P10 = downside path, Median = typical path, P90 = upside path. Based on 10,000 historical-return simulations.</div></div>
-<div class="card" style="margin-top:14px"><h2>Annual Base Projection <span class="info" data-tooltip="Year-by-year table of the base-case calculation. On mobile, scroll sideways inside the table.">i</span></h2><div class="table-wrap"><table class="main-table"><thead><tr><th>Age/Year</th><th>Spouse Age</th><th>Start Portfolio</th><th>Property Sale</th><th>Property 2 Sale</th><th>Net Contribution</th><th>Interest</th><th>Base Spending</th><th>Extra Expenses</th><th>Total Spending</th><th>Base Income</th><th>Social Security Income</th><th>Extra Income</th><th>Gross Withdrawal</th><th>End Portfolio</th></tr></thead><tbody id="projectionBody"></tbody></table></div></div>
+<div class="card" style="margin-top:14px"><h2>Annual Base Projection <span class="info" data-tooltip="Year-by-year table of the base-case calculation. On mobile, scroll sideways inside the table.">i</span></h2><div class="table-wrap"><table class="main-table"><thead><tr><th>Age/Year</th><th>Spouse Age</th><th>Start Portfolio</th><th>Property Sale</th><th>Property 2 Sale</th><th>Net Contribution</th><th>Interest</th><th>Base Spending</th><th>Extra Expenses</th><th>Total Spending</th><th>Base Income</th><th>Social Security Income</th><th>Extra Income</th><th>Gross Withdrawal</th><th>RMD</th><th>401(k)/Trad End</th><th>Roth End</th><th>Taxable End</th><th>Cash End</th><th>Low End Portfolio</th><th>Medium End Portfolio</th><th>High End Portfolio</th><th>End Portfolio</th></tr></thead><tbody id="projectionBody"></tbody></table></div></div>
 </section>
 </main>
 
@@ -693,6 +718,110 @@ const SS_COLA_RATE = 0.025;
 function simulateFull(randomize,returnAdjustmentPct=0){const currentAge=getVal("currentAge"),spouseAge=getVal("spouseAge"),retireAge=getVal("retireAge"),endAge=getVal("endAge");let portfolio=getVal("portfolio");const baseReturn=getVal("returnRate")/100,baseInf=getVal("inflation")/100,ssAge=getVal("ssAge"),spouseSsAge=getVal("spouseSsAge")||getVal("ssAge"),yourSsMonthly=getVal("ssMonthly"),spouseSsMonthly=getVal("spouseSsMonthly"),rentalAnnual=getVal("rentalMonthly")*12,taxRate=getVal("taxRate")/100,feeRate=getVal("feeRate")/100,freq=parseFloat(getSelect("compoundFreq"));let infFactor=1,propertyFactor=1,propertyFactor2=1,soldProperty=false,soldProperty2=false;const rows=[];for(let age=currentAge;age<=endAge;age++){const yearIndex=age-currentAge,spouseCurrent=spouseAge+yearIndex,startPortfolio=portfolio;let yearInterest=0,yearContribution=0,yearWithdrawal=0,bsAnnual=0,eeAnnual=0,totalSpendAnnual=0,biAnnual=0,ssIncomeAnnual=0,eiAnnual=0,propertySale=0,propertySale2=0,propertyInfo={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0},propertyInfo2={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};let annualReturn=randomize?randomHistoricalStockReturn():(baseReturn+returnAdjustmentPct),annualInflation=randomize?randomHistoricalInflation():baseInf,annualPropertyGrowth=randomize?randomPropertyGrowth(getVal("propertyGrowth")/100):getVal("propertyGrowth")/100;const netAnnualReturn=annualReturn-feeRate,monthlyInflation=Math.pow(1+annualInflation,1/12)-1,monthlyPropertyGrowth=Math.pow(1+annualPropertyGrowth,1/12)-1,monthlyProperty2Growth=Math.pow(1+(randomize?randomPropertyGrowth(getVal("property2Growth")/100):getVal("property2Growth")/100),1/12)-1;for(let m=1;m<=12;m++){const currentMonthIndex=yearIndex*12+m;if(currentMonthIndex>1){infFactor*=1+monthlyInflation;propertyFactor*=1+monthlyPropertyGrowth;propertyFactor2*=1+monthlyProperty2Growth}if(getSelect("sellRealEstate")==="yes"&&age===getVal("propertySaleAge")&&m===1&&!soldProperty){propertyInfo=calcPropertySaleInfo(age,propertyFactor);propertySale=propertyInfo.saleProceeds;portfolio+=propertySale;soldProperty=true}if(getSelect("sellRealEstate2")==="yes"&&age===getVal("property2SaleAge")&&m===1&&!soldProperty2){propertyInfo2=calcPropertySaleInfo2(age,propertyFactor2);propertySale2=propertyInfo2.saleProceeds;portfolio+=propertySale2;soldProperty2=true}const interest=applyInterestDiscrete(portfolio,netAnnualReturn,freq,m);portfolio+=interest;yearInterest+=interest;if(age<retireAge){const c=monthlyContributionAmount();portfolio+=c;yearContribution+=c;const college=collegeExpenses(age,infFactor);const misc=miscOneTimeExpensesAtMonth(age,m,infFactor);const monthlyCollege=(college/12)/(1-taxRate);const miscWithdrawal=misc/(1-taxRate);const withdrawal=monthlyCollege+miscWithdrawal;if(withdrawal>0){portfolio-=withdrawal;yearWithdrawal+=withdrawal;eeAnnual+=college/12+misc;totalSpendAnnual+=college/12+misc;}}else{const bs=baseSpending(age,infFactor),college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,m,infFactor),eeBase=extraExpenses(age,infFactor),ee=eeBase+college+misc,totalSpend=bs+ee;const rentalStopped=soldProperty;let bi=rentalStopped?0:rentalAnnual*infFactor;const currentSpouseAge=spouseCurrent;const monthlySsIncome=(age>=ssAge?yourSsMonthly:0)+(currentSpouseAge>=spouseSsAge?spouseSsMonthly:0);const yearsFromNow = age - currentAge;
 const ssGrowthFactor = Math.pow(1+SS_COLA_RATE, yearsFromNow);
 const annualSsIncome=monthlySsIncome*12*ssGrowthFactor;bi+=annualSsIncome;ssIncomeAnnual+=annualSsIncome/12;const ei=extraIncome(age,infFactor);const monthlyNetNeed=Math.max(0,(bs/12)+(eeBase/12)+(college/12)+misc-(bi/12)-(ei/12));const withdrawal=monthlyNetNeed/(1-taxRate);portfolio-=withdrawal;yearWithdrawal+=withdrawal;bsAnnual+=bs/12;eeAnnual+=(eeBase/12)+(college/12)+misc;totalSpendAnnual+=(bs/12)+(eeBase/12)+(college/12)+misc;biAnnual+=bi/12;eiAnnual+=ei/12}}rows.push({age,spouseAge:spouseCurrent,startPortfolio,propertySale,propertySale2,propertyInfo,propertyInfo2,contribution:yearContribution,growth:yearInterest,bs:bsAnnual,ee:eeAnnual,totalSpend:totalSpendAnnual,bi:biAnnual,ssIncome:ssIncomeAnnual,ei:eiAnnual,withdrawal:yearWithdrawal,endPortfolio:portfolio})}return rows}
+
+function accountModelEnabled(){return getSelect("useAccountModeling")==="yes";}
+function getStartingAccounts(){
+ const total=getVal("portfolio"),trad=getVal("tradBalance"),roth=getVal("rothBalance"),taxable=getVal("taxableBalance"),cash=getVal("cashBalance");
+ const sum=trad+roth+taxable+cash;
+ if(accountModelEnabled()&&sum>0)return{trad,roth,taxable,cash};
+ return{trad:0,roth:0,taxable:total,cash:0};
+}
+function accountTotal(a){return Math.max(0,a.trad)+Math.max(0,a.roth)+Math.max(0,a.taxable)+Math.max(0,a.cash);}
+function rmdDivisor(age){
+ const table={73:26.5,74:25.5,75:24.6,76:23.7,77:22.9,78:22.0,79:21.1,80:20.2,81:19.4,82:18.5,83:17.7,84:16.8,85:16.0,86:15.2,87:14.4,88:13.7,89:12.9,90:12.2,91:11.5,92:10.8,93:10.1,94:9.5,95:8.9};
+ return age<73?null:(table[Math.min(95,Math.floor(age))]||8.4);
+}
+function withdrawFromAccount(accounts,key,grossNeeded){
+ const amt=Math.min(Math.max(0,accounts[key]),Math.max(0,grossNeeded));
+ accounts[key]-=amt;return amt;
+}
+function withdrawForNetNeed(accounts,netNeed,taxRate,taxableTaxRate,strategy){
+ let remaining=Math.max(0,netNeed),gross=0,details={cash:0,taxable:0,trad:0,roth:0};
+ if(strategy==="proRata"){
+   const total=accountTotal(accounts);
+   if(total>0){
+     const grossApprox=remaining/(1-taxRate);
+     ["cash","taxable","trad","roth"].forEach(k=>{const amt=withdrawFromAccount(accounts,k,grossApprox*(accounts[k]/total));details[k]+=amt;gross+=amt;});
+     return{grossWithdrawal:gross,details};
+   }
+ }
+ let amt=withdrawFromAccount(accounts,"cash",remaining);details.cash+=amt;gross+=amt;remaining-=amt;
+ amt=withdrawFromAccount(accounts,"taxable",remaining/(1-taxableTaxRate));details.taxable+=amt;gross+=amt;remaining-=amt*(1-taxableTaxRate);
+ amt=withdrawFromAccount(accounts,"trad",remaining/(1-taxRate));details.trad+=amt;gross+=amt;remaining-=amt*(1-taxRate);
+ amt=withdrawFromAccount(accounts,"roth",remaining);details.roth+=amt;gross+=amt;remaining-=amt;
+ return{grossWithdrawal:gross,details};
+}
+function applyAccountMonthlyGrowth(accounts,annualReturn,feeRate){
+ const baseReturn=getVal("returnRate")/100;
+ const scenarioAdjustment=annualReturn-baseReturn;
+ const tradBase=(getVal("tradReturn")||baseReturn*100)/100;
+ const rothBase=(getVal("rothReturn")||baseReturn*100)/100;
+ const taxableBase=(getVal("taxableReturn")||baseReturn*100)/100;
+ const cashBase=(getVal("cashReturn")||0)/100;
+ const tradR=Math.pow(1+tradBase+scenarioAdjustment-feeRate,1/12)-1;
+ const rothR=Math.pow(1+rothBase+scenarioAdjustment-feeRate,1/12)-1;
+ const taxableR=Math.pow(1+taxableBase+scenarioAdjustment-feeRate,1/12)-1;
+ const cashR=Math.pow(1+cashBase,1/12)-1;
+ const before=accountTotal(accounts);
+ accounts.trad=Math.max(0,accounts.trad*(1+tradR));
+ accounts.roth=Math.max(0,accounts.roth*(1+rothR));
+ accounts.taxable=Math.max(0,accounts.taxable*(1+taxableR));
+ accounts.cash=Math.max(0,accounts.cash*(1+cashR));
+ return accountTotal(accounts)-before;
+}
+function simulateFull(randomize,returnAdjustmentPct=0){
+ const currentAge=getVal("currentAge"),spouseAge=getVal("spouseAge"),retireAge=getVal("retireAge"),endAge=getVal("endAge");
+ let accounts=getStartingAccounts();
+ const baseReturn=getVal("returnRate")/100,baseInf=getVal("inflation")/100,ssAge=getVal("ssAge"),spouseSsAge=getVal("spouseSsAge")||getVal("ssAge"),yourSsMonthly=getVal("ssMonthly"),spouseSsMonthly=getVal("spouseSsMonthly"),rentalAnnual=getVal("rentalMonthly")*12,taxRate=getVal("taxRate")/100,feeRate=getVal("feeRate")/100,taxableTaxRate=getVal("taxableWithdrawalTaxRate")/100,strategy=getSelect("withdrawalStrategy")||"taxAware";
+ let infFactor=1,propertyFactor=1,propertyFactor2=1,soldProperty=false,soldProperty2=false;
+ const rows=[];
+ for(let age=currentAge;age<=endAge;age++){
+  const yearIndex=age-currentAge,spouseCurrent=spouseAge+yearIndex,startPortfolio=accountTotal(accounts);
+  let yearInterest=0,yearContribution=0,yearWithdrawal=0,bsAnnual=0,eeAnnual=0,totalSpendAnnual=0,biAnnual=0,ssIncomeAnnual=0,eiAnnual=0,rmdAnnual=0,propertySale=0,propertySale2=0;
+  let propertyInfo={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0},propertyInfo2={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};
+  const annualReturn=randomize?randomHistoricalStockReturn():(baseReturn+returnAdjustmentPct),annualInflation=randomize?randomHistoricalInflation():baseInf,monthlyInflation=Math.pow(1+annualInflation,1/12)-1;
+  const monthlyPropertyGrowth=Math.pow(1+(randomize?randomPropertyGrowth(getVal("propertyGrowth")/100):getVal("propertyGrowth")/100),1/12)-1;
+  const monthlyProperty2Growth=Math.pow(1+(randomize?randomPropertyGrowth(getVal("property2Growth")/100):getVal("property2Growth")/100),1/12)-1;
+  for(let m=1;m<=12;m++){
+   const currentMonthIndex=yearIndex*12+m;
+   if(currentMonthIndex>1){infFactor*=1+monthlyInflation;propertyFactor*=1+monthlyPropertyGrowth;propertyFactor2*=1+monthlyProperty2Growth;}
+   if(getSelect("sellRealEstate")==="yes"&&age===getVal("propertySaleAge")&&m===1&&!soldProperty){propertyInfo=calcPropertySaleInfo(age,propertyFactor);propertySale=propertyInfo.saleProceeds;accounts.taxable+=propertySale;soldProperty=true;}
+   if(getSelect("sellRealEstate2")==="yes"&&age===getVal("property2SaleAge")&&m===1&&!soldProperty2){propertyInfo2=calcPropertySaleInfo2(age,propertyFactor2);propertySale2=propertyInfo2.saleProceeds;accounts.taxable+=propertySale2;soldProperty2=true;}
+   yearInterest+=applyAccountMonthlyGrowth(accounts,annualReturn,feeRate);
+   if(age<retireAge){
+     const c=monthlyContributionAmount();if(accountModelEnabled())accounts.trad+=c;else accounts.taxable+=c;yearContribution+=c;
+     const college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,m,infFactor),need=college/12+misc;
+     if(need>0){const w=withdrawForNetNeed(accounts,need,taxRate,taxableTaxRate,strategy);yearWithdrawal+=w.grossWithdrawal;eeAnnual+=need;totalSpendAnnual+=need;}
+   }else{
+     const bs=baseSpending(age,infFactor),college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,m,infFactor),eeBase=extraExpenses(age,infFactor);
+     let bi=soldProperty?0:rentalAnnual*infFactor;
+     const monthlySsIncome=(age>=ssAge?yourSsMonthly:0)+(spouseCurrent>=spouseSsAge?spouseSsMonthly:0),ssGrowthFactor=Math.pow(1+(typeof SS_COLA_RATE==="number"?SS_COLA_RATE:0.025),age-currentAge),annualSsIncome=monthlySsIncome*12*ssGrowthFactor;
+     bi+=annualSsIncome;const ei=extraIncome(age,infFactor);
+     let monthlyNeed=Math.max(0,(bs/12)+(eeBase/12)+(college/12)+misc-(bi/12)-(ei/12));
+     const rmdStart=getVal("rmdStartAge")||73;
+     if(age>=rmdStart&&m===1&&accounts.trad>0){
+       const divisor=rmdDivisor(age),rmd=divisor?accounts.trad/divisor:0,actual=withdrawFromAccount(accounts,"trad",rmd);
+       rmdAnnual+=actual;yearWithdrawal+=actual;const rmdNet=actual*(1-taxRate);
+       monthlyNeed=Math.max(0,monthlyNeed-rmdNet);
+       if(rmdNet>monthlyNeed)accounts.taxable+=Math.max(0,rmdNet-monthlyNeed);
+     }
+     const w=withdrawForNetNeed(accounts,monthlyNeed,taxRate,taxableTaxRate,strategy);yearWithdrawal+=w.grossWithdrawal;
+     bsAnnual+=bs/12;eeAnnual+=(eeBase/12)+(college/12)+misc;totalSpendAnnual+=(bs/12)+(eeBase/12)+(college/12)+misc;biAnnual+=bi/12;ssIncomeAnnual+=annualSsIncome/12;eiAnnual+=ei/12;
+   }
+  }
+  const endPortfolio=accountTotal(accounts);
+  rows.push({age,spouseAge:spouseCurrent,startPortfolio,propertySale,propertySale2,propertyInfo,propertyInfo2,contribution:yearContribution,growth:yearInterest,bs:bsAnnual,ee:eeAnnual,totalSpend:totalSpendAnnual,bi:biAnnual,ssIncome:ssIncomeAnnual,ei:eiAnnual,withdrawal:yearWithdrawal,rmd:rmdAnnual,tradEnd:accounts.trad,rothEnd:accounts.roth,taxableEnd:accounts.taxable,cashEnd:accounts.cash,endPortfolio});
+ }
+ return rows;
+}
+function renderAccountEndingMetrics(rows){
+ const r=rows&&rows.length?rows[rows.length-1]:null;
+ if(el("endingTradBalance"))el("endingTradBalance").textContent=fmtMoney(r?r.tradEnd||0:0);
+ if(el("endingRothBalance"))el("endingRothBalance").textContent=fmtMoney(r?r.rothEnd||0:0);
+ if(el("endingTaxableBalance"))el("endingTaxableBalance").textContent=fmtMoney(r?r.taxableEnd||0:0);
+ if(el("endingCashBalance"))el("endingCashBalance").textContent=fmtMoney(r?r.cashEnd||0:0);
+}
+
 function simulate(randomize,returnAdjustmentPct=0){return getSelect("simpleMode")==="yes"?simulateSimple(returnAdjustmentPct):simulateFull(randomize,returnAdjustmentPct)}
 
 function renderSensitivitySummary(lowRows,medRows,highRows,variancePct){
@@ -713,8 +842,8 @@ let lowest=rows.length?Math.min(...rows.map(r=>r.endPortfolio)):ending,depletion
 const saleRow=rows.find(r=>r.propertySale>0);
 updateSaleMetrics(saleRow?saleRow.propertyInfo:calcPropertySaleInfo(getVal("propertySaleAge"),null));
 renderSummary(ending,lowest,depletion?depletion.age:null);
-renderSensitivitySummary(lowRows,rows,highRows,variancePct);
-renderTable(rows);
+renderSensitivitySummary(lowRows,rows,highRows,variancePct);renderAccountEndingMetrics(rows);
+renderTable(rows,lowRows,highRows);
 drawMultiLineChart("portfolioChart",[
  {label:"Low",points:lowRows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)})),color:"#b91c1c"},
  {label:"Medium",points:rows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)})),color:"#2563eb"},
@@ -761,7 +890,46 @@ function renderEmptyState(){
 }
 
 function renderSummary(ending,lowest,depletionAge){const r=el("result"),e=el("endingPortfolio"),l=el("lowestPortfolio"),d=el("depletionAge");if(depletionAge===null){r.textContent="Funds Last";r.className="value success";d.textContent="None";d.className="value success"}else{r.textContent="Depletes";r.className="value danger";d.textContent=depletionAge;d.className="value danger"}e.textContent=fmtMoney(ending);e.className=ending>=0?"value success":"value danger";l.textContent=fmtMoney(lowest);l.className=lowest>=0?"value success":"value danger"}
-function renderTable(rows){const body=el("projectionBody");body.innerHTML="";rows.forEach(r=>{const tr=document.createElement("tr");[r.age,r.spouseAge,fmtMoney(r.startPortfolio),fmtMoney(r.propertySale),fmtMoney(r.propertySale2),fmtMoney(r.contribution),fmtMoney(r.growth),fmtMoney(r.bs),fmtMoney(r.ee),fmtMoney(r.totalSpend),fmtMoney(r.bi),fmtMoney(r.ssIncome||0),fmtMoney(r.ei),fmtMoney(r.withdrawal),fmtMoney(r.endPortfolio)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td)});body.appendChild(tr)})}
+function renderTable(rows,lowRows=[],highRows=[]){
+ const body=el("projectionBody");
+ body.innerHTML="";
+ rows.forEach((r,i)=>{
+  const low=(lowRows&&lowRows[i])?lowRows[i].endPortfolio:r.endPortfolio;
+  const med=r.endPortfolio;
+  const high=(highRows&&highRows[i])?highRows[i].endPortfolio:r.endPortfolio;
+  const tr=document.createElement("tr");
+  [
+    r.age,
+    r.spouseAge,
+    fmtMoney(r.startPortfolio),
+    fmtMoney(r.propertySale),
+    fmtMoney(r.propertySale2),
+    fmtMoney(r.contribution),
+    fmtMoney(r.growth),
+    fmtMoney(r.bs),
+    fmtMoney(r.ee),
+    fmtMoney(r.totalSpend),
+    fmtMoney(r.bi),
+    fmtMoney(r.ssIncome||0),
+    fmtMoney(r.ei),
+    fmtMoney(r.withdrawal),
+    fmtMoney(r.rmd||0),
+    fmtMoney(r.tradEnd||0),
+    fmtMoney(r.rothEnd||0),
+    fmtMoney(r.taxableEnd||0),
+    fmtMoney(r.cashEnd||0),
+    fmtMoney(low),
+    fmtMoney(med),
+    fmtMoney(high),
+    fmtMoney(r.endPortfolio)
+  ].forEach(v=>{
+    const td=document.createElement("td");
+    td.textContent=v;
+    tr.appendChild(td);
+  });
+  body.appendChild(tr);
+ });
+}
 
 const CHART_INTERACTIVE_POINTS = {};
 function ensureChartTooltip(){
@@ -919,7 +1087,7 @@ function requiredFields(){
   if(getSelect("sellRealEstate2")==="yes"){
     fields = fields.concat(["property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate"]);
   }
-  return fields;
+  if(getSelect("useAccountModeling")==="yes"){fields=fields.concat(["tradBalance","tradReturn","rothBalance","rothReturn","taxableBalance","taxableReturn","cashBalance","cashReturn","rmdStartAge","taxableWithdrawalTaxRate"]);}return fields;
 }
 function markRequiredFields(){
   document.querySelectorAll(".field").forEach(f=>{
@@ -983,6 +1151,30 @@ document.addEventListener("DOMContentLoaded",function(){
       if(typeof validateRequiredFields==="function") validateRequiredFields();
     });
   });
+});
+</script>
+
+
+<script>
+function updateAccountTotal(){
+  if(getSelect("useAccountModeling")!=="yes") return;
+  const total =
+    getVal("tradBalance") +
+    getVal("rothBalance") +
+    getVal("taxableBalance") +
+    getVal("cashBalance");
+  if(el("totalAccounts")) el("totalAccounts").value = total || "";
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  ["tradBalance","rothBalance","taxableBalance","cashBalance","useAccountModeling"].forEach(id=>{
+    const node = el(id);
+    if(node){
+      node.addEventListener("input", updateAccountTotal);
+      node.addEventListener("change", updateAccountTotal);
+    }
+  });
+  updateAccountTotal();
 });
 </script>
 
