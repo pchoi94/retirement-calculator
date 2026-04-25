@@ -751,6 +751,8 @@ main {
 <div class="metric"><div class="metric-title">Median Ending Portfolio <span class="info" data-tooltip="Middle outcome from the Monte Carlo simulations. Half of simulations ended higher and half lower.">i</span></div><div id="mcMedian" class="value">—</div></div>
 <div class="metric"><div class="metric-title">10th Percentile Ending <span class="info" data-tooltip="Downside outcome: 90% of simulations ended higher, 10% ended lower.">i</span></div><div id="mcP10" class="value">—</div></div>
 <div class="metric"><div class="metric-title">Worst Case Ending <span class="info" data-tooltip="Lowest ending portfolio value across the Monte Carlo simulations.">i</span></div><div id="mcWorst" class="value">—</div></div>
+
+<div class="metric"><div class="metric-title">Recommended Retirement Age <span class="info" data-tooltip="Earliest retirement age where the base projection does not deplete and Monte Carlo success rate is at least 85%. Calculated when Monte Carlo is run.">i</span></div><div id="recommendedRetirementAge" class="value">—</div></div>
 </div>
 
 
@@ -1010,6 +1012,7 @@ function percentile(sorted,p){if(sorted.length===0)return 0;const idx=(sorted.le
 function clearMC(){["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{el(id).textContent="—";el(id).className="value"});if(el("mcNote"))el("mcNote").textContent="Run Monte Carlo to populate this chart using 10,000 historical-return simulations.";if(el("mcChart"))if(el("mcPercentileChart"))clearCanvas("mcPercentileChart")}
 
 function renderEmptyState(){
+  setRecommendedRetirementAgeDisplay("—","value");
  ["result","endingPortfolio","lowestPortfolio","depletionAge","lowEndingPortfolio","mediumEndingPortfolio","highEndingPortfolio","varianceRangeMetric","saleProceedsMetric","saleValueMetric","mortgageMetric","saleTaxMetric","sale2ProceedsMetric","sale2ValueMetric","mortgage2Metric","sale2TaxMetric","mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el(id)){el(id).textContent="—";el(id).className="value";}});
  if(el("projectionBody"))el("projectionBody").innerHTML="";
  if(el("portfolioChart"))clearCanvas("portfolioChart");
@@ -1805,6 +1808,89 @@ function renderTable(rows,lowRows=[],highRows=[]){
     [r.age,r.spouseAge,fmtMoney(r.startPortfolio),fmtMoney(r.propertySale),fmtMoney(r.propertySale2),fmtMoney(r.contribution),fmtMoney(r.growth),fmtMoney(r.bs),fmtMoney(r.ee),fmtMoney(r.totalSpend),fmtMoney(r.bi),fmtMoney(r.ssIncome||0),fmtMoney(r.healthcare||0),fmtMoney(r.estimatedTax||0),fmtMoney(r.rothConversion||0),fmtMoney(r.ei),fmtMoney(r.withdrawal),fmtMoney(r.rmd||0),fmtMoney(r.tradEnd||0),fmtMoney(r.rothEnd||0),fmtMoney(r.taxableEnd||0),fmtMoney(r.cashEnd||0),fmtMoney(low),fmtMoney(med),fmtMoney(high),fmtMoney(r.endPortfolio)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td);}); body.appendChild(tr);});
   renderAdvancedMetrics(rows);
 }
+
+const RECOMMENDED_RETIREMENT_MC_THRESHOLD = 0.85;
+const RECOMMENDED_RETIREMENT_TRIALS = 1000;
+
+function setRecommendedRetirementAgeDisplay(value, className="value"){
+  const node=el("recommendedRetirementAge");
+  if(!node)return;
+  node.textContent=value;
+  node.className=className;
+}
+
+function baseProjectionSucceedsAtRetirementAge(age){
+  const retireNode=document.getElementById("retireAge");
+  if(!retireNode)return false;
+  const original=retireNode.value;
+  retireNode.value=age;
+  try{
+    const rows=simulate(false,0);
+    return rows.length>0 && !rows.some(r=>r.endPortfolio<=0);
+  }finally{
+    retireNode.value=original;
+  }
+}
+
+function monteCarloSuccessRateAtRetirementAge(age,trials=RECOMMENDED_RETIREMENT_TRIALS){
+  const retireNode=document.getElementById("retireAge");
+  if(!retireNode)return 0;
+  const original=retireNode.value;
+  retireNode.value=age;
+  let successes=0,completed=0;
+  try{
+    for(let i=0;i<trials;i++){
+      const rows=simulateFull(true,0,{});
+      if(!rows.length)continue;
+      completed++;
+      if(!rows.some(r=>r.endPortfolio<=0))successes++;
+    }
+    return completed?successes/completed:0;
+  }finally{
+    retireNode.value=original;
+  }
+}
+
+function findRecommendedRetirementAge(){
+  const simple=getSelect("simpleMode")==="yes";
+  if(simple)return {status:"notApplicable",label:"N/A"};
+  const currentAge=getVal("currentAge");
+  const originalRetire=getVal("retireAge");
+  const endAge=getVal("endAge");
+  const maxAge=Math.max(originalRetire,endAge);
+  const startAge=Math.max(currentAge,originalRetire);
+
+  for(let age=startAge;age<=maxAge;age++){
+    if(!baseProjectionSucceedsAtRetirementAge(age))continue;
+    const mcRate=monteCarloSuccessRateAtRetirementAge(age);
+    if(mcRate>=RECOMMENDED_RETIREMENT_MC_THRESHOLD){
+      return {status:"success",age,mcRate};
+    }
+  }
+
+  return {status:"none",label:"No age found"};
+}
+
+function updateRecommendedRetirementAge(){
+  const node=el("recommendedRetirementAge");
+  if(!node)return;
+  if(getSelect("simpleMode")==="yes"){
+    setRecommendedRetirementAgeDisplay("N/A","value");
+    return;
+  }
+  setRecommendedRetirementAgeDisplay("Calculating…","value warn");
+  const result=findRecommendedRetirementAge();
+  if(result.status==="success"){
+    const original=getVal("retireAge");
+    const cls=result.age<=original?"value success":"value warn";
+    setRecommendedRetirementAgeDisplay(String(result.age),cls);
+  }else if(result.status==="none"){
+    setRecommendedRetirementAgeDisplay("No age found","value danger");
+  }else{
+    setRecommendedRetirementAgeDisplay(result.label||"—","value");
+  }
+}
+
 function runMonteCarlo(){
   try{
     el("errorBox").style.display="none"; if(!validateRequiredFields()){renderEmptyState();return;} calculate();
@@ -1813,9 +1899,10 @@ function runMonteCarlo(){
     endings.sort((a,b)=>a-b); const successRate=endings.length?successes/endings.length:0,median=percentile(endings,.5),p10=percentile(endings,.1),worst=endings[0]||0;
     el("mcSuccess").textContent=fmtPct(successRate); el("mcSuccess").className=successRate>=.85?"value success":successRate>=.70?"value warn":"value danger"; el("mcMedian").textContent=fmtMoney(median); el("mcMedian").className=median>=0?"value success":"value danger"; el("mcP10").textContent=fmtMoney(p10); el("mcP10").className=p10>=0?"value success":"value danger"; el("mcWorst").textContent=fmtMoney(worst); el("mcWorst").className=worst>=0?"value success":"value danger"; drawMonteCarloPercentileChart("mcPercentileChart",allPaths);
     const avgFailure=failureAges.length?failureAges.reduce((a,b)=>a+b,0)/failureAges.length:null; if(el("mcNote"))el("mcNote").textContent=failureAges.length?("Failures: "+failureAges.length+" of "+endings.length+". Average failure age among failed trials: "+avgFailure.toFixed(1)+"."):"No failures in "+endings.length+" trials.";
+    updateRecommendedRetirementAge();
   }catch(e){el("errorBox").textContent=e.message;el("errorBox").style.display="block";}
 }
-function clearMC(){["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el(id)){el(id).textContent="—";el(id).className="value"}}); if(el("mcNote"))el("mcNote").textContent=""; clearCanvas("mcPercentileChart");}
+function clearMC(){["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el(id)){el(id).textContent="—";el(id).className="value"}}); if(el("mcNote"))el("mcNote").textContent=""; setRecommendedRetirementAgeDisplay("—","value"); clearCanvas("mcPercentileChart");}
 
 function requiredFields(){
   const m=readNormalizedModel(),useMonthly=getSelect("useMonthlyContribution")==="yes",usePhases=getSelect("useAgeBasedSpending")==="yes"; let fields=[];
