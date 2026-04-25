@@ -419,6 +419,17 @@ main {
   white-space: nowrap;
 }
 
+
+.field.disabled-by-toggle .field-label {
+  color: #6b7280 !important;
+}
+.field.disabled-by-toggle input,
+.field.disabled-by-toggle select {
+  background: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+  color: #6b7280 !important;
+}
+
 </style>
 </head>
 <body>
@@ -481,6 +492,11 @@ main {
 
 <h3>Monte Carlo Simulation <span class="info" data-tooltip="Runs 10,000 simulations using historical S&P 500 annual total return years sampled randomly with replacement. No user volatility inputs are required.">i</span></h3>
 <div class="note"><strong>Historical mode:</strong> Monte Carlo uses 10,000 simulations and samples annual stock returns from historical S&P 500 total-return data from 1928–2024. User-entered volatility, return floor, return cap, and trial count are not used.</div>
+
+
+<h3>Retirement Spending <span class="info" data-tooltip="Choose constant spending throughout retirement or use custom age-based spending phases. Amounts are in today's dollars and are inflated over time.">i</span></h3>
+<div class="field"><div class="field-label">Use Age-Based Spending Phases <span class="info" data-tooltip="When No, the calculator uses one constant annual spending amount throughout retirement. When Yes, it uses the Early/Mid/Late phase table below.">i</span></div><select id="useAgeBasedSpending"><option value="no" selected>No - Constant Spending</option><option value="yes">Yes - Age-Based Phases</option></select></div>
+<div class="field"><div class="field-label">Constant Annual Retirement Spending $ <span class="info" data-tooltip="Annual retirement spending in today's dollars, used every retirement year when age-based phases are turned off.">i</span></div><input id="constantRetirementSpending" type="number" value="" step="5000"></div>
 
 <h3>Age-Based Spending Phases <span class="info" data-tooltip="Models different spending levels during early, middle, and late retirement. Amounts are in today's dollars.">i</span></h3>
 <div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Phase</th><th>Start</th><th>End</th><th>Annual $</th></tr></thead><tbody>
@@ -607,7 +623,7 @@ main {
 </main>
 
 <script>
-const defaults={simpleMode:"no",simpleYears:40,currentAge:50,spouseAge:55,retireAge:57,endAge:90,portfolio:1900000,contrib:48500,monthlyContribution:4041.6667,useMonthlyContribution:"no",returnRate:6,growthVariance:0,compoundFreq:"12",inflation:3,ssAge:67,spouseSsAge:67,ssMonthly:4100,spouseSsMonthly:2050,rentalMonthly:500,sellRealEstate:"no",propertySaleAge:60,propertyValue:500000,propertyGrowth:3,mortgageBalance:154000,mortgagePaydown:6000,sellingCosts:7,costBasis:250000,capGainExclusion:0,capGainTaxRate:20,stopRentalAfterSale:"yes",sellRealEstate2:"no",property2SaleAge:0,property2Value:0,property2Growth:0,mortgage2Balance:0,mortgage2Paydown:0,selling2Costs:7,cost2Basis:0,capGain2Exclusion:0,capGain2TaxRate:20,rental2Monthly:0,stopRental2AfterSale:"yes",taxRate:15,feeRate:.25,mcTrials:2000,mcVolatility:13,mcInflationVol:1.2,mcPropertyVol:5,mcReturnFloor:-45,mcReturnCap:35,spend1Start:57,spend1End:64,spend1Amt:150000,spend2Start:65,spend2End:79,spend2Amt:120000,spend3Start:80,spend3End:90,spend3Amt:105000,inc1Start:57,inc1End:60,inc1Amt:0,inc2Start:61,inc2End:66,inc2Amt:0,inc3Start:67,inc3End:90,inc3Amt:0,exp1Start:57,exp1End:60,exp1Amt:20000,exp2Start:61,exp2End:66,exp2Amt:0,exp3Start:80,exp3End:90,exp3Amt:15000,college1Start:0,college1End:0,college1Amt:0,college2Start:0,college2End:0,college2Amt:0,misc1Label:"",misc1Age:0,misc1Amt:0,misc2Label:"",misc2Age:0,misc2Amt:0,misc3Label:"",misc3Age:0,misc3Amt:0,misc4Label:"",misc4Age:0,misc4Amt:0,misc5Label:"",misc5Age:0,misc5Amt:0};
+const defaults={simpleMode:"no",simpleYears:40,currentAge:50,spouseAge:55,retireAge:57,endAge:90,portfolio:1900000,contrib:48500,monthlyContribution:4041.6667,useMonthlyContribution:"no",returnRate:6,growthVariance:0,compoundFreq:"12",inflation:3,ssAge:67,spouseSsAge:67,ssMonthly:4100,spouseSsMonthly:2050,rentalMonthly:500,sellRealEstate:"no",propertySaleAge:60,propertyValue:500000,propertyGrowth:3,mortgageBalance:154000,mortgagePaydown:6000,sellingCosts:7,costBasis:250000,capGainExclusion:0,capGainTaxRate:20,stopRentalAfterSale:"yes",sellRealEstate2:"no",property2SaleAge:0,property2Value:0,property2Growth:0,mortgage2Balance:0,mortgage2Paydown:0,selling2Costs:7,cost2Basis:0,capGain2Exclusion:0,capGain2TaxRate:20,rental2Monthly:0,stopRental2AfterSale:"yes",taxRate:15,feeRate:.25,mcTrials:2000,mcVolatility:13,mcInflationVol:1.2,mcPropertyVol:5,mcReturnFloor:-45,mcReturnCap:35,useAgeBasedSpending:"no",constantRetirementSpending:0,spend1Start:57,spend1End:64,spend1Amt:150000,spend2Start:65,spend2End:79,spend2Amt:120000,spend3Start:80,spend3End:90,spend3Amt:105000,inc1Start:57,inc1End:60,inc1Amt:0,inc2Start:61,inc2End:66,inc2Amt:0,inc3Start:67,inc3End:90,inc3Amt:0,exp1Start:57,exp1End:60,exp1Amt:20000,exp2Start:61,exp2End:66,exp2Amt:0,exp3Start:80,exp3End:90,exp3Amt:15000,college1Start:0,college1End:0,college1Amt:0,college2Start:0,college2End:0,college2Amt:0,misc1Label:"",misc1Age:0,misc1Amt:0,misc2Label:"",misc2Age:0,misc2Amt:0,misc3Label:"",misc3Age:0,misc3Amt:0,misc4Label:"",misc4Age:0,misc4Amt:0,misc5Label:"",misc5Age:0,misc5Amt:0};
 
 const HISTORICAL_SP500_TOTAL_RETURNS = [
   0.4381,-0.0830,-0.2512,-0.4384,-0.0864,0.4998,-0.0119,0.4674,0.3194,-0.3534,
@@ -634,7 +650,20 @@ function fmtMoney(n){if(!isFinite(n))return"—";const s=n<0?"-":"";return s+"$"
 function fmtPct(n){return isFinite(n)?(n*100).toFixed(1)+"%":"—"}
 function resetDefaults(){Object.keys(defaults).forEach(k=>{if(el(k))el(k).value=defaults[k]});calculate();clearMC()}
 function active(age,start,end,amt,infFactor){return age>=start&&age<=end?amt*infFactor:0}
-function baseSpending(age,infFactor){const phases=[[getVal("spend1Start"),getVal("spend1End"),getVal("spend1Amt")],[getVal("spend2Start"),getVal("spend2End"),getVal("spend2Amt")],[getVal("spend3Start"),getVal("spend3End"),getVal("spend3Amt")]];for(let p of phases){if(age>=p[0]&&age<=p[1])return p[2]*infFactor}return 0}
+function baseSpending(age,infFactor){
+ if(getSelect("useAgeBasedSpending")!=="yes"){
+   return age>=getVal("retireAge") ? getVal("constantRetirementSpending")*infFactor : 0;
+ }
+ const phases=[
+   [getVal("spend1Start"),getVal("spend1End"),getVal("spend1Amt")],
+   [getVal("spend2Start"),getVal("spend2End"),getVal("spend2Amt")],
+   [getVal("spend3Start"),getVal("spend3End"),getVal("spend3Amt")]
+ ];
+ for(let p of phases){
+   if(age>=p[0]&&age<=p[1])return p[2]*infFactor;
+ }
+ return 0;
+}
 function extraIncome(age,infFactor){return active(age,getVal("inc1Start"),getVal("inc1End"),getVal("inc1Amt"),infFactor)+active(age,getVal("inc2Start"),getVal("inc2End"),getVal("inc2Amt"),infFactor)+active(age,getVal("inc3Start"),getVal("inc3End"),getVal("inc3Amt"),infFactor)}
 function extraExpenses(age,infFactor){return active(age,getVal("exp1Start"),getVal("exp1End"),getVal("exp1Amt"),infFactor)+active(age,getVal("exp2Start"),getVal("exp2End"),getVal("exp2Amt"),infFactor)+active(age,getVal("exp3Start"),getVal("exp3End"),getVal("exp3Amt"),infFactor)}
 function collegeExpenses(age,infFactor){return active(age,getVal("college1Start"),getVal("college1End"),getVal("college1Amt"),infFactor)+active(age,getVal("college2Start"),getVal("college2End"),getVal("college2Amt"),infFactor)}
@@ -1077,17 +1106,42 @@ document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("inp
 function requiredFields(){
   const simple = getSelect("simpleMode")==="yes";
   const useMonthly = getSelect("useMonthlyContribution")==="yes";
+  const useAccounts = getSelect("useAccountModeling")==="yes";
+  const usePhases = getSelect("useAgeBasedSpending")==="yes";
+
   if(simple){
-    return ["simpleMode","simpleYears","portfolio","returnRate","compoundFreq"].concat(useMonthly?["monthlyContribution"]:["contrib"]);
+    return ["simpleMode","simpleYears","returnRate","compoundFreq"].concat(useMonthly?["monthlyContribution"]:["contrib"]).concat(useAccounts?["tradBalance","tradReturn","rothBalance","rothReturn","taxableBalance","taxableReturn","cashBalance","cashReturn"]:["portfolio"]);
   }
-  let fields = ["simpleMode","currentAge","retireAge","endAge","portfolio","returnRate","growthVariance","compoundFreq","inflation","ssAge","spouseSsAge","taxRate"];
+
+  let fields = ["simpleMode","currentAge","retireAge","endAge","returnRate","growthVariance","compoundFreq","inflation","ssAge","spouseSsAge","taxRate"];
+
+  if(useMonthly){
+    fields.push("monthlyContribution");
+  } else {
+    fields.push("contrib");
+  }
+
+  if(useAccounts){
+    fields = fields.concat(["tradBalance","tradReturn","rothBalance","rothReturn","taxableBalance","taxableReturn","cashBalance","cashReturn","rmdStartAge","taxableWithdrawalTaxRate"]);
+  } else {
+    fields.push("portfolio");
+  }
+
+  if(usePhases){
+    fields = fields.concat(["spend1Amt","spend2Amt","spend3Amt"]);
+  } else {
+    fields.push("constantRetirementSpending");
+  }
+
   if(getSelect("sellRealEstate")==="yes"){
-    fields = fields.concat(["propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate"]);
+    fields = fields.concat(["propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate","rentalMonthly"]);
   }
+
   if(getSelect("sellRealEstate2")==="yes"){
     fields = fields.concat(["property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate"]);
   }
-  if(getSelect("useAccountModeling")==="yes"){fields=fields.concat(["tradBalance","tradReturn","rothBalance","rothReturn","taxableBalance","taxableReturn","cashBalance","cashReturn","rmdStartAge","taxableWithdrawalTaxRate"]);}return fields;
+
+  return fields;
 }
 function markRequiredFields(){
   document.querySelectorAll(".field").forEach(f=>{
@@ -1218,6 +1272,297 @@ document.addEventListener("DOMContentLoaded", ()=>{
     if(btn.textContent.toLowerCase().includes("reset")){
       btn.onclick = resetFormClean;
     }
+  });
+});
+</script>
+
+
+
+
+
+<script>
+function syncSpendingPhaseStarts(){
+  const retireAge = document.getElementById("retireAge");
+  const planEnd = document.getElementById("endAge");
+
+  const earlyStart = document.getElementById("spend1Start");
+  const earlyEnd = document.getElementById("spend1End");
+  const midStart = document.getElementById("spend2Start");
+  const midEnd = document.getElementById("spend2End");
+  const lateStart = document.getElementById("spend3Start");
+  const lateEnd = document.getElementById("spend3End");
+
+  if(!earlyStart || !earlyEnd || !midStart || !midEnd || !lateStart || !lateEnd) return;
+
+  const r = parseInt(retireAge && retireAge.value ? retireAge.value : "", 10);
+  if(!Number.isNaN(r)) {
+    earlyStart.value = r;
+    earlyEnd.min = r;
+  }
+
+  const e1 = parseInt(earlyEnd.value || "", 10);
+  if(!Number.isNaN(e1)) {
+    midStart.value = e1 + 1;
+    midEnd.min = e1 + 1;
+  } else {
+    midStart.value = "";
+  }
+
+  const e2 = parseInt(midEnd.value || "", 10);
+  if(!Number.isNaN(e2)) {
+    lateStart.value = e2 + 1;
+    lateEnd.min = e2 + 1;
+  } else {
+    lateStart.value = "";
+  }
+
+  const finalAge = parseInt(planEnd && planEnd.value ? planEnd.value : "", 10);
+  if(!Number.isNaN(finalAge)) {
+    lateEnd.value = finalAge;
+  }
+
+  earlyStart.readOnly = true;
+  midStart.readOnly = true;
+  lateStart.readOnly = true;
+  lateEnd.readOnly = true;
+}
+
+function enforceSpendingPhaseRanges(){
+  syncSpendingPhaseStarts();
+
+  const retireAge = document.getElementById("retireAge");
+  const planEnd = document.getElementById("endAge");
+  const earlyEnd = document.getElementById("spend1End");
+  const midEnd = document.getElementById("spend2End");
+
+  const r = parseInt(retireAge && retireAge.value ? retireAge.value : "", 10);
+  const finalAge = parseInt(planEnd && planEnd.value ? planEnd.value : "", 10);
+
+  if(earlyEnd && earlyEnd.value !== "" && !Number.isNaN(r)) {
+    const v = parseInt(earlyEnd.value, 10);
+    if(!Number.isNaN(v) && v < r) earlyEnd.value = r;
+  }
+
+  syncSpendingPhaseStarts();
+
+  const midStart = document.getElementById("spend2Start");
+  const minMid = parseInt(midStart && midStart.value ? midStart.value : "", 10);
+
+  if(midEnd && midEnd.value !== "" && !Number.isNaN(minMid)) {
+    const v = parseInt(midEnd.value, 10);
+    if(!Number.isNaN(v) && v < minMid) midEnd.value = minMid;
+  }
+
+  syncSpendingPhaseStarts();
+
+  const lateStart = document.getElementById("spend3Start");
+  const lateStartVal = parseInt(lateStart && lateStart.value ? lateStart.value : "", 10);
+
+  if(!Number.isNaN(finalAge) && !Number.isNaN(lateStartVal) && lateStartVal > finalAge) {
+    midEnd.value = finalAge - 1;
+    syncSpendingPhaseStarts();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  syncSpendingPhaseStarts();
+
+  ["retireAge","endAge"].forEach(id=>{
+    const node = document.getElementById(id);
+    if(node){
+      node.addEventListener("input", function(){
+        syncSpendingPhaseStarts();
+        if(typeof calculate === "function") calculate();
+      });
+      node.addEventListener("change", function(){
+        enforceSpendingPhaseRanges();
+        if(typeof calculate === "function") calculate();
+      });
+      node.addEventListener("blur", function(){
+        enforceSpendingPhaseRanges();
+        if(typeof calculate === "function") calculate();
+      });
+    }
+  });
+
+  ["spend1End","spend2End"].forEach(id=>{
+    const node = document.getElementById(id);
+    if(node){
+      node.addEventListener("input", function(){
+        // Do not clamp while typing. Just sync dependent start fields.
+        syncSpendingPhaseStarts();
+        if(typeof calculate === "function") calculate();
+      });
+      node.addEventListener("change", function(){
+        enforceSpendingPhaseRanges();
+        if(typeof calculate === "function") calculate();
+      });
+      node.addEventListener("blur", function(){
+        enforceSpendingPhaseRanges();
+        if(typeof calculate === "function") calculate();
+      });
+    }
+  });
+
+  document.querySelectorAll("button").forEach(btn=>{
+    if(btn.textContent.toLowerCase().includes("reset")){
+      const prior = btn.onclick;
+      btn.onclick = function(evt){
+        if(typeof prior === "function") prior.call(this, evt);
+        syncSpendingPhaseStarts();
+        if(typeof calculate === "function") calculate();
+      };
+    }
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+<script>
+function setFieldDisabled(id, disabled){
+  const node = document.getElementById(id);
+  if(!node) return;
+  node.disabled = !!disabled;
+  node.readOnly = !!disabled;
+  node.style.opacity = disabled ? "0.55" : "1";
+  const field = node.closest(".field");
+  if(field){
+    field.classList.toggle("disabled-by-toggle", !!disabled);
+    if(disabled) field.classList.remove("missing");
+  }
+}
+
+function setIdsDisabled(ids, disabled){
+  ids.forEach(id=>setFieldDisabled(id, disabled));
+}
+
+function updateToggleDependentFields(){
+  const simple = getSelect("simpleMode")==="yes";
+  const useMonthly = getSelect("useMonthlyContribution")==="yes";
+  const useAccounts = getSelect("useAccountModeling")==="yes";
+  const usePhases = getSelect("useAgeBasedSpending")==="yes";
+  const sellRental = getSelect("sellRealEstate")==="yes";
+  const sellPrimary = getSelect("sellRealEstate2")==="yes";
+
+  // First restore all potentially toggle-controlled fields.
+  const controlledIds = [
+    "simpleYears",
+    "currentAge","spouseAge","retireAge","endAge","inflation",
+    "ssAge","spouseSsAge","ssMonthly","spouseSsMonthly","rentalMonthly",
+    "taxRate",
+    "contrib","monthlyContribution",
+    "portfolio",
+    "tradBalance","tradReturn","rothBalance","rothReturn",
+    "taxableBalance","taxableReturn","cashBalance","cashReturn",
+    "rmdStartAge","taxableWithdrawalTaxRate","withdrawalStrategy","totalAccounts",
+    "useAgeBasedSpending","constantRetirementSpending",
+    "spend1Start","spend1End","spend1Amt",
+    "spend2Start","spend2End","spend2Amt",
+    "spend3Start","spend3End","spend3Amt",
+    "inc1Start","inc1End","inc1Amt",
+    "inc2Start","inc2End","inc2Amt",
+    "inc3Start","inc3End","inc3Amt",
+    "exp1Start","exp1End","exp1Amt",
+    "exp2Start","exp2End","exp2Amt",
+    "exp3Start","exp3End","exp3Amt",
+    "college1Start","college1End","college1Amt",
+    "college2Start","college2End","college2Amt",
+    "misc1Age","misc1Amt","misc2Age","misc2Amt","misc3Age","misc3Amt","misc4Age","misc4Amt","misc5Age","misc5Amt",
+    "sellRealEstate","propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate","stopRentalAfterSale",
+    "sellRealEstate2","property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate","rental2Monthly","stopRental2AfterSale"
+  ];
+  setIdsDisabled(controlledIds, false);
+
+  if(simple){
+    // Simple mode keeps only compounding-oriented controls active.
+    const fullOnlyIds = [
+      "currentAge","spouseAge","retireAge","endAge","inflation",
+      "ssAge","spouseSsAge","ssMonthly","spouseSsMonthly","rentalMonthly",
+      "taxRate",
+      "useAgeBasedSpending","constantRetirementSpending",
+      "spend1Start","spend1End","spend1Amt","spend2Start","spend2End","spend2Amt","spend3Start","spend3End","spend3Amt",
+      "inc1Start","inc1End","inc1Amt","inc2Start","inc2End","inc2Amt","inc3Start","inc3End","inc3Amt",
+      "exp1Start","exp1End","exp1Amt","exp2Start","exp2End","exp2Amt","exp3Start","exp3End","exp3Amt",
+      "college1Start","college1End","college1Amt","college2Start","college2End","college2Amt",
+      "misc1Age","misc1Amt","misc2Age","misc2Amt","misc3Age","misc3Amt","misc4Age","misc4Amt","misc5Age","misc5Amt",
+      "sellRealEstate","propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate","stopRentalAfterSale",
+      "sellRealEstate2","property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate","rental2Monthly","stopRental2AfterSale"
+    ];
+    setIdsDisabled(fullOnlyIds, true);
+    setIdsDisabled(["simpleYears"], false);
+  } else {
+    setIdsDisabled(["simpleYears"], true);
+  }
+
+  // Annual vs monthly contribution applies in both modes.
+  setIdsDisabled(["contrib"], useMonthly);
+  setIdsDisabled(["monthlyContribution"], !useMonthly);
+
+  // Single initial portfolio vs account-level modeling.
+  setIdsDisabled(["portfolio"], useAccounts);
+  setIdsDisabled([
+    "tradBalance","tradReturn","rothBalance","rothReturn",
+    "taxableBalance","taxableReturn","cashBalance","cashReturn",
+    "rmdStartAge","taxableWithdrawalTaxRate","withdrawalStrategy","totalAccounts"
+  ], !useAccounts);
+
+  // Spending mode applies only when full retirement model is active.
+  if(!simple){
+    setIdsDisabled(["constantRetirementSpending"], usePhases);
+    setIdsDisabled([
+      "spend1Start","spend1End","spend1Amt",
+      "spend2Start","spend2End","spend2Amt",
+      "spend3Start","spend3End","spend3Amt"
+    ], !usePhases);
+
+    // Rental property sale section.
+    setIdsDisabled([
+      "propertySaleAge","propertyValue","propertyGrowth","mortgageBalance",
+      "mortgagePaydown","sellingCosts","costBasis","capGainExclusion",
+      "capGainTaxRate","stopRentalAfterSale"
+    ], !sellRental);
+
+    // Rental income can remain active even if no sale is modeled.
+    setIdsDisabled(["rentalMonthly"], false);
+
+    // Primary residence sale section.
+    setIdsDisabled([
+      "property2SaleAge","property2Value","property2Growth","mortgage2Balance",
+      "mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion",
+      "capGain2TaxRate","rental2Monthly","stopRental2AfterSale"
+    ], !sellPrimary);
+  }
+
+  if(typeof updateAccountTotal === "function") updateAccountTotal();
+  if(typeof syncSpendingPhaseStarts === "function") syncSpendingPhaseStarts();
+  if(typeof markRequiredFields === "function") markRequiredFields();
+  if(typeof validateRequiredFields === "function") validateRequiredFields();
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  updateToggleDependentFields();
+
+  ["simpleMode","useMonthlyContribution","useAccountModeling","useAgeBasedSpending","sellRealEstate","sellRealEstate2"].forEach(id=>{
+    const node=document.getElementById(id);
+    if(node){
+      node.addEventListener("change", function(){
+        updateToggleDependentFields();
+        if(typeof calculate==="function") calculate();
+      });
+    }
+  });
+
+  document.querySelectorAll("input,select").forEach(node=>{
+    node.addEventListener("input", function(){
+      if(typeof updateAccountTotal==="function") updateAccountTotal();
+      if(typeof validateRequiredFields==="function") validateRequiredFields();
+    });
   });
 });
 </script>
