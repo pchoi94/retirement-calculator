@@ -460,6 +460,37 @@ main {
   color: #111827;
 }
 
+
+.age-phase-disabled {
+  opacity: 0.45;
+}
+.age-phase-disabled input,
+.age-phase-disabled select,
+.age-phase-disabled textarea {
+  background: #f3f4f6 !important;
+  color: #6b7280 !important;
+  cursor: not-allowed !important;
+}
+
+
+/* Force visibly disabled age-based spending fields when phase modeling is off */
+.field.age-phase-disabled {
+  opacity: 1 !important;
+}
+.field.age-phase-disabled .field-label {
+  color: #9ca3af !important;
+}
+.field.age-phase-disabled input {
+  background-color: #e5e7eb !important;
+  border-color: #d1d5db !important;
+  color: #9ca3af !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+.field.age-phase-disabled .info {
+  opacity: 0.55 !important;
+}
+
 </style>
 </head>
 <body>
@@ -496,18 +527,39 @@ main {
 
 <h3>Investment Account Types <span class="info" data-tooltip="Optional account-level modeling. If enabled, the calculator uses these account balances and growth rates instead of only a single portfolio total.">i</span></h3>
 <div class="field"><div class="field-label">Use Account-Level Modeling <span class="info" data-tooltip="When Yes, portfolio projection uses the account balances below: 401(k)/Traditional IRA, Roth IRA, taxable investments, and cash savings.">i</span></div><select id="useAccountModeling"><option value="no">No</option><option value="yes">Yes</option></select></div>
-<div class="field"><div class="field-label">401(k) / Traditional IRA Balance $ <span class="info" data-tooltip="Pre-tax retirement account balance. Withdrawals are taxable and RMDs may apply.">i</span></div><input id="tradBalance" type="text" inputmode="decimal" value="" step="10000"></div>
-<div class="field"><div class="field-label">401(k) / Traditional IRA Growth % <span class="info" data-tooltip="Expected annual growth rate for pre-tax retirement accounts.">i</span></div><input id="tradReturn" type="number" value="8" step="0.1"></div>
-<div class="field"><div class="field-label">Roth IRA Balance $ <span class="info" data-tooltip="Roth account balance. Withdrawals are modeled as tax-free and generally preserved longest.">i</span></div><input id="rothBalance" type="text" inputmode="decimal" value="" step="10000"></div>
-<div class="field"><div class="field-label">Roth IRA Growth % <span class="info" data-tooltip="Expected annual growth rate for Roth accounts.">i</span></div><input id="rothReturn" type="number" value="8" step="0.1"></div>
+<div class="field"><div class="field-label">Your 401(k) / Traditional IRA Balance $ <span class="info" data-tooltip="Your owner-specific pre-tax retirement account balance. Used for owner-specific RMD modeling when account-level modeling is enabled.">i</span></div><input id="tradYouBalance" type="text" inputmode="decimal" value="" step="10000"></div>
+<div class="field"><div class="field-label">Your 401(k) / Traditional IRA Growth % <span class="info" data-tooltip="Expected annual growth rate for your pre-tax retirement accounts.">i</span></div><input id="tradYouReturn" type="number" value="8" step="0.1"></div>
+<div class="field"><div class="field-label">Spouse 401(k) / Traditional IRA Balance $ <span class="info" data-tooltip="Spouse owner-specific pre-tax retirement account balance. Used for owner-specific RMD modeling when account-level modeling is enabled.">i</span></div><input id="tradSpouseBalance" type="text" inputmode="decimal" value="" step="10000"></div>
+<div class="field"><div class="field-label">Spouse 401(k) / Traditional IRA Growth % <span class="info" data-tooltip="Expected annual growth rate for spouse pre-tax retirement accounts.">i</span></div><input id="tradSpouseReturn" type="number" value="8" step="0.1"></div>
+<div class="field"><div class="field-label">Your Roth IRA Balance $ <span class="info" data-tooltip="Your owner-specific Roth balance. Roth withdrawals are modeled as tax-free when qualified.">i</span></div><input id="rothYouBalance" type="text" inputmode="decimal" value="" step="10000"></div>
+<div class="field"><div class="field-label">Your Roth IRA Growth % <span class="info" data-tooltip="Expected annual growth rate for your Roth accounts.">i</span></div><input id="rothYouReturn" type="number" value="8" step="0.1"></div>
+<div class="field"><div class="field-label">Spouse Roth IRA Balance $ <span class="info" data-tooltip="Spouse owner-specific Roth balance. Roth withdrawals are modeled as tax-free when qualified.">i</span></div><input id="rothSpouseBalance" type="text" inputmode="decimal" value="" step="10000"></div>
+<div class="field"><div class="field-label">Spouse Roth IRA Growth % <span class="info" data-tooltip="Expected annual growth rate for spouse Roth accounts.">i</span></div><input id="rothSpouseReturn" type="number" value="8" step="0.1"></div>
+
+
+
+
+
 <div class="field"><div class="field-label">Taxable Investments Balance $ <span class="info" data-tooltip="Taxable brokerage or other non-retirement investment balance.">i</span></div><input id="taxableBalance" type="text" inputmode="decimal" value="" step="10000"></div>
 <div class="field"><div class="field-label">Taxable Investments Growth % <span class="info" data-tooltip="Expected annual growth rate for taxable investments.">i</span></div><input id="taxableReturn" type="number" value="8" step="0.1"></div>
 <div class="field"><div class="field-label">Cash Savings Balance $ <span class="info" data-tooltip="Cash, checking, savings, money market, or emergency reserve balance.">i</span></div><input id="cashBalance" type="text" inputmode="decimal" value="" step="1000"></div>
 <div class="field"><div class="field-label">Cash Savings Growth % <span class="info" data-tooltip="Expected annual interest rate for cash savings.">i</span></div><input id="cashReturn" type="number" value="4" step="0.1"></div>
 <div class="field"><div class="field-label">Total Across Accounts $ <span class="info" data-tooltip="Automatically calculated sum of all account balances when account-level modeling is enabled.">i</span></div><div id="totalAccounts" class="calculated-text-value">$0</div></div>
 
+
+<div class="field"><div class="field-label">Your 401(k) / Traditional Annual Contribution $ <span class="info" data-tooltip="Annual contribution routed to your pre-tax retirement accounts when account-level modeling is enabled.">i</span></div><input id="contribTradYouAnnual" type="text" inputmode="decimal" value="" step="1000"></div>
+<div class="field"><div class="field-label">Spouse 401(k) / Traditional Annual Contribution $ <span class="info" data-tooltip="Annual contribution routed to spouse pre-tax retirement accounts when account-level modeling is enabled.">i</span></div><input id="contribTradSpouseAnnual" type="text" inputmode="decimal" value="" step="1000"></div>
+<div class="field"><div class="field-label">Your Roth Annual Contribution $ <span class="info" data-tooltip="Annual contribution routed to your Roth accounts when account-level modeling is enabled.">i</span></div><input id="contribRothYouAnnual" type="text" inputmode="decimal" value="" step="1000"></div>
+<div class="field"><div class="field-label">Spouse Roth Annual Contribution $ <span class="info" data-tooltip="Annual contribution routed to spouse Roth accounts when account-level modeling is enabled.">i</span></div><input id="contribRothSpouseAnnual" type="text" inputmode="decimal" value="" step="1000"></div>
+<div class="field"><div class="field-label">Taxable Annual Contribution $ <span class="info" data-tooltip="Annual contribution routed to taxable investments when account-level modeling is enabled.">i</span></div><input id="contribTaxableAnnual" type="text" inputmode="decimal" value="" step="1000"></div>
+<div class="field"><div class="field-label">Cash Annual Contribution $ <span class="info" data-tooltip="Annual contribution routed to cash savings when account-level modeling is enabled.">i</span></div><input id="contribCashAnnual" type="text" inputmode="decimal" value="" step="1000"></div>
 <div class="field"><div class="field-label">RMD Start Age <span class="info" data-tooltip="Age when required minimum distributions begin for pre-tax retirement accounts.">i</span></div><input id="rmdStartAge" type="number" value="73"></div>
 <div class="field"><div class="field-label">Taxable Withdrawal Tax Rate % <span class="info" data-tooltip="Simplified tax rate applied to taxable-investment withdrawals.">i</span></div><input id="taxableWithdrawalTaxRate" type="number" value="10" step="0.5"></div>
+
+
+
+
+
 <div class="field"><div class="field-label">Withdrawal Strategy <span class="info" data-tooltip="Tax-aware default uses RMDs first, then cash, taxable investments, pre-tax accounts, and Roth last.">i</span></div><select id="withdrawalStrategy"><option value="taxAware">Tax-Aware Default</option><option value="proRata">Pro Rata</option></select></div>
 
 <h3>Base Income <span class="info" data-tooltip="Recurring income sources that reduce required portfolio withdrawals.">i</span></h3>
@@ -559,7 +611,7 @@ main {
 <div class="field"><div class="field-label">Use Age-Based Spending Phases <span class="info" data-tooltip="When No, the calculator uses one constant annual spending amount throughout retirement. When Yes, it uses the Early/Mid/Late phase table below.">i</span></div><select id="useAgeBasedSpending"><option value="no" selected>No - Constant Spending</option><option value="yes">Yes - Age-Based Phases</option></select></div>
 <div class="field"><div class="field-label">Constant Annual Retirement Spending $ <span class="info" data-tooltip="Annual retirement spending in today's dollars, used every retirement year when age-based phases are turned off.">i</span></div><input id="constantRetirementSpending" type="text" inputmode="decimal" value="" step="5000"></div>
 
-<h3>Age-Based Spending Phases <span class="info" data-tooltip="Models different spending levels during early, middle, and late retirement. Amounts are in today's dollars.">i</span></h3>
+<h3>Age-Based Spending Phases <span class="info" data-tooltip="When Use Age-Based Spending Phases is set to No, these fields are grayed out and ignored. Turn it to Yes to edit separate early, mid, and late retirement spending phases.">i</span></h3>
 <div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Phase</th><th>Start</th><th>End</th><th>Annual $</th></tr></thead><tbody>
 <tr><td>Early <span class="info" data-tooltip="Higher-spending early retirement phase, often driven by travel, activity, and lifestyle upgrades.">i</span></td><td><input id="spend1Start" type="number" value=""></td><td><input id="spend1End" value="70"></td><td><input id="spend1Amt" type="text" inputmode="decimal" value="" step="5000"></td></tr>
 <tr><td>Mid <span class="info" data-tooltip="Middle retirement phase with more stable or moderate spending.">i</span></td><td><input id="spend2Start" value="71"></td><td><input id="spend2End" value="75"></td><td><input id="spend2Amt" type="text" inputmode="decimal" value="" step="5000"></td></tr>
@@ -700,8 +752,27 @@ main {
 </section>
 </main>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script>
-const defaults={simpleMode:"no",simpleYears:40,currentAge:50,spouseAge:55,retireAge:57,endAge:90,portfolio:1900000,contrib:48500,monthlyContribution:4041.6667,useMonthlyContribution:"no",returnRate:6,growthVariance:0,compoundFreq:"12",inflation:3,ssAge:67,spouseSsAge:67,ssMonthly:4100,spouseSsMonthly:2050,rentalMonthly:500,sellRealEstate:"no",propertySaleAge:60,propertyValue:500000,propertyGrowth:3,mortgageBalance:154000,mortgagePaydown:6000,sellingCosts:7,costBasis:250000,capGainExclusion:0,capGainTaxRate:20,stopRentalAfterSale:"yes",sellRealEstate2:"no",property2SaleAge:0,property2Value:0,property2Growth:0,mortgage2Balance:0,mortgage2Paydown:0,selling2Costs:7,cost2Basis:0,capGain2Exclusion:0,capGain2TaxRate:20,rental2Monthly:0,stopRental2AfterSale:"yes",taxRate:15,feeRate:.25,mcTrials:2000,mcVolatility:13,mcInflationVol:1.2,mcPropertyVol:5,mcReturnFloor:-45,mcReturnCap:35,useAgeBasedSpending:"no",constantRetirementSpending:0,spend1Start:57,spend1End:64,spend1Amt:150000,spend2Start:65,spend2End:79,spend2Amt:120000,spend3Start:80,spend3End:90,spend3Amt:105000,inc1Start:57,inc1End:60,inc1Amt:0,inc2Start:61,inc2End:66,inc2Amt:0,inc3Start:67,inc3End:90,inc3Amt:0,exp1Start:57,exp1End:60,exp1Amt:20000,exp2Start:61,exp2End:66,exp2Amt:0,exp3Start:80,exp3End:90,exp3Amt:15000,college1Start:0,college1End:0,college1Amt:0,college2Start:0,college2End:0,college2Amt:0,misc1Label:"",misc1Age:0,misc1Amt:0,misc2Label:"",misc2Age:0,misc2Amt:0,misc3Label:"",misc3Age:0,misc3Amt:0,misc4Label:"",misc4Age:0,misc4Amt:0,misc5Label:"",misc5Age:0,misc5Amt:0};
+const defaults={};
 
 const HISTORICAL_SP500_TOTAL_RETURNS = [
   0.4381,-0.0830,-0.2512,-0.4384,-0.0864,0.4998,-0.0119,0.4674,0.3194,-0.3534,
@@ -722,11 +793,31 @@ function sampleHistoricalStockReturn(){
 }
 
 function el(id){return document.getElementById(id)}
+
+function getAliasValue(primary, aliases, fallback=""){
+  const ids=[primary].concat(aliases||[]);
+  for(const id of ids){
+    const node=document.getElementById(id);
+    if(node && String(node.value||"").trim()!=="") return node.value;
+  }
+  return fallback;
+}
+function getAliasNumber(primary, aliases, fallback=0){
+  const raw=getAliasValue(primary, aliases, "");
+  if(String(raw).trim()==="") return fallback;
+  const n=parseFloat(String(raw).replace(/[$,\s]/g,""));
+  return isFinite(n)?n:fallback;
+}
+function getAliasSelect(primary, aliases, fallback=""){
+  return getAliasValue(primary, aliases, fallback);
+}
+
 function getVal(id){const node=document.getElementById(id);if(!node)return 0;const raw=String(node.value||"").replace(/[$,\s]/g,"");return parseFloat(raw)||0}
 function getSelect(id){const node=document.getElementById(id);return node?node.value:""}
 function fmtMoney(n){if(!isFinite(n))return"—";const s=n<0?"-":"";return s+"$"+Math.abs(n).toLocaleString(undefined,{maximumFractionDigits:0})}
 function fmtPct(n){return isFinite(n)?(n*100).toFixed(1)+"%":"—"}
-function resetDefaults(){Object.keys(defaults).forEach(k=>{if(el(k))el(k).value=defaults[k]});calculate();clearMC()}
+
+
 function active(age,start,end,amt,infFactor){return age>=start&&age<=end?amt*infFactor:0}
 function baseSpending(age,infFactor){
  if(getSelect("useAgeBasedSpending")!=="yes"){
@@ -747,25 +838,15 @@ function extraExpenses(age,infFactor){return active(age,getVal("exp1Start"),getV
 function collegeExpenses(age,infFactor){return active(age,getVal("college1Start"),getVal("college1End"),getVal("college1Amt"),infFactor)+active(age,getVal("college2Start"),getVal("college2End"),getVal("college2Amt"),infFactor)}
 function oneTimeExpense(age,eventAge,amount,infFactor){return age===eventAge?amount*infFactor:0}
 
-function miscOneTimeExpensesAtMonth(age,month,infFactor){
- if(month!==1)return 0;
- return miscOneTimeExpenses(age,infFactor);
-}
 
-function miscOneTimeExpenses(age,infFactor){
- let total=0;
- document.querySelectorAll("#miscExpenseBody tr").forEach(row=>{
-   const ageInput=row.querySelector('input[id$="Age"]');
-   const amtInput=row.querySelector('input[id$="Amt"]');
-   if(!ageInput || !amtInput) return;
-   const eventAge=parseFloat(String(ageInput.value||"").replace(/[$,\s]/g,""))||0;
-   const amount=parseFloat(String(amtInput.value||"").replace(/[$,\s]/g,""))||0;
-   if(age===eventAge) total+=amount*infFactor;
- });
- return total;
-}
-function validate(){if(getVal("endAge")<getVal("currentAge"))throw new Error("Plan Until Your Age must be greater than or equal to Current Age.");if(getVal("taxRate")>=100)throw new Error("Effective Tax Rate must be less than 100%.");if(getVal("capGainTaxRate")>=100)throw new Error("Cap Gains Tax Rate must be less than 100%.");if(getVal("capGain2TaxRate")>=100)throw new Error("Property 2 Cap Gains Tax Rate must be less than 100%.");}
-function monthlyContributionAmount(){return getSelect("useMonthlyContribution")==="yes"?getVal("monthlyContribution"):getVal("contrib")/12}
+
+
+
+
+
+
+
+
 function compoundingMonths(freq){if(freq===1)return 12;if(freq===2)return 6;if(freq===4)return 3;if(freq===12)return 1;return 0}
 function applyInterestDiscrete(balance,annualRate,freq,monthInYear){if(freq===365){const days=[31,28,31,30,31,30,31,31,30,31,30,31][monthInYear-1];return balance*(Math.pow(1+annualRate/365,days)-1)}const interval=compoundingMonths(freq);if(interval>0&&monthInYear%interval===0)return balance*(annualRate/freq);return 0}
 function calcPropertySaleInfo(age, propertyFactor){if(getSelect("sellRealEstate")!=="yes")return{saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};const currentAge=getVal("currentAge"),saleAge=getVal("propertySaleAge");if(age!==saleAge)return{saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};const years=Math.max(0,saleAge-currentAge);const saleValue=propertyFactor!==null?getVal("propertyValue")*propertyFactor:getVal("propertyValue")*Math.pow(1+getVal("propertyGrowth")/100,years);const remainingMortgage=Math.max(0,getVal("mortgageBalance")-(getVal("mortgagePaydown")*years));const sellingCost=saleValue*(getVal("sellingCosts")/100);const taxableGain=Math.max(0,saleValue-sellingCost-getVal("costBasis")-getVal("capGainExclusion"));const tax=taxableGain*(getVal("capGainTaxRate")/100);const saleProceeds=Math.max(0,saleValue-sellingCost-remainingMortgage-tax);return{saleProceeds,saleValue,remainingMortgage,sellingCost,tax,gain:taxableGain}}
@@ -826,105 +907,34 @@ function randomInflation(mean){return mean}
 function randomPropertyGrowth(mean){return mean}
 function simulateSimple(returnAdjustmentPct=0){let portfolio=getVal("portfolio");const years=Math.max(0,Math.floor(getVal("simpleYears"))),annualRate=((getVal("returnRate")-getVal("feeRate"))/100)+returnAdjustmentPct,freq=parseFloat(getSelect("compoundFreq")),monthlyContribution=monthlyContributionAmount();const rows=[];for(let y=1;y<=years;y++){const startPortfolio=portfolio;let interestYear=0,contribYear=0;for(let m=1;m<=12;m++){const interest=applyInterestDiscrete(portfolio,annualRate,freq,m);portfolio+=interest;interestYear+=interest;portfolio+=monthlyContribution;contribYear+=monthlyContribution}rows.push({age:y,spouseAge:"—",startPortfolio,propertySale:0,propertySale2:0,propertyInfo:{saleProceeds:0,saleValue:0,remainingMortgage:0,tax:0},propertyInfo2:{saleProceeds:0,saleValue:0,remainingMortgage:0,tax:0},contribution:contribYear,growth:interestYear,bs:0,ee:0,totalSpend:0,bi:0,ssIncome:0,ei:0,withdrawal:monthlyContribution<0?Math.abs(contribYear):0,endPortfolio:portfolio})}return rows}
 const SS_COLA_RATE = 0.025;
-function simulateFull(randomize,returnAdjustmentPct=0){const currentAge=getVal("currentAge"),spouseAge=getVal("spouseAge"),retireAge=getVal("retireAge"),endAge=getVal("endAge");let portfolio=getVal("portfolio");const baseReturn=getVal("returnRate")/100,baseInf=getVal("inflation")/100,ssAge=getVal("ssAge"),spouseSsAge=getVal("spouseSsAge")||getVal("ssAge"),yourSsMonthly=getVal("ssMonthly"),spouseSsMonthly=getVal("spouseSsMonthly"),rentalAnnual=getVal("rentalMonthly")*12,taxRate=getVal("taxRate")/100,feeRate=getVal("feeRate")/100,freq=parseFloat(getSelect("compoundFreq"));let infFactor=1,propertyFactor=1,propertyFactor2=1,soldProperty=false,soldProperty2=false;const rows=[];for(let age=currentAge;age<=endAge;age++){const yearIndex=age-currentAge,spouseCurrent=spouseAge+yearIndex,startPortfolio=portfolio;let yearInterest=0,yearContribution=0,yearWithdrawal=0,bsAnnual=0,eeAnnual=0,totalSpendAnnual=0,biAnnual=0,ssIncomeAnnual=0,eiAnnual=0,propertySale=0,propertySale2=0,propertyInfo={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0},propertyInfo2={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};let annualReturn=randomize?randomHistoricalStockReturn():(baseReturn+returnAdjustmentPct),annualInflation=randomize?randomHistoricalInflation():baseInf,annualPropertyGrowth=randomize?randomPropertyGrowth(getVal("propertyGrowth")/100):getVal("propertyGrowth")/100;const netAnnualReturn=annualReturn-feeRate,monthlyInflation=Math.pow(1+annualInflation,1/12)-1,monthlyPropertyGrowth=Math.pow(1+annualPropertyGrowth,1/12)-1,monthlyProperty2Growth=Math.pow(1+(randomize?randomPropertyGrowth(getVal("property2Growth")/100):getVal("property2Growth")/100),1/12)-1;for(let m=1;m<=12;m++){const currentMonthIndex=yearIndex*12+m;if(currentMonthIndex>1){infFactor*=1+monthlyInflation;propertyFactor*=1+monthlyPropertyGrowth;propertyFactor2*=1+monthlyProperty2Growth}if(getSelect("sellRealEstate")==="yes"&&age===getVal("propertySaleAge")&&m===1&&!soldProperty){propertyInfo=calcPropertySaleInfo(age,propertyFactor);propertySale=propertyInfo.saleProceeds;portfolio+=propertySale;soldProperty=true}if(getSelect("sellRealEstate2")==="yes"&&age===getVal("property2SaleAge")&&m===1&&!soldProperty2){propertyInfo2=calcPropertySaleInfo2(age,propertyFactor2);propertySale2=propertyInfo2.saleProceeds;portfolio+=propertySale2;soldProperty2=true}const interest=applyInterestDiscrete(portfolio,netAnnualReturn,freq,m);portfolio+=interest;yearInterest+=interest;if(age<retireAge){const c=monthlyContributionAmount();portfolio+=c;yearContribution+=c;const college=collegeExpenses(age,infFactor);const misc=miscOneTimeExpensesAtMonth(age,m,infFactor);const monthlyCollege=(college/12)/(1-taxRate);const miscWithdrawal=misc/(1-taxRate);const withdrawal=monthlyCollege+miscWithdrawal;if(withdrawal>0){portfolio-=withdrawal;yearWithdrawal+=withdrawal;eeAnnual+=college/12+misc;totalSpendAnnual+=college/12+misc;}}else{const bs=baseSpending(age,infFactor),college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,m,infFactor),eeBase=extraExpenses(age,infFactor),ee=eeBase+college+misc,totalSpend=bs+ee;const rentalStopped=soldProperty;let bi=rentalStopped?0:rentalAnnual*infFactor;const currentSpouseAge=spouseCurrent;const monthlySsIncome=(age>=ssAge?yourSsMonthly:0)+(currentSpouseAge>=spouseSsAge?spouseSsMonthly:0);const yearsFromNow = age - currentAge;
-const ssGrowthFactor = Math.pow(1+SS_COLA_RATE, yearsFromNow);
-const annualSsIncome=monthlySsIncome*12*ssGrowthFactor;bi+=annualSsIncome;ssIncomeAnnual+=annualSsIncome/12;const ei=extraIncome(age,infFactor);const monthlyNetNeed=Math.max(0,(bs/12)+(eeBase/12)+(college/12)+misc-(bi/12)-(ei/12));const withdrawal=monthlyNetNeed/(1-taxRate);portfolio-=withdrawal;yearWithdrawal+=withdrawal;bsAnnual+=bs/12;eeAnnual+=(eeBase/12)+(college/12)+misc;totalSpendAnnual+=(bs/12)+(eeBase/12)+(college/12)+misc;biAnnual+=bi/12;eiAnnual+=ei/12}}rows.push({age,spouseAge:spouseCurrent,startPortfolio,propertySale,propertySale2,propertyInfo,propertyInfo2,contribution:yearContribution,growth:yearInterest,bs:bsAnnual,ee:eeAnnual,totalSpend:totalSpendAnnual,bi:biAnnual,ssIncome:ssIncomeAnnual,ei:eiAnnual,withdrawal:yearWithdrawal,endPortfolio:portfolio})}return rows}
+
+/* Removed inactive duplicate function simulateFull */
+
 
 function accountModelEnabled(){return getSelect("useAccountModeling")==="yes";}
-function getStartingAccounts(){
- const total=getVal("portfolio"),trad=getVal("tradBalance"),roth=getVal("rothBalance"),taxable=getVal("taxableBalance"),cash=getVal("cashBalance");
- const sum=trad+roth+taxable+cash;
- if(accountModelEnabled()&&sum>0)return{trad,roth,taxable,cash};
- return{trad:0,roth:0,taxable:total,cash:0};
-}
-function accountTotal(a){return Math.max(0,a.trad)+Math.max(0,a.roth)+Math.max(0,a.taxable)+Math.max(0,a.cash);}
+
+
+
+
+
+
+
+
 function rmdDivisor(age){
  const table={73:26.5,74:25.5,75:24.6,76:23.7,77:22.9,78:22.0,79:21.1,80:20.2,81:19.4,82:18.5,83:17.7,84:16.8,85:16.0,86:15.2,87:14.4,88:13.7,89:12.9,90:12.2,91:11.5,92:10.8,93:10.1,94:9.5,95:8.9};
  return age<73?null:(table[Math.min(95,Math.floor(age))]||8.4);
 }
-function withdrawFromAccount(accounts,key,grossNeeded){
- const amt=Math.min(Math.max(0,accounts[key]),Math.max(0,grossNeeded));
- accounts[key]-=amt;return amt;
-}
-function withdrawForNetNeed(accounts,netNeed,taxRate,taxableTaxRate,strategy){
- let remaining=Math.max(0,netNeed),gross=0,details={cash:0,taxable:0,trad:0,roth:0};
- if(strategy==="proRata"){
-   const total=accountTotal(accounts);
-   if(total>0){
-     const grossApprox=remaining/(1-taxRate);
-     ["cash","taxable","trad","roth"].forEach(k=>{const amt=withdrawFromAccount(accounts,k,grossApprox*(accounts[k]/total));details[k]+=amt;gross+=amt;});
-     return{grossWithdrawal:gross,details};
-   }
- }
- let amt=withdrawFromAccount(accounts,"cash",remaining);details.cash+=amt;gross+=amt;remaining-=amt;
- amt=withdrawFromAccount(accounts,"taxable",remaining/(1-taxableTaxRate));details.taxable+=amt;gross+=amt;remaining-=amt*(1-taxableTaxRate);
- amt=withdrawFromAccount(accounts,"trad",remaining/(1-taxRate));details.trad+=amt;gross+=amt;remaining-=amt*(1-taxRate);
- amt=withdrawFromAccount(accounts,"roth",remaining);details.roth+=amt;gross+=amt;remaining-=amt;
- return{grossWithdrawal:gross,details};
-}
-function applyAccountMonthlyGrowth(accounts,annualReturn,feeRate){
- const baseReturn=getVal("returnRate")/100;
- const scenarioAdjustment=annualReturn-baseReturn;
- const tradBase=(getVal("tradReturn")||baseReturn*100)/100;
- const rothBase=(getVal("rothReturn")||baseReturn*100)/100;
- const taxableBase=(getVal("taxableReturn")||baseReturn*100)/100;
- const cashBase=(getVal("cashReturn")||0)/100;
- const tradR=Math.pow(1+tradBase+scenarioAdjustment-feeRate,1/12)-1;
- const rothR=Math.pow(1+rothBase+scenarioAdjustment-feeRate,1/12)-1;
- const taxableR=Math.pow(1+taxableBase+scenarioAdjustment-feeRate,1/12)-1;
- const cashR=Math.pow(1+cashBase,1/12)-1;
- const before=accountTotal(accounts);
- accounts.trad=Math.max(0,accounts.trad*(1+tradR));
- accounts.roth=Math.max(0,accounts.roth*(1+rothR));
- accounts.taxable=Math.max(0,accounts.taxable*(1+taxableR));
- accounts.cash=Math.max(0,accounts.cash*(1+cashR));
- return accountTotal(accounts)-before;
-}
-function simulateFull(randomize,returnAdjustmentPct=0){
- const currentAge=getVal("currentAge"),spouseAge=getVal("spouseAge"),retireAge=getVal("retireAge"),endAge=getVal("endAge");
- let accounts=getStartingAccounts();
- const baseReturn=getVal("returnRate")/100,baseInf=getVal("inflation")/100,ssAge=getVal("ssAge"),spouseSsAge=getVal("spouseSsAge")||getVal("ssAge"),yourSsMonthly=getVal("ssMonthly"),spouseSsMonthly=getVal("spouseSsMonthly"),rentalAnnual=getVal("rentalMonthly")*12,taxRate=getVal("taxRate")/100,feeRate=getVal("feeRate")/100,taxableTaxRate=getVal("taxableWithdrawalTaxRate")/100,strategy=getSelect("withdrawalStrategy")||"taxAware";
- let infFactor=1,propertyFactor=1,propertyFactor2=1,soldProperty=false,soldProperty2=false;
- const rows=[];
- for(let age=currentAge;age<=endAge;age++){
-  const yearIndex=age-currentAge,spouseCurrent=spouseAge+yearIndex,startPortfolio=accountTotal(accounts);
-  let yearInterest=0,yearContribution=0,yearWithdrawal=0,bsAnnual=0,eeAnnual=0,totalSpendAnnual=0,biAnnual=0,ssIncomeAnnual=0,eiAnnual=0,rmdAnnual=0,propertySale=0,propertySale2=0;
-  let propertyInfo={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0},propertyInfo2={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};
-  const annualReturn=randomize?randomHistoricalStockReturn():(baseReturn+returnAdjustmentPct),annualInflation=randomize?randomHistoricalInflation():baseInf,monthlyInflation=Math.pow(1+annualInflation,1/12)-1;
-  const monthlyPropertyGrowth=Math.pow(1+(randomize?randomPropertyGrowth(getVal("propertyGrowth")/100):getVal("propertyGrowth")/100),1/12)-1;
-  const monthlyProperty2Growth=Math.pow(1+(randomize?randomPropertyGrowth(getVal("property2Growth")/100):getVal("property2Growth")/100),1/12)-1;
-  for(let m=1;m<=12;m++){
-   const currentMonthIndex=yearIndex*12+m;
-   if(currentMonthIndex>1){infFactor*=1+monthlyInflation;propertyFactor*=1+monthlyPropertyGrowth;propertyFactor2*=1+monthlyProperty2Growth;}
-   if(getSelect("sellRealEstate")==="yes"&&age===getVal("propertySaleAge")&&m===1&&!soldProperty){propertyInfo=calcPropertySaleInfo(age,propertyFactor);propertySale=propertyInfo.saleProceeds;accounts.taxable+=propertySale;soldProperty=true;}
-   if(getSelect("sellRealEstate2")==="yes"&&age===getVal("property2SaleAge")&&m===1&&!soldProperty2){propertyInfo2=calcPropertySaleInfo2(age,propertyFactor2);propertySale2=propertyInfo2.saleProceeds;accounts.taxable+=propertySale2;soldProperty2=true;}
-   yearInterest+=applyAccountMonthlyGrowth(accounts,annualReturn,feeRate);
-   if(age<retireAge){
-     const c=monthlyContributionAmount();if(accountModelEnabled())accounts.trad+=c;else accounts.taxable+=c;yearContribution+=c;
-     const college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,m,infFactor),need=college/12+misc;
-     if(need>0){const w=withdrawForNetNeed(accounts,need,taxRate,taxableTaxRate,strategy);yearWithdrawal+=w.grossWithdrawal;eeAnnual+=need;totalSpendAnnual+=need;}
-   }else{
-     const bs=baseSpending(age,infFactor),college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,m,infFactor),eeBase=extraExpenses(age,infFactor);
-     let bi=soldProperty?0:rentalAnnual*infFactor;
-     const monthlySsIncome=(age>=ssAge?yourSsMonthly:0)+(spouseCurrent>=spouseSsAge?spouseSsMonthly:0),ssGrowthFactor=Math.pow(1+(typeof SS_COLA_RATE==="number"?SS_COLA_RATE:0.025),age-currentAge),annualSsIncome=monthlySsIncome*12*ssGrowthFactor;
-     bi+=annualSsIncome;const ei=extraIncome(age,infFactor);
-     let monthlyNeed=Math.max(0,(bs/12)+(eeBase/12)+(college/12)+misc-(bi/12)-(ei/12));
-     const rmdStart=getVal("rmdStartAge")||73;
-     if(age>=rmdStart&&m===1&&accounts.trad>0){
-       const divisor=rmdDivisor(age),rmd=divisor?accounts.trad/divisor:0,actual=withdrawFromAccount(accounts,"trad",rmd);
-       rmdAnnual+=actual;yearWithdrawal+=actual;const rmdNet=actual*(1-taxRate);
-       monthlyNeed=Math.max(0,monthlyNeed-rmdNet);
-       if(rmdNet>monthlyNeed)accounts.taxable+=Math.max(0,rmdNet-monthlyNeed);
-     }
-     const w=withdrawForNetNeed(accounts,monthlyNeed,taxRate,taxableTaxRate,strategy);yearWithdrawal+=w.grossWithdrawal;
-     bsAnnual+=bs/12;eeAnnual+=(eeBase/12)+(college/12)+misc;totalSpendAnnual+=(bs/12)+(eeBase/12)+(college/12)+misc;biAnnual+=bi/12;ssIncomeAnnual+=annualSsIncome/12;eiAnnual+=ei/12;
-   }
-  }
-  const endPortfolio=accountTotal(accounts);
-  rows.push({age,spouseAge:spouseCurrent,startPortfolio,propertySale,propertySale2,propertyInfo,propertyInfo2,contribution:yearContribution,growth:yearInterest,bs:bsAnnual,ee:eeAnnual,totalSpend:totalSpendAnnual,bi:biAnnual,ssIncome:ssIncomeAnnual,ei:eiAnnual,withdrawal:yearWithdrawal,rmd:rmdAnnual,tradEnd:accounts.trad,rothEnd:accounts.roth,taxableEnd:accounts.taxable,cashEnd:accounts.cash,endPortfolio});
- }
- return rows;
-}
+
+
+
+
+
+
+
+
+
+/* Removed inactive duplicate function simulateFull */
+
 function renderAccountEndingMetrics(rows){
  const r=rows&&rows.length?rows[rows.length-1]:null;
  if(el("endingTradBalance"))el("endingTradBalance").textContent=fmtMoney(r?r.tradEnd||0:0);
@@ -933,7 +943,8 @@ function renderAccountEndingMetrics(rows){
  if(el("endingCashBalance"))el("endingCashBalance").textContent=fmtMoney(r?r.cashEnd||0:0);
 }
 
-function simulate(randomize,returnAdjustmentPct=0){return getSelect("simpleMode")==="yes"?simulateSimple(returnAdjustmentPct):simulateFull(randomize,returnAdjustmentPct)}
+
+
 
 function renderSensitivitySummary(lowRows,medRows,highRows,variancePct){
  const low=lowRows.length?lowRows[lowRows.length-1].endPortfolio:0;
@@ -945,50 +956,12 @@ function renderSensitivitySummary(lowRows,medRows,highRows,variancePct){
  if(el("varianceRangeMetric")){el("varianceRangeMetric").textContent="±"+variancePct.toFixed(2)+"%";el("varianceRangeMetric").className="value";}
 }
 
-function calculate(){try{el("errorBox").style.display="none";if(typeof validateRequiredFields==="function"&&!validateRequiredFields()){renderEmptyState();return;}validate();const variancePct=Math.max(0,getVal("growthVariance"));
-const variance=variancePct/100;
-const lowRows=simulate(false,-variance),rows=simulate(false,0),highRows=simulate(false,variance);
-const ending=rows.length?rows[rows.length-1].endPortfolio:getVal("portfolio");
-let lowest=rows.length?Math.min(...rows.map(r=>r.endPortfolio)):ending,depletion=rows.find(r=>r.endPortfolio<=0);
-const saleRow=rows.find(r=>r.propertySale>0);
-updateSaleMetrics(saleRow?saleRow.propertyInfo:calcPropertySaleInfo(getVal("propertySaleAge"),null));
-renderSummary(ending,lowest,depletion?depletion.age:null);
-renderSensitivitySummary(lowRows,rows,highRows,variancePct);renderAccountEndingMetrics(rows);
-renderTable(rows,lowRows,highRows);
-drawMultiLineChart("portfolioChart",[
- {label:"Low",points:lowRows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)})),color:"#b91c1c"},
- {label:"Medium",points:rows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)})),color:"#2563eb"},
- {label:"High",points:highRows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)})),color:"#047857"}
-],"Low / Medium / High Portfolio by Year/Age")}catch(e){el("errorBox").textContent=e.message;el("errorBox").style.display="block"}}
+
+
 function percentile(sorted,p){if(sorted.length===0)return 0;const idx=(sorted.length-1)*p,lo=Math.floor(idx),hi=Math.ceil(idx);return lo===hi?sorted[lo]:sorted[lo]+(sorted[hi]-sorted[lo])*(idx-lo)}
 
-function runMonteCarlo(){
- try{
-  el("errorBox").style.display="none";validate();calculate();
-  const trials=10000;
-  const endings=[],failureAges=[],allPaths=[];
-  let successes=0;
-  for(let i=0;i<trials;i++){
-    const rows=simulateFull(true);
-    const ending=rows[rows.length-1].endPortfolio;
-    const fail=rows.find(r=>r.endPortfolio<=0);
-    endings.push(ending);
-    allPaths.push(rows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)})));
-    if(!fail)successes++;else failureAges.push(fail.age);
-  }
-  endings.sort((a,b)=>a-b);
-  const successRate=successes/trials,median=percentile(endings,.5),p10=percentile(endings,.1),worst=endings[0];
-  el("mcSuccess").textContent=fmtPct(successRate);
-  el("mcSuccess").className=successRate>=.85?"value success":successRate>=.70?"value warn":"value danger";
-  el("mcMedian").textContent=fmtMoney(median);el("mcMedian").className=median>=0?"value success":"value danger";
-  el("mcP10").textContent=fmtMoney(p10);el("mcP10").className=p10>=0?"value success":"value danger";
-  el("mcWorst").textContent=fmtMoney(worst);el("mcWorst").className=worst>=0?"value success":"value danger";
-  
-  drawMonteCarloPercentileChart("mcPercentileChart",allPaths);
-  const avgFailure=failureAges.length?failureAges.reduce((a,b)=>a+b,0)/failureAges.length:null;
-  if(el("mcNote"))if(el("mcNote"))el("mcNote").textContent=failureAges.length?("Failures: "+failureAges.length+" of "+trials+". Average failure age among failed trials: "+avgFailure.toFixed(1)+"."):"No failures in "+trials+" trials.";
- }catch(e){el("errorBox").textContent=e.message;el("errorBox").style.display="block"}
-}
+
+
 function clearMC(){["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{el(id).textContent="—";el(id).className="value"});if(el("mcNote"))el("mcNote").textContent="Run Monte Carlo to populate this chart using 10,000 historical-return simulations.";if(el("mcChart"))if(el("mcPercentileChart"))clearCanvas("mcPercentileChart")}
 
 function renderEmptyState(){
@@ -1001,46 +974,8 @@ function renderEmptyState(){
 }
 
 function renderSummary(ending,lowest,depletionAge){const r=el("result"),e=el("endingPortfolio"),l=el("lowestPortfolio"),d=el("depletionAge");if(depletionAge===null){r.textContent="Funds Last";r.className="value success";d.textContent="None";d.className="value success"}else{r.textContent="Depletes";r.className="value danger";d.textContent=depletionAge;d.className="value danger"}e.textContent=fmtMoney(ending);e.className=ending>=0?"value success":"value danger";l.textContent=fmtMoney(lowest);l.className=lowest>=0?"value success":"value danger"}
-function renderTable(rows,lowRows=[],highRows=[]){
- const body=el("projectionBody");
- body.innerHTML="";
- rows.forEach((r,i)=>{
-  const low=(lowRows&&lowRows[i])?lowRows[i].endPortfolio:r.endPortfolio;
-  const med=r.endPortfolio;
-  const high=(highRows&&highRows[i])?highRows[i].endPortfolio:r.endPortfolio;
-  const tr=document.createElement("tr");
-  [
-    r.age,
-    r.spouseAge,
-    fmtMoney(r.startPortfolio),
-    fmtMoney(r.propertySale),
-    fmtMoney(r.propertySale2),
-    fmtMoney(r.contribution),
-    fmtMoney(r.growth),
-    fmtMoney(r.bs),
-    fmtMoney(r.ee),
-    fmtMoney(r.totalSpend),
-    fmtMoney(r.bi),
-    fmtMoney(r.ssIncome||0),
-    fmtMoney(r.ei),
-    fmtMoney(r.withdrawal),
-    fmtMoney(r.rmd||0),
-    fmtMoney(r.tradEnd||0),
-    fmtMoney(r.rothEnd||0),
-    fmtMoney(r.taxableEnd||0),
-    fmtMoney(r.cashEnd||0),
-    fmtMoney(low),
-    fmtMoney(med),
-    fmtMoney(high),
-    fmtMoney(r.endPortfolio)
-  ].forEach(v=>{
-    const td=document.createElement("td");
-    td.textContent=v;
-    tr.appendChild(td);
-  });
-  body.appendChild(tr);
- });
-}
+
+
 
 const CHART_INTERACTIVE_POINTS = {};
 function ensureChartTooltip(){
@@ -1142,1312 +1077,42 @@ function drawMonteCarloPercentileChart(id,paths){
 function drawHistogram(id,values){const{ctx,w,h}=prepCanvas(id),p={left:70,right:18,top:24,bottom:42};const min=Math.min(...values),max=Math.max(...values),bins=30,range=max-min||1,counts=Array(bins).fill(0);values.forEach(v=>{let idx=Math.floor((v-min)/range*bins);if(idx>=bins)idx=bins-1;if(idx<0)idx=0;counts[idx]++});const maxCount=Math.max(...counts,1),barW=(w-p.left-p.right)/bins;ctx.strokeStyle="#e5e7eb";ctx.fillStyle="#6b7280";ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.lineWidth=1;for(let i=0;i<=5;i++){const y=p.top+(1-i/5)*(h-p.top-p.bottom);ctx.beginPath();ctx.moveTo(p.left,y);ctx.lineTo(w-p.right,y);ctx.stroke();ctx.textAlign="right";ctx.fillText(Math.round(maxCount*i/5),p.left-6,y+4)}ctx.fillStyle="#2563eb";counts.forEach((c,i)=>{const x=p.left+i*barW,y=p.top+(1-c/maxCount)*(h-p.top-p.bottom),bh=(c/maxCount)*(h-p.top-p.bottom);ctx.fillRect(x+1,y,Math.max(1,barW-2),bh)});ctx.strokeStyle="#111827";ctx.beginPath();ctx.moveTo(p.left,p.top);ctx.lineTo(p.left,h-p.bottom);ctx.lineTo(w-p.right,h-p.bottom);ctx.stroke();ctx.fillStyle="#111827";ctx.font="12px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="left";ctx.fillText("Ending Portfolio Distribution",p.left,17);ctx.fillStyle="#6b7280";ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="center";ctx.fillText(fmtMoney(min),p.left,h-20);ctx.fillText(fmtMoney(max),w-p.right,h-20);ctx.fillText("Ending Portfolio",w/2,h-20)}
 window.addEventListener("resize",()=>calculate());
 document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("input,select").forEach(input=>input.addEventListener("input",()=>{calculate();clearMC()}));calculate();clearMC()});
-</script>
 
-<script>
-(function(){
-  function syncLinkedAges(){
-    const retireAge = document.getElementById("retireAge");
-    const endAge = document.getElementById("endAge");
-    const spend1Start = document.getElementById("spend1Start");
-    const spend3End = document.getElementById("spend3End");
+/* === Single-source-of-truth runtime === */
 
-    if (retireAge && spend1Start) {
-      spend1Start.value = retireAge.value || "";
-    }
+let INITIAL_PAGE_VALUES=null;
 
-    if (endAge && spend3End) {
-      spend3End.value = endAge.value || "";
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", function(){
-    syncLinkedAges();
-
-    const retireAge = document.getElementById("retireAge");
-    const endAge = document.getElementById("endAge");
-
-    if (retireAge) {
-      retireAge.addEventListener("input", syncLinkedAges);
-      retireAge.addEventListener("change", syncLinkedAges);
-    }
-
-    if (endAge) {
-      endAge.addEventListener("input", syncLinkedAges);
-      endAge.addEventListener("change", syncLinkedAges);
-    }
-  });
-
-  window.syncLinkedAges = syncLinkedAges;
-})();
-</script>
-
-
-<script>
-
-function requiredFields(){
-  const simple = getSelect("simpleMode")==="yes";
-  const useMonthly = getSelect("useMonthlyContribution")==="yes";
-  const useAccounts = getSelect("useAccountModeling")==="yes";
-  const usePhases = getSelect("useAgeBasedSpending")==="yes";
-  const useAdvanced = getSelect("useAdvancedPlanning")==="yes";
-
-  if(simple){
-    let fields = ["simpleMode","simpleYears","returnRate","compoundFreq"];
-    fields = fields.concat(useMonthly?["monthlyContribution"]:["contrib"]);
-    fields = fields.concat(useAccounts?["tradBalance","tradReturn","rothBalance","rothReturn","taxableBalance","taxableReturn","cashBalance","cashReturn"]:["portfolio"]);
-    return fields;
-  }
-
-  let fields = ["simpleMode","currentAge","retireAge","endAge","returnRate","growthVariance","compoundFreq","inflation","ssAge","taxRate"];
-
-  if(document.getElementById("spouseSsAge")) fields.push("spouseSsAge");
-
-  fields.push(useMonthly?"monthlyContribution":"contrib");
-
-  if(useAccounts){
-    fields = fields.concat(["tradBalance","tradReturn","rothBalance","rothReturn","taxableBalance","taxableReturn","cashBalance","cashReturn","rmdStartAge","taxableWithdrawalTaxRate"]);
-  } else {
-    fields.push("portfolio");
-  }
-
-  if(usePhases){
-    fields = fields.concat(["spend1Amt","spend2Amt","spend3Amt"]);
-  } else if(document.getElementById("constantRetirementSpending")) {
-    fields.push("constantRetirementSpending");
-  }
-
-  if(getSelect("sellRealEstate")==="yes"){
-    fields = fields.concat(["propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate"]);
-  }
-
-  if(getSelect("sellRealEstate2")==="yes"){
-    fields = fields.concat(["property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate"]);
-  }
-
-  if(useAdvanced){
-    if(getSelect("useDetailedTaxEstimate")==="yes"){
-      fields = fields.concat(["filingStatus","stateTaxRate"]);
-    }
-    if(document.getElementById("preMedicareHealthcareAnnual")) fields.push("preMedicareHealthcareAnnual");
-    if(document.getElementById("medicareHealthcareAnnual")) fields.push("medicareHealthcareAnnual");
-    if(document.getElementById("medicareStartAge")) fields.push("medicareStartAge");
-    if(getSelect("enableSurvivorScenario")==="yes"){
-      fields = fields.concat(["firstDeath","firstDeathAge","survivorSpendingPct"]);
-    }
-  }
-
-  return fields;
-}
-function markRequiredFields(){
-  document.querySelectorAll(".field").forEach(f=>{
-    f.classList.remove("required");
-    const existing=f.querySelector(".required-asterisk");
-    if(existing) existing.remove();
-  });
-  requiredFields().forEach(id=>{
-    const node=el(id); if(!node)return;
-    const field=node.closest(".field"); if(!field)return;
-    field.classList.add("required");
-    const label=field.querySelector(".field-label");
-    if(label && !label.querySelector(".required-asterisk")){
-      const star=document.createElement("span");
-      star.className="required-asterisk";
-      star.textContent="*";
-      label.appendChild(star);
-    }
-  });
-}
-function validateRequiredFields(){
-  if(typeof markRequiredFields === "function") markRequiredFields();
-  let missing=[];
-  requiredFields().forEach(id=>{
-    const node=el(id);
-    if(!node || node.disabled) return;
-    const field=node.closest(".field");
-    const isHidden=field && (field.classList.contains("hidden-by-toggle") || field.classList.contains("hidden-by-advanced-toggle") || window.getComputedStyle(field).display==="none");
-    if(isHidden) return;
-    const isMissing=String(node.value||"").trim()==="";
-    if(field) field.classList.toggle("missing",isMissing);
-    if(isMissing){
-      const label=field?field.querySelector(".field-label"):null;
-      missing.push(label?label.textContent.replace("*","").trim():id);
-    }
-  });
-  const box=el("validationBox");
-  if(box){
-    if(missing.length){
-      box.style.display="block";
-      box.innerHTML="<strong>Required fields missing:</strong> "+missing.join(", ")+".";
-    } else {
-      box.style.display="none";
-    }
-  }
-  return missing.length===0;
-}
-
-
-</script>
-
-
-<script>
-document.addEventListener("DOMContentLoaded",function(){
-  if(typeof markRequiredFields==="function") markRequiredFields();
-  if(typeof validateRequiredFields==="function") validateRequiredFields();
-  document.querySelectorAll("input,select").forEach(function(node){
-    node.addEventListener("input",function(){
-      if(typeof syncLinkedAges==="function") syncLinkedAges();
-      if(typeof validateRequiredFields==="function") validateRequiredFields();
-    });
-    node.addEventListener("change",function(){
-      if(typeof syncLinkedAges==="function") syncLinkedAges();
-      if(typeof validateRequiredFields==="function") validateRequiredFields();
-    });
-  });
-});
-</script>
-
-
-<script>
-function updateAccountTotal(){
-  if(getSelect("useAccountModeling")!=="yes") return;
-  const total =
-    getVal("tradBalance") +
-    getVal("rothBalance") +
-    getVal("taxableBalance") +
-    getVal("cashBalance");
-  if(el("totalAccounts")) el("totalAccounts").textContent = fmtMoney ? fmtMoney(total || 0) : "$" + (total || 0).toLocaleString();
-}
-
-document.addEventListener("DOMContentLoaded",()=>{
-  ["tradBalance","rothBalance","taxableBalance","cashBalance","useAccountModeling"].forEach(id=>{
-    const node = el(id);
-    if(node){
-      node.addEventListener("input", updateAccountTotal);
-      node.addEventListener("change", updateAccountTotal);
-    }
-  });
-  updateAccountTotal();
-});
-</script>
-
-
-<script>
-const RESET_DEFAULTS = {
-  currentAge: 50,
-  spouseAge: 55,
-  endAge: 90,
-  compoundFreq: "annually",
-  ssAge: 67,
-  spouseSsAge: 67,
-  returnRate: 8,
-  growthVariance: 2,
-  useAccountModeling: "no",
-  withdrawalStrategy: "taxAware"
+const MONEY_FIELD_IDS = [
+  "portfolio","contrib","monthlyContribution","ssMonthly","spouseSsMonthly","rentalMonthly",
+  "propertyValue","mortgageBalance","mortgagePaydown","costBasis","capGainExclusion",
+  "property2Value","mortgage2Balance","mortgage2Paydown","cost2Basis","capGain2Exclusion","rental2Monthly",
+  "spend1Amt","spend2Amt","spend3Amt","constantRetirementSpending",
+  "inc1Amt","inc2Amt","inc3Amt","exp1Amt","exp2Amt","exp3Amt","college1Amt","college2Amt",
+  "tradYouBalance","tradSpouseBalance","rothYouBalance","rothSpouseBalance","taxableBalance","cashBalance",
+  "annualRothConversion","preMedHealthcareAnnual","preMedicareHealthcareAnnual","medicareAnnualPerPerson","medicareHealthcareAnnual"
 ,
-  inflation: 3.0};
-
-function resetFormClean(){
-  document.querySelectorAll("input, select").forEach(node=>{
-    const id = node.id;
-    if(!id) return;
-
-    if(RESET_DEFAULTS.hasOwnProperty(id)){
-      node.value = RESET_DEFAULTS[id];
-    } else {
-      if(node.tagName === "SELECT"){
-        node.selectedIndex = 0;
-      } else {
-        node.value = "";
-      }
-    }
-  });
-
-  if(typeof renderEmptyState === "function") renderEmptyState();
-  if(typeof validateRequiredFields === "function") validateRequiredFields();
-}
-
-document.addEventListener("DOMContentLoaded", ()=>{
-  document.querySelectorAll("button").forEach(btn=>{
-    if(btn.textContent.toLowerCase().includes("reset")){
-      btn.onclick = resetFormClean;
-    }
-  });
-});
-</script>
-
-
-
-
-
-<script>
-function syncSpendingPhaseStarts(){
-  const retireAge = document.getElementById("retireAge");
-  const planEnd = document.getElementById("endAge");
-
-  const earlyStart = document.getElementById("spend1Start");
-  const earlyEnd = document.getElementById("spend1End");
-  const midStart = document.getElementById("spend2Start");
-  const midEnd = document.getElementById("spend2End");
-  const lateStart = document.getElementById("spend3Start");
-  const lateEnd = document.getElementById("spend3End");
-
-  if(!earlyStart || !earlyEnd || !midStart || !midEnd || !lateStart || !lateEnd) return;
-
-  const r = parseInt(retireAge && retireAge.value ? retireAge.value : "", 10);
-  if(!Number.isNaN(r)) {
-    earlyStart.value = r;
-    earlyEnd.min = r;
-  }
-
-  const e1 = parseInt(earlyEnd.value || "", 10);
-  if(!Number.isNaN(e1)) {
-    midStart.value = e1 + 1;
-    midEnd.min = e1 + 1;
-  } else {
-    midStart.value = "";
-  }
-
-  const e2 = parseInt(midEnd.value || "", 10);
-  if(!Number.isNaN(e2)) {
-    lateStart.value = e2 + 1;
-    lateEnd.min = e2 + 1;
-  } else {
-    lateStart.value = "";
-  }
-
-  const finalAge = parseInt(planEnd && planEnd.value ? planEnd.value : "", 10);
-  if(!Number.isNaN(finalAge)) {
-    lateEnd.value = finalAge;
-  }
-
-  earlyStart.readOnly = true;
-  midStart.readOnly = true;
-  lateStart.readOnly = true;
-  lateEnd.readOnly = true;
-}
-
-function enforceSpendingPhaseRanges(){
-  syncSpendingPhaseStarts();
-
-  const retireAge = document.getElementById("retireAge");
-  const planEnd = document.getElementById("endAge");
-  const earlyEnd = document.getElementById("spend1End");
-  const midEnd = document.getElementById("spend2End");
-
-  const r = parseInt(retireAge && retireAge.value ? retireAge.value : "", 10);
-  const finalAge = parseInt(planEnd && planEnd.value ? planEnd.value : "", 10);
-
-  if(earlyEnd && earlyEnd.value !== "" && !Number.isNaN(r)) {
-    const v = parseInt(earlyEnd.value, 10);
-    if(!Number.isNaN(v) && v < r) earlyEnd.value = r;
-  }
-
-  syncSpendingPhaseStarts();
-
-  const midStart = document.getElementById("spend2Start");
-  const minMid = parseInt(midStart && midStart.value ? midStart.value : "", 10);
-
-  if(midEnd && midEnd.value !== "" && !Number.isNaN(minMid)) {
-    const v = parseInt(midEnd.value, 10);
-    if(!Number.isNaN(v) && v < minMid) midEnd.value = minMid;
-  }
-
-  syncSpendingPhaseStarts();
-
-  const lateStart = document.getElementById("spend3Start");
-  const lateStartVal = parseInt(lateStart && lateStart.value ? lateStart.value : "", 10);
-
-  if(!Number.isNaN(finalAge) && !Number.isNaN(lateStartVal) && lateStartVal > finalAge) {
-    midEnd.value = finalAge - 1;
-    syncSpendingPhaseStarts();
-  }
-}
-
-document.addEventListener("DOMContentLoaded", function(){
-  syncSpendingPhaseStarts();
-
-  ["retireAge","endAge"].forEach(id=>{
-    const node = document.getElementById(id);
-    if(node){
-      node.addEventListener("input", function(){
-        syncSpendingPhaseStarts();
-        if(typeof calculate === "function") calculate();
-      });
-      node.addEventListener("change", function(){
-        enforceSpendingPhaseRanges();
-        if(typeof calculate === "function") calculate();
-      });
-      node.addEventListener("blur", function(){
-        enforceSpendingPhaseRanges();
-        if(typeof calculate === "function") calculate();
-      });
-    }
-  });
-
-  ["spend1End","spend2End"].forEach(id=>{
-    const node = document.getElementById(id);
-    if(node){
-      node.addEventListener("input", function(){
-        // Do not clamp while typing. Just sync dependent start fields.
-        syncSpendingPhaseStarts();
-        if(typeof calculate === "function") calculate();
-      });
-      node.addEventListener("change", function(){
-        enforceSpendingPhaseRanges();
-        if(typeof calculate === "function") calculate();
-      });
-      node.addEventListener("blur", function(){
-        enforceSpendingPhaseRanges();
-        if(typeof calculate === "function") calculate();
-      });
-    }
-  });
-
-  document.querySelectorAll("button").forEach(btn=>{
-    if(btn.textContent.toLowerCase().includes("reset")){
-      const prior = btn.onclick;
-      btn.onclick = function(evt){
-        if(typeof prior === "function") prior.call(this, evt);
-        syncSpendingPhaseStarts();
-        if(typeof calculate === "function") calculate();
-      };
-    }
-  });
-});
-</script>
-
-
-
-
-
-
-
-
-<script>
-function setFieldDisabled(id, disabled){
-  const node = document.getElementById(id);
-  if(!node) return;
-  node.disabled = !!disabled;
-  node.readOnly = !!disabled;
-  node.style.opacity = disabled ? "0.55" : "1";
-  const field = node.closest(".field");
-  if(field){
-    field.classList.toggle("disabled-by-toggle", !!disabled);
-    if(disabled) field.classList.remove("missing");
-  }
-}
-
-function setIdsDisabled(ids, disabled){
-  ids.forEach(id=>setFieldDisabled(id, disabled));
-}
-
-function updateToggleDependentFields(){
-  const simple = getSelect("simpleMode")==="yes";
-  const useMonthly = getSelect("useMonthlyContribution")==="yes";
-  const useAccounts = getSelect("useAccountModeling")==="yes";
-  const usePhases = getSelect("useAgeBasedSpending")==="yes";
-  const sellRental = getSelect("sellRealEstate")==="yes";
-  const sellPrimary = getSelect("sellRealEstate2")==="yes";
-
-  // First restore all potentially toggle-controlled fields.
-  const controlledIds = [
-    "simpleYears",
-    "currentAge","spouseAge","retireAge","endAge","inflation",
-    "ssAge","spouseSsAge","ssMonthly","spouseSsMonthly","rentalMonthly",
-    "taxRate",
-    "contrib","monthlyContribution",
-    "portfolio",
-    "tradBalance","tradReturn","rothBalance","rothReturn",
-    "taxableBalance","taxableReturn","cashBalance","cashReturn",
-    "rmdStartAge","taxableWithdrawalTaxRate","withdrawalStrategy","totalAccounts",
-    "useAgeBasedSpending","constantRetirementSpending",
-    "spend1Start","spend1End","spend1Amt",
-    "spend2Start","spend2End","spend2Amt",
-    "spend3Start","spend3End","spend3Amt",
-    "inc1Start","inc1End","inc1Amt",
-    "inc2Start","inc2End","inc2Amt",
-    "inc3Start","inc3End","inc3Amt",
-    "exp1Start","exp1End","exp1Amt",
-    "exp2Start","exp2End","exp2Amt",
-    "exp3Start","exp3End","exp3Amt",
-    "college1Start","college1End","college1Amt",
-    "college2Start","college2End","college2Amt",
-    "misc1Age","misc1Amt","misc2Age","misc2Amt","misc3Age","misc3Amt","misc4Age","misc4Amt","misc5Age","misc5Amt",
-    "sellRealEstate","propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate","stopRentalAfterSale",
-    "sellRealEstate2","property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate","rental2Monthly","stopRental2AfterSale"
-  ];
-  setIdsDisabled(controlledIds, false);
-
-  if(simple){
-    // Simple mode keeps only compounding-oriented controls active.
-    const fullOnlyIds = [
-      "currentAge","spouseAge","retireAge","endAge","inflation",
-      "ssAge","spouseSsAge","ssMonthly","spouseSsMonthly","rentalMonthly",
-      "taxRate",
-      "useAgeBasedSpending","constantRetirementSpending",
-      "spend1Start","spend1End","spend1Amt","spend2Start","spend2End","spend2Amt","spend3Start","spend3End","spend3Amt",
-      "inc1Start","inc1End","inc1Amt","inc2Start","inc2End","inc2Amt","inc3Start","inc3End","inc3Amt",
-      "exp1Start","exp1End","exp1Amt","exp2Start","exp2End","exp2Amt","exp3Start","exp3End","exp3Amt",
-      "college1Start","college1End","college1Amt","college2Start","college2End","college2Amt",
-      "misc1Age","misc1Amt","misc2Age","misc2Amt","misc3Age","misc3Amt","misc4Age","misc4Amt","misc5Age","misc5Amt",
-      "sellRealEstate","propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate","stopRentalAfterSale",
-      "sellRealEstate2","property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate","rental2Monthly","stopRental2AfterSale"
-    ];
-    setIdsDisabled(fullOnlyIds, true);
-    setIdsDisabled(["simpleYears"], false);
-  } else {
-    setIdsDisabled(["simpleYears"], true);
-  }
-
-  // Annual vs monthly contribution applies in both modes.
-  setIdsDisabled(["contrib"], useMonthly);
-  setIdsDisabled(["monthlyContribution"], !useMonthly);
-
-  // Single initial portfolio vs account-level modeling.
-  setIdsDisabled(["portfolio"], useAccounts);
-  setIdsDisabled([
-    "tradBalance","tradReturn","rothBalance","rothReturn",
-    "taxableBalance","taxableReturn","cashBalance","cashReturn",
-    "rmdStartAge","taxableWithdrawalTaxRate","withdrawalStrategy","totalAccounts"
-  ], !useAccounts);
-
-  // Spending mode applies only when full retirement model is active.
-  if(!simple){
-    setIdsDisabled(["constantRetirementSpending"], usePhases);
-    setIdsDisabled([
-      "spend1Start","spend1End","spend1Amt",
-      "spend2Start","spend2End","spend2Amt",
-      "spend3Start","spend3End","spend3Amt"
-    ], !usePhases);
-
-    // Rental property sale section.
-    setIdsDisabled([
-      "propertySaleAge","propertyValue","propertyGrowth","mortgageBalance",
-      "mortgagePaydown","sellingCosts","costBasis","capGainExclusion",
-      "capGainTaxRate","stopRentalAfterSale"
-    ], !sellRental);
-
-    // Rental income can remain active even if no sale is modeled.
-    setIdsDisabled(["rentalMonthly"], false);
-
-    // Primary residence sale section.
-    setIdsDisabled([
-      "property2SaleAge","property2Value","property2Growth","mortgage2Balance",
-      "mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion",
-      "capGain2TaxRate","rental2Monthly","stopRental2AfterSale"
-    ], !sellPrimary);
-  }
-
-  if(typeof updateAccountTotal === "function") updateAccountTotal();
-  if(typeof syncSpendingPhaseStarts === "function") syncSpendingPhaseStarts();
-  if(typeof markRequiredFields === "function") markRequiredFields();
-  if(typeof validateRequiredFields === "function") validateRequiredFields();
-}
-
-document.addEventListener("DOMContentLoaded", function(){
-  updateToggleDependentFields();
-
-  ["simpleMode","useMonthlyContribution","useAccountModeling","useAgeBasedSpending","sellRealEstate","sellRealEstate2"].forEach(id=>{
-    const node=document.getElementById(id);
-    if(node){
-      node.addEventListener("change", function(){
-        updateToggleDependentFields();
-        if(typeof calculate==="function") calculate();
-      });
-    }
-  });
-
-  document.querySelectorAll("input,select").forEach(node=>{
-    node.addEventListener("input", function(){
-      if(typeof updateAccountTotal==="function") updateAccountTotal();
-      if(typeof validateRequiredFields==="function") validateRequiredFields();
-    });
-  });
-});
-</script>
-
-
-<script>
-function setFieldHidden(id, hidden){
-  const node = document.getElementById(id);
-  if(!node) return;
-  const field = node.closest(".field");
-  if(field){
-    field.classList.toggle("hidden-by-toggle", !!hidden);
-    if(hidden) field.classList.remove("missing");
-  }
-  node.disabled = !!hidden;
-}
-
-function setIdsHidden(ids, hidden){
-  ids.forEach(id => setFieldHidden(id, hidden));
-}
-
-function restoreToggleControlledFields(){
-  const ids = [
-    "simpleYears",
-    "currentAge","spouseAge","retireAge","endAge","inflation",
-    "ssAge","spouseSsAge","ssMonthly","spouseSsMonthly","rentalMonthly",
-    "taxRate",
-    "contrib","monthlyContribution",
-    "portfolio",
-    "tradBalance","tradReturn","rothBalance","rothReturn",
-    "taxableBalance","taxableReturn","cashBalance","cashReturn",
-    "rmdStartAge","taxableWithdrawalTaxRate","withdrawalStrategy","totalAccounts",
-    "useAgeBasedSpending","constantRetirementSpending",
-    "spend1Start","spend1End","spend1Amt",
-    "spend2Start","spend2End","spend2Amt",
-    "spend3Start","spend3End","spend3Amt",
-    "inc1Start","inc1End","inc1Amt",
-    "inc2Start","inc2End","inc2Amt",
-    "inc3Start","inc3End","inc3Amt",
-    "exp1Start","exp1End","exp1Amt",
-    "exp2Start","exp2End","exp2Amt",
-    "exp3Start","exp3End","exp3Amt",
-    "college1Start","college1End","college1Amt",
-    "college2Start","college2End","college2Amt",
-    "misc1Age","misc1Amt","misc2Age","misc2Amt","misc3Age","misc3Amt","misc4Age","misc4Amt","misc5Age","misc5Amt",
-    "sellRealEstate","propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate","stopRentalAfterSale",
-    "sellRealEstate2","property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate","rental2Monthly","stopRental2AfterSale"
-  ];
-
-  ids.forEach(id=>{
-    const node = document.getElementById(id);
-    if(!node) return;
-    const field = node.closest(".field");
-    if(field){
-      field.classList.remove("hidden-by-toggle");
-      field.classList.remove("disabled-by-toggle");
-    }
-    node.disabled = false;
-    node.readOnly = false;
-    node.style.opacity = "1";
-  });
-}
-
-function updateToggleDependentFields(){
-  const simple = getSelect("simpleMode")==="yes";
-  const useMonthly = getSelect("useMonthlyContribution")==="yes";
-  const useAccounts = getSelect("useAccountModeling")==="yes";
-  const usePhases = getSelect("useAgeBasedSpending")==="yes";
-  const sellRental = getSelect("sellRealEstate")==="yes";
-  const sellPrimary = getSelect("sellRealEstate2")==="yes";
-
-  restoreToggleControlledFields();
-
-  const fullOnlyIds = [
-    "currentAge","spouseAge","retireAge","endAge","inflation",
-    "ssAge","spouseSsAge","ssMonthly","spouseSsMonthly","rentalMonthly",
-    "taxRate",
-    "useAgeBasedSpending","constantRetirementSpending",
-    "spend1Start","spend1End","spend1Amt","spend2Start","spend2End","spend2Amt","spend3Start","spend3End","spend3Amt",
-    "inc1Start","inc1End","inc1Amt","inc2Start","inc2End","inc2Amt","inc3Start","inc3End","inc3Amt",
-    "exp1Start","exp1End","exp1Amt","exp2Start","exp2End","exp2Amt","exp3Start","exp3End","exp3Amt",
-    "college1Start","college1End","college1Amt","college2Start","college2End","college2Amt",
-    "misc1Age","misc1Amt","misc2Age","misc2Amt","misc3Age","misc3Amt","misc4Age","misc4Amt","misc5Age","misc5Amt",
-    "sellRealEstate","propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate","stopRentalAfterSale",
-    "sellRealEstate2","property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate","rental2Monthly","stopRental2AfterSale"
-  ];
-
-  if(simple){
-    setIdsHidden(["simpleYears"], false);
-    setIdsHidden(fullOnlyIds, true);
-  } else {
-    setIdsHidden(["simpleYears"], true);
-  }
-
-  setIdsHidden(["contrib"], useMonthly);
-  setIdsHidden(["monthlyContribution"], !useMonthly);
-
-  setIdsHidden(["portfolio"], useAccounts);
-  setIdsHidden([
-    "tradBalance","tradReturn","rothBalance","rothReturn",
-    "taxableBalance","taxableReturn","cashBalance","cashReturn",
-    "rmdStartAge","taxableWithdrawalTaxRate","withdrawalStrategy","totalAccounts"
-  ], !useAccounts);
-
-  if(!simple){
-    setIdsHidden(["constantRetirementSpending"], usePhases);
-    setIdsHidden([
-      "spend1Start","spend1End","spend1Amt",
-      "spend2Start","spend2End","spend2Amt",
-      "spend3Start","spend3End","spend3Amt"
-    ], !usePhases);
-
-    setIdsHidden([
-      "propertySaleAge","propertyValue","propertyGrowth","mortgageBalance",
-      "mortgagePaydown","sellingCosts","costBasis","capGainExclusion",
-      "capGainTaxRate","stopRentalAfterSale"
-    ], !sellRental);
-
-    setIdsHidden([
-      "property2SaleAge","property2Value","property2Growth","mortgage2Balance",
-      "mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion",
-      "capGain2TaxRate","rental2Monthly","stopRental2AfterSale"
-    ], !sellPrimary);
-  }
-
-  if(typeof updateAccountTotal === "function") updateAccountTotal();
-  if(typeof syncSpendingPhaseStarts === "function") syncSpendingPhaseStarts();
-  if(typeof markRequiredFields === "function") markRequiredFields();
-  if(typeof validateRequiredFields === "function") validateRequiredFields();
-}
-
-document.addEventListener("DOMContentLoaded", function(){
-  updateToggleDependentFields();
-
-  ["simpleMode","useMonthlyContribution","useAccountModeling","useAgeBasedSpending","sellRealEstate","sellRealEstate2"].forEach(id=>{
-    const node=document.getElementById(id);
-    if(node){
-      node.addEventListener("change", function(){
-        updateToggleDependentFields();
-        if(typeof calculate==="function") calculate();
-      });
-    }
-  });
-});
-</script>
-
-
-<script>
-const MONEY_FIELD_IDS = ["portfolio", "contrib", "monthlyContribution", "ssMonthly", "spouseSsMonthly", "rentalMonthly", "propertyValue", "mortgageBalance", "mortgagePaydown", "costBasis", "capGainExclusion", "property2Value", "mortgage2Balance", "mortgage2Paydown", "cost2Basis", "capGain2Exclusion", "rental2Monthly", "spend1Amt", "spend2Amt", "spend3Amt", "constantRetirementSpending", "inc1Amt", "inc2Amt", "inc3Amt", "exp1Amt", "exp2Amt", "exp3Amt", "college1Amt", "college2Amt", "misc1Amt", "misc2Amt", "misc3Amt", "misc4Amt", "misc5Amt", "tradBalance", "rothBalance", "taxableBalance", "cashBalance", "totalAccounts", "preMedHealthcareAnnual", "medicareAnnualPerPerson", "annualRothConversion"];
-
-function formatMoneyInputValue(value){
-  const raw = String(value || "").replace(/[^0-9.-]/g, "");
-  if(raw === "" || raw === "-" || raw === "." || raw === "-.") return raw;
-  const isNegative = raw.startsWith("-");
-  const cleaned = raw.replace(/-/g, "");
-  const parts = cleaned.split(".");
-  const whole = parts[0] || "";
-  const decimals = parts.length > 1 ? "." + parts.slice(1).join("").slice(0, 2) : "";
-  const formattedWhole = whole.replace(/^0+(?=\d)/, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  return (isNegative ? "-" : "") + (formattedWhole || "0") + decimals;
-}
-
-function formatMoneyInputNode(node){
-  if(!node) return;
-  node.value = formatMoneyInputValue(node.value);
-}
-
-function setupMoneyFormatting(){
-  MONEY_FIELD_IDS.forEach(id => {
-    const node = document.getElementById(id);
-    if(!node) return;
-
-    node.addEventListener("input", function(){
-      const cursorAtEnd = node.selectionStart === node.value.length;
-      formatMoneyInputNode(node);
-      if(cursorAtEnd && node.setSelectionRange) node.setSelectionRange(node.value.length, node.value.length);
-      if(typeof updateAccountTotal === "function") updateAccountTotal();
-      if(typeof validateRequiredFields === "function") validateRequiredFields();
-    });
-
-    node.addEventListener("blur", function(){
-      formatMoneyInputNode(node);
-    });
-
-    formatMoneyInputNode(node);
-  });
-}
-
-document.addEventListener("DOMContentLoaded", setupMoneyFormatting);
-</script>
-
-
-<script>
-let INITIAL_PAGE_VALUES = null;
-
-function captureInitialPageValues(){
-  INITIAL_PAGE_VALUES = {};
-  document.querySelectorAll("input, select, textarea").forEach(node=>{
-    if(!node.id) return;
-    INITIAL_PAGE_VALUES[node.id] = {
-      value: node.value,
-      selectedIndex: node.tagName === "SELECT" ? node.selectedIndex : null,
-      checked: node.type === "checkbox" || node.type === "radio" ? node.checked : null
-    };
-  });
-}
-
-function resetToInitialPageValues(){
-  if(!INITIAL_PAGE_VALUES) captureInitialPageValues();
-
-  Object.keys(INITIAL_PAGE_VALUES).forEach(id=>{
-    const node = document.getElementById(id);
-    if(!node) return;
-
-    const saved = INITIAL_PAGE_VALUES[id];
-
-    if(node.tagName === "SELECT" && saved.selectedIndex !== null) {
-      node.selectedIndex = saved.selectedIndex;
-    }
-
-    node.value = saved.value;
-
-    if(saved.checked !== null) {
-      node.checked = saved.checked;
-    }
-  });
-
-  if(typeof setupMoneyFormatting === "function") setupMoneyFormatting();
-  if(typeof updateAccountTotal === "function") updateAccountTotal();
-  if(typeof syncLinkedAges === "function") syncLinkedAges();
-  if(typeof syncSpendingPhaseStarts === "function") syncSpendingPhaseStarts();
-  if(typeof updateToggleDependentFields === "function") updateToggleDependentFields();
-  if(typeof updateSpendingModeUI === "function") updateSpendingModeUI();
-
-  if(typeof clearMC === "function") clearMC();
-  if(typeof calculate === "function") calculate();
-  if(typeof markRequiredFields === "function") markRequiredFields();
-  if(typeof validateRequiredFields === "function") validateRequiredFields();
-}
-
-document.addEventListener("DOMContentLoaded", function(){
-  // Capture after all default values are loaded, but before user interaction.
-  setTimeout(captureInitialPageValues, 0);
-
-  document.querySelectorAll("button").forEach(btn=>{
-    if(btn.textContent && btn.textContent.toLowerCase().includes("reset")){
-      btn.onclick = function(evt){
-        if(evt) evt.preventDefault();
-        resetToInitialPageValues();
-      };
-    }
-  });
-});
-</script>
-
-
-<script>
-function updateReturnRateLabelForAccountMode(){
-  const label = document.getElementById("returnRateLabel");
-  const info = document.getElementById("returnRateInfo");
-  const useAccounts = (typeof getSelect === "function" ? getSelect("useAccountModeling") : "") === "yes";
-
-  if(!label) return;
-
-  const icon = info || label.querySelector(".info");
-
-  if(useAccounts){
-    label.childNodes[0].nodeValue = "Fallback Growth Rate % ";
-    if(icon){
-      icon.setAttribute("data-tooltip", "Fallback annual growth rate used only when an account-specific growth rate is blank or zero. Low/Medium/High scenarios still use Growth Variance Range ± %.");
-    }
-  } else {
-    label.childNodes[0].nodeValue = "Annual Interest Rate % ";
-    if(icon){
-      icon.setAttribute("data-tooltip", "Expected nominal annual return before inflation. This is the primary portfolio return assumption when account-level modeling is off.");
-    }
-  }
-}
-
-document.addEventListener("DOMContentLoaded", function(){
-  updateReturnRateLabelForAccountMode();
-
-  const accountToggle = document.getElementById("useAccountModeling");
-  if(accountToggle){
-    accountToggle.addEventListener("change", updateReturnRateLabelForAccountMode);
-  }
-});
-</script>
-
-
-<script>
-/* Advanced planning extension: tax estimate, healthcare/IRMAA, Roth conversions, historical sequence stress, survivor scenario. */
-const HISTORICAL_START_YEAR = 1928;
-
-function estimateFederalTaxFromTaxable(taxableIncome, filingStatus){
-  const income = Math.max(0, taxableIncome || 0);
-  const mfj = filingStatus !== "single";
-  const brackets = mfj
-    ? [[23200,0.10],[94300,0.12],[201050,0.22],[383900,0.24],[487450,0.32],[731200,0.35],[Infinity,0.37]]
-    : [[11600,0.10],[47150,0.12],[100525,0.22],[191950,0.24],[243725,0.32],[609350,0.35],[Infinity,0.37]];
-  let tax = 0, prev = 0;
-  for(const [limit,rate] of brackets){
-    if(income > prev){
-      const amt = Math.min(income, limit) - prev;
-      tax += amt * rate;
-      prev = limit;
-    }
-    if(income <= limit) break;
-  }
-  return tax;
-}
-
-function estimateTax(ordinaryIncome, ssIncome, taxableGainIncome, filingStatus){
-  if(getSelect("useDetailedTaxModel") !== "yes"){
-    return Math.max(0, ordinaryIncome || 0) * (getVal("taxRate")/100);
-  }
-  const mfj = filingStatus !== "single";
-  const standardDeduction = mfj ? 29200 : 14600;
-  const provisional = Math.max(0, ordinaryIncome || 0) + Math.max(0, taxableGainIncome || 0) + 0.5*Math.max(0, ssIncome || 0);
-  const ssBase1 = mfj ? 32000 : 25000;
-  const ssBase2 = mfj ? 44000 : 34000;
-  let taxableSS = 0;
-  if(provisional > ssBase2) taxableSS = Math.min(0.85*ssIncome, 0.85*(provisional-ssBase2) + Math.min(0.5*ssIncome, mfj ? 6000 : 4500));
-  else if(provisional > ssBase1) taxableSS = Math.min(0.5*ssIncome, 0.5*(provisional-ssBase1));
-  const taxableIncome = Math.max(0, ordinaryIncome + taxableGainIncome + taxableSS - standardDeduction);
-  const federal = estimateFederalTaxFromTaxable(taxableIncome, filingStatus);
-  const state = Math.max(0, ordinaryIncome + taxableGainIncome + taxableSS) * (getVal("stateTaxRate")/100);
-  return federal + state;
-}
-
-function estimateHealthcareCost(age, spouseCurrent, filingStatus, ordinaryIncome, ssIncome, taxableGainIncome, survivorActive){
-  const preMed = getVal("preMedHealthcareAnnual");
-  const medicarePer = getVal("medicareAnnualPerPerson");
-  const medicareAge = getVal("medicareAge") || 65;
-  const people = survivorActive ? 1 : 2;
-  let cost = 0;
-  if(people === 1){
-    const survivorAge = age;
-    cost = survivorAge >= medicareAge ? medicarePer : preMed/2;
-  } else {
-    cost += age >= medicareAge ? medicarePer : preMed/2;
-    cost += spouseCurrent >= medicareAge ? medicarePer : preMed/2;
-  }
-  if(getSelect("includeIRMAA") === "yes"){
-    const magi = Math.max(0, ordinaryIncome + taxableGainIncome + Math.min(ssIncome*0.85, ssIncome));
-    const threshold = filingStatus === "single" ? 109000 : 218000;
-    const medicarePeople = people === 1 ? (age >= medicareAge ? 1 : 0) : (age >= medicareAge ? 1 : 0) + (spouseCurrent >= medicareAge ? 1 : 0);
-    let surcharge = 0;
-    if(magi > threshold*2.5) surcharge = 5000;
-    else if(magi > threshold*1.5) surcharge = 3000;
-    else if(magi > threshold) surcharge = 1000;
-    cost += surcharge * medicarePeople;
-  }
-  return Math.max(0, cost);
-}
-
-function getAnnualReturnForMode(randomize, returnAdjustmentPct, yearIndex, options){
-  if(randomize === "sequence"){
-    const idx = ((options && options.sequenceStart ? options.sequenceStart : 0) + yearIndex) % HISTORICAL_STOCK_RETURNS.length;
-    return HISTORICAL_STOCK_RETURNS[idx];
-  }
-  if(randomize === true) return randomHistoricalStockReturn();
-  return getVal("returnRate")/100 + (returnAdjustmentPct || 0);
-}
-
-function getAnnualInflationForMode(randomize, yearIndex, options){
-  if(randomize === "sequence"){
-    const idx = ((options && options.sequenceStart ? options.sequenceStart : 0) + yearIndex) % HISTORICAL_INFLATION_RATES.length;
-    return HISTORICAL_INFLATION_RATES[idx];
-  }
-  if(randomize === true) return randomHistoricalInflation();
-  return getVal("inflation")/100;
-}
-
-function simulateFull(randomize, returnAdjustmentPct=0, options={}){
- const currentAge=getVal("currentAge"),spouseAge=getVal("spouseAge"),retireAge=getVal("retireAge"),endAge=getVal("endAge");
- let accounts=getStartingAccounts();
- const baseInf=getVal("inflation")/100,ssAge=getVal("ssAge"),spouseSsAge=getVal("spouseSsAge")||getVal("ssAge"),yourSsMonthly=getVal("ssMonthly"),spouseSsMonthly=getVal("spouseSsMonthly"),rentalAnnual=getVal("rentalMonthly")*12,taxRate=getVal("taxRate")/100,feeRate=getVal("feeRate")/100,taxableTaxRate=getVal("taxableWithdrawalTaxRate")/100,strategy=getSelect("withdrawalStrategy")||"taxAware";
- let infFactor=1,propertyFactor=1,propertyFactor2=1,soldProperty=false,soldProperty2=false,totalRothConversions=0,totalEstimatedTax=0;
- const survivorScenario = options.survivor === true || getSelect("enableSurvivorScenario")==="yes";
- const firstDeathPerson = getSelect("firstDeathPerson") || "you";
- const firstDeathAge = getVal("firstDeathAge");
- const survivorPct = (getVal("survivorSpendingPct") || 80) / 100;
- const rows=[];
- for(let age=currentAge;age<=endAge;age++){
-  const yearIndex=age-currentAge,spouseCurrent=spouseAge+yearIndex,startPortfolio=accountTotal(accounts);
-  let yearInterest=0,yearContribution=0,yearWithdrawal=0,bsAnnual=0,eeAnnual=0,totalSpendAnnual=0,biAnnual=0,ssIncomeAnnual=0,eiAnnual=0,rmdAnnual=0,healthcareAnnual=0,estimatedTaxAnnual=0,rothConversionAnnual=0,ordinaryIncomeAnnual=0,taxableGainIncomeAnnual=0,propertySale=0,propertySale2=0;
-  let propertyInfo={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0},propertyInfo2={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};
-  const survivorActive = survivorScenario && firstDeathAge>0 && age>=firstDeathAge;
-  const filingStatus = survivorActive ? "single" : (getSelect("filingStatus") || "mfj");
-  const annualReturn=getAnnualReturnForMode(randomize, returnAdjustmentPct, yearIndex, options),annualInflation=getAnnualInflationForMode(randomize, yearIndex, options),monthlyInflation=Math.pow(1+annualInflation,1/12)-1;
-  const monthlyPropertyGrowth=Math.pow(1+(randomize===true?randomPropertyGrowth(getVal("propertyGrowth")/100):getVal("propertyGrowth")/100),1/12)-1;
-  const monthlyProperty2Growth=Math.pow(1+(randomize===true?randomPropertyGrowth(getVal("property2Growth")/100):getVal("property2Growth")/100),1/12)-1;
-  for(let m=1;m<=12;m++){
-   const currentMonthIndex=yearIndex*12+m;
-   if(currentMonthIndex>1){infFactor*=1+monthlyInflation;propertyFactor*=1+monthlyPropertyGrowth;propertyFactor2*=1+monthlyProperty2Growth;}
-   if(getSelect("sellRealEstate")==="yes"&&age===getVal("propertySaleAge")&&m===1&&!soldProperty){propertyInfo=calcPropertySaleInfo(age,propertyFactor);propertySale=propertyInfo.saleProceeds;accounts.taxable+=propertySale;soldProperty=true;taxableGainIncomeAnnual+=propertyInfo.gain||0;}
-   if(getSelect("sellRealEstate2")==="yes"&&age===getVal("property2SaleAge")&&m===1&&!soldProperty2){propertyInfo2=calcPropertySaleInfo2(age,propertyFactor2);propertySale2=propertyInfo2.saleProceeds;accounts.taxable+=propertySale2;soldProperty2=true;taxableGainIncomeAnnual+=propertyInfo2.gain||0;}
-   yearInterest+=applyAccountMonthlyGrowth(accounts,annualReturn,feeRate);
-   if(age<retireAge){
-     const c=monthlyContributionAmount();if(accountModelEnabled())accounts.trad+=c;else accounts.taxable+=c;yearContribution+=c;
-     const college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,m,infFactor),need=college/12+misc;
-     if(need>0){const w=withdrawForNetNeed(accounts,need,taxRate,taxableTaxRate,strategy);yearWithdrawal+=w.grossWithdrawal;ordinaryIncomeAnnual+=w.details.trad||0;taxableGainIncomeAnnual+=(w.details.taxable||0)*0.5;eeAnnual+=need;totalSpendAnnual+=need;}
-   }else{
-     let bs=baseSpending(age,infFactor),college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,m,infFactor),eeBase=extraExpenses(age,infFactor);
-     if(survivorActive){bs*=survivorPct;eeBase*=survivorPct;}
-     let bi=soldProperty?0:rentalAnnual*infFactor;
-     let yourSS = age>=ssAge ? yourSsMonthly : 0;
-     let spouseSS = spouseCurrent>=spouseSsAge ? spouseSsMonthly : 0;
-     if(survivorActive){
-       const survivorSS = Math.max(yourSS, spouseSS);
-       yourSS = survivorSS; spouseSS = 0;
-       if(firstDeathPerson === "you" && spouseSS > yourSS) { yourSS = spouseSS; spouseSS = 0; }
-     }
-     const monthlySsIncome=(survivorActive?Math.max(yourSS,spouseSS):yourSS+spouseSS),ssGrowthFactor=Math.pow(1+(typeof SS_COLA_RATE==="number"?SS_COLA_RATE:0.025),age-currentAge),annualSsIncome=monthlySsIncome*12*ssGrowthFactor;
-     bi+=annualSsIncome;const ei=extraIncome(age,infFactor);
-     const projectedOrdinaryForHealth = ordinaryIncomeAnnual + annualSsIncome*0.85;
-     const healthAnnual = estimateHealthcareCost(age, spouseCurrent, filingStatus, projectedOrdinaryForHealth, annualSsIncome, taxableGainIncomeAnnual, survivorActive);
-     const healthMonthly = healthAnnual/12;
-     healthcareAnnual += healthMonthly;
-     let monthlyNeed=Math.max(0,(bs/12)+(eeBase/12)+(college/12)+misc+healthMonthly-(bi/12)-(ei/12));
-     const rmdStart=getVal("rmdStartAge")||73;
-     if(age>=rmdStart&&m===1&&accounts.trad>0){
-       const divisor=rmdDivisor(age),rmd=divisor?accounts.trad/divisor:0,actual=withdrawFromAccount(accounts,"trad",rmd);
-       rmdAnnual+=actual;yearWithdrawal+=actual;ordinaryIncomeAnnual+=actual;const rmdNet=actual*(1-taxRate);
-       monthlyNeed=Math.max(0,monthlyNeed-rmdNet);
-       if(rmdNet>monthlyNeed)accounts.taxable+=Math.max(0,rmdNet-monthlyNeed);
-     }
-     if(m===1 && getVal("annualRothConversion")>0 && age>=getVal("rothConversionStartAge") && age<=getVal("rothConversionEndAge") && accounts.trad>0){
-       const conversion=Math.min(accounts.trad,getVal("annualRothConversion"));
-       accounts.trad-=conversion;accounts.roth+=conversion;rothConversionAnnual+=conversion;totalRothConversions+=conversion;ordinaryIncomeAnnual+=conversion;
-       const conversionTax=estimateTax(conversion,0,0,filingStatus);
-       const taxPay=withdrawForNetNeed(accounts,conversionTax, taxRate, taxableTaxRate, strategy);
-       yearWithdrawal+=taxPay.grossWithdrawal;estimatedTaxAnnual+=conversionTax;
-     }
-     const w=withdrawForNetNeed(accounts,monthlyNeed,taxRate,taxableTaxRate,strategy);yearWithdrawal+=w.grossWithdrawal;ordinaryIncomeAnnual+=w.details.trad||0;taxableGainIncomeAnnual+=(w.details.taxable||0)*0.5;
-     bsAnnual+=bs/12;eeAnnual+=(eeBase/12)+(college/12)+misc+healthMonthly;totalSpendAnnual+=(bs/12)+(eeBase/12)+(college/12)+misc+healthMonthly;biAnnual+=bi/12;ssIncomeAnnual+=annualSsIncome/12;eiAnnual+=ei/12;
-   }
-  }
-  estimatedTaxAnnual += estimateTax(ordinaryIncomeAnnual, ssIncomeAnnual, taxableGainIncomeAnnual, filingStatus);
-  totalEstimatedTax += estimatedTaxAnnual;
-  const endPortfolio=accountTotal(accounts);
-  rows.push({age,spouseAge:spouseCurrent,startPortfolio,propertySale,propertySale2,propertyInfo,propertyInfo2,contribution:yearContribution,growth:yearInterest,bs:bsAnnual,ee:eeAnnual,totalSpend:totalSpendAnnual,bi:biAnnual,ssIncome:ssIncomeAnnual,ei:eiAnnual,withdrawal:yearWithdrawal,rmd:rmdAnnual,tradEnd:accounts.trad,rothEnd:accounts.roth,taxableEnd:accounts.taxable,cashEnd:accounts.cash,healthcare:healthcareAnnual,estimatedTax:estimatedTaxAnnual,rothConversion:rothConversionAnnual,totalEstimatedTax,totalRothConversions,endPortfolio});
- }
- return rows;
-}
-
-function runHistoricalSequenceStress(){
- if(getSelect("runSequenceStress")!=="yes") return null;
- let worstEnding=Infinity,worstStart=HISTORICAL_START_YEAR,successes=0,count=0;
- for(let i=0;i<HISTORICAL_STOCK_RETURNS.length;i++){
-   const rows=simulateFull("sequence",0,{sequenceStart:i});
-   if(!rows.length) continue;
-   const ending=rows[rows.length-1].endPortfolio;
-   const failed=rows.some(r=>r.endPortfolio<=0);
-   if(!failed) successes++;
-   if(ending<worstEnding){worstEnding=ending;worstStart=HISTORICAL_START_YEAR+i;}
-   count++;
- }
- return {worstEnding,worstStart,successRate:count?successes/count:0};
-}
-
-function renderAdvancedMetrics(rows){
- const last=rows&&rows.length?rows[rows.length-1]:null;
- if(el("lastYearTaxEstimate"))el("lastYearTaxEstimate").textContent=fmtMoney(last?last.estimatedTax||0:0);
- if(el("lastYearHealthcareEstimate"))el("lastYearHealthcareEstimate").textContent=fmtMoney(last?last.healthcare||0:0);
- if(el("totalRothConversions"))el("totalRothConversions").textContent=fmtMoney(last?last.totalRothConversions||0:0);
- const stress=runHistoricalSequenceStress();
- if(el("historicalWorstSequence"))el("historicalWorstSequence").textContent=stress?fmtMoney(stress.worstEnding):"—";
- if(el("historicalWorstStartYear"))el("historicalWorstStartYear").textContent=stress?String(stress.worstStart):"—";
- if(el("historicalSequenceSuccess"))el("historicalSequenceSuccess").textContent=stress?fmtPct(stress.successRate):"—";
- if(getSelect("enableSurvivorScenario")==="yes"){
-   const survivorRows=simulateFull(false,0,{survivor:true});
-   const survivorLast=survivorRows.length?survivorRows[survivorRows.length-1]:null;
-   const dep=survivorRows.find(r=>r.endPortfolio<=0);
-   if(el("survivorScenarioEnding"))el("survivorScenarioEnding").textContent=survivorLast?fmtMoney(survivorLast.endPortfolio):"—";
-   if(el("survivorDepletionAge"))el("survivorDepletionAge").textContent=dep?String(dep.age):"None";
- } else {
-   if(el("survivorScenarioEnding"))el("survivorScenarioEnding").textContent="—";
-   if(el("survivorDepletionAge"))el("survivorDepletionAge").textContent="—";
- }
-}
-
-if(typeof renderTable === "function" && !window.__advancedRenderTableWrapped){
-  window.__advancedRenderTableWrapped=true;
-  const oldRenderTable=renderTable;
-  renderTable=function(rows,lowRows=[],highRows=[]){
-    oldRenderTable(rows,lowRows,highRows);
-    const body=el("projectionBody");
-    if(body && rows && rows.length){
-      Array.from(body.rows).forEach((tr,i)=>{
-        const r=rows[i]||{};
-        const cells=Array.from(tr.cells);
-        const ssIdx=cells.findIndex((td,idx)=>idx>0 && td.textContent===fmtMoney(r.ssIncome||0));
-        // Append extra values near the end if header was extended but old renderer did not include them.
-        const expectedMin=23;
-        if(cells.length<expectedMin){
-          [fmtMoney(r.healthcare||0),fmtMoney(r.estimatedTax||0),fmtMoney(r.rothConversion||0)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td);});
-        }
-      });
-    }
-    renderAdvancedMetrics(rows);
-  };
-}
-</script>
-
-
-<script>
-/* Correct annual table rendering with advanced planning columns in the same order as the header. */
-renderTable = function(rows,lowRows=[],highRows=[]){
- const body=el("projectionBody");
- if(!body) return;
- body.innerHTML="";
- rows.forEach((r,i)=>{
-  const low=(lowRows&&lowRows[i])?lowRows[i].endPortfolio:r.endPortfolio;
-  const med=r.endPortfolio;
-  const high=(highRows&&highRows[i])?highRows[i].endPortfolio:r.endPortfolio;
-  const tr=document.createElement("tr");
-  [
-    r.age,
-    r.spouseAge,
-    fmtMoney(r.startPortfolio),
-    fmtMoney(r.propertySale),
-    fmtMoney(r.propertySale2),
-    fmtMoney(r.contribution),
-    fmtMoney(r.growth),
-    fmtMoney(r.bs),
-    fmtMoney(r.ee),
-    fmtMoney(r.totalSpend),
-    fmtMoney(r.bi),
-    fmtMoney(r.ssIncome||0),
-    fmtMoney(r.healthcare||0),
-    fmtMoney(r.estimatedTax||0),
-    fmtMoney(r.rothConversion||0),
-    fmtMoney(r.ei),
-    fmtMoney(r.withdrawal),
-    fmtMoney(r.rmd||0),
-    fmtMoney(r.tradEnd||0),
-    fmtMoney(r.rothEnd||0),
-    fmtMoney(r.taxableEnd||0),
-    fmtMoney(r.cashEnd||0),
-    fmtMoney(low),
-    fmtMoney(med),
-    fmtMoney(high),
-    fmtMoney(r.endPortfolio)
-  ].forEach(v=>{
-    const td=document.createElement("td");
-    td.textContent=v;
-    tr.appendChild(td);
-  });
-  body.appendChild(tr);
- });
- if(typeof renderAdvancedMetrics==="function") renderAdvancedMetrics(rows);
-};
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script>
-const ADVANCED_EXCLUDED_CORE_IDS = new Set([
-  "useAgeBasedSpending","constantRetirementSpending",
-  "spend1Start","spend1End","spend1Amt","spend2Start","spend2End","spend2Amt","spend3Start","spend3End","spend3Amt",
-  "inc1Start","inc1End","inc1Amt","inc2Start","inc2End","inc2Amt","inc3Start","inc3End","inc3Amt",
-  "exp1Start","exp1End","exp1Amt","exp2Start","exp2End","exp2Amt","exp3Start","exp3End","exp3Amt",
-  "college1Start","college1End","college1Amt","college2Start","college2End","college2Amt",
-  "misc1Label","misc1Age","misc1Amt","misc2Label","misc2Age","misc2Amt","misc3Label","misc3Age","misc3Amt","misc4Label","misc4Age","misc4Amt","misc5Label","misc5Age","misc5Amt"
-]);
-
-const ADVANCED_EXACT_IDS = new Set([
-  "useDetailedTaxEstimate","filingStatus","stateTaxRate",
-  "preMedicareHealthcareAnnual","medicareHealthcareAnnual","medicareStartAge","includeIrmaaEstimate",
-  "annualRothConversion","rothConversionStartAge","rothConversionEndAge",
-  "runHistoricalSequenceStress",
-  "enableSurvivorScenario","firstDeath","firstDeathAge","survivorSpendingPct",
-  // fallback variants from prior builds
-  "useDetailedTaxes","detailedTaxEstimate","stateTaxPct","healthcareAnnual","medicareAnnual",
-  "irmaaEstimate","rothConversionAnnual","rothConversionStart","rothConversionEnd",
-  "historicalSequenceStress","survivorScenario","deathScenario","survivorSpendingPercent"
-]);
-
-const ADVANCED_LABEL_PATTERNS = [
-  /detailed tax/i,
-  /filing status/i,
-  /state tax/i,
-  /pre[-\s]?medicare/i,
-  /medicare healthcare/i,
-  /medicare start/i,
-  /irmaa/i,
-  /roth conversion/i,
-  /historical sequence/i,
-  /survivor scenario/i,
-  /first death/i,
-  /survivor spending/i
+  
+  
+  
+  
+  
+  "contribCashAnnual"];
+
+const ACCOUNT_FIELD_IDS=[
+  "tradYouBalance","tradYouReturn","tradSpouseBalance","tradSpouseReturn",
+  "rothYouBalance","rothYouReturn","rothSpouseBalance","rothSpouseReturn",
+  "taxableBalance","taxableReturn","cashBalance","cashReturn",
+  "contribTradYouAnnual","contribTradSpouseAnnual","contribRothYouAnnual","contribRothSpouseAnnual","contribTaxableAnnual","contribCashAnnual",
+  "rmdStartAge","taxableWithdrawalTaxRate","withdrawalStrategy","totalAccounts"
 ];
 
-function isAdvancedOnlyField(field){
-  if(!field || !field.querySelectorAll) return false;
+const ADVANCED_FIELD_IDS=[
+  "useDetailedTaxModel","useDetailedTaxEstimate","filingStatus","stateTaxRate",
+  "preMedHealthcareAnnual","preMedicareHealthcareAnnual","medicareAnnualPerPerson","medicareHealthcareAnnual","medicareAge","medicareStartAge","includeIRMAA","includeIrmaaEstimate",
+  "annualRothConversion","rothConversionStartAge","rothConversionEndAge","runSequenceStress","runHistoricalSequenceStress",
+  "enableSurvivorScenario","firstDeathPerson","firstDeath","firstDeathAge","survivorSpendingPct"
+];
 
-  const controls = Array.from(field.querySelectorAll("input, select, textarea"));
-  if(!controls.length) return false;
-
-  // Never hide the master toggle itself.
-  if(controls.some(c => c.id === "useAdvancedPlanning")) return false;
-
-  // Never hide core-independent fields.
-  if(controls.some(c => ADVANCED_EXCLUDED_CORE_IDS.has(c.id))) return false;
-
-  // Hide known advanced IDs.
-  if(controls.some(c => ADVANCED_EXACT_IDS.has(c.id))) return true;
-
-  const text = (field.textContent || "").trim();
-  return ADVANCED_LABEL_PATTERNS.some(pattern => pattern.test(text));
-}
-
-function getAdvancedOnlyFields(){
-  return Array.from(document.querySelectorAll(".field")).filter(isAdvancedOnlyField);
-}
-
-function updateAdvancedPlanningVisibility(){
-  const master = document.getElementById("useAdvancedPlanning");
-  const useAdvanced = master && master.value === "yes";
-
-  getAdvancedOnlyFields().forEach(field => {
-    field.classList.toggle("hidden-by-advanced-toggle", !useAdvanced);
-    if(!useAdvanced) field.classList.remove("missing");
-
-    field.querySelectorAll("input, select, textarea").forEach(node => {
-      node.disabled = !useAdvanced;
-      if(!useAdvanced && ["useDetailedTaxEstimate","includeIrmaaEstimate","runHistoricalSequenceStress","enableSurvivorScenario"].includes(node.id)) {
-        node.value = "no";
-      }
-    });
-  });
-
-  // Unhide core-independent fields in case older code marked them.
-  ADVANCED_EXCLUDED_CORE_IDS.forEach(id => {
-    const node = document.getElementById(id);
-    if(!node) return;
-    const field = node.closest(".field");
-    if(field) field.classList.remove("hidden-by-advanced-toggle");
-  });
-
-  // Unhide core section headers in case older code marked them.
-  const coreTitles = [
-    "Monte Carlo Simulation",
-    "Retirement Spending",
-    "Age-Based Spending Phases",
-    "Age-Based Extra Income",
-    "Age-Based Extra Expenses",
-    "College Payments for Children",
-    "Miscellaneous One-Time Expenses"
-  ];
-  document.querySelectorAll("h3").forEach(h => {
-    const text = (h.textContent || "").trim();
-    if(coreTitles.some(title => text.startsWith(title))) {
-      h.classList.remove("hidden-by-advanced-toggle");
-      h.style.display = "";
-    }
-  });
-
-  if(typeof markRequiredFields === "function") markRequiredFields();
-  if(typeof validateRequiredFields === "function") validateRequiredFields();
-}
-
-document.addEventListener("DOMContentLoaded", function(){
-  updateAdvancedPlanningVisibility();
-
-  const node = document.getElementById("useAdvancedPlanning");
-  if(node){
-    node.addEventListener("change", function(){
-      updateAdvancedPlanningVisibility();
-      if(typeof calculate === "function") calculate();
-    });
-  }
-});
-</script>
-
-
-
-
-
-<script>
-function getNextMiscExpenseIndex(){
-  let max=0;
-  document.querySelectorAll("#miscExpenseBody input[id^='misc']").forEach(node=>{
-    const m=node.id.match(/^misc(\d+)/);
-    if(m) max=Math.max(max,parseInt(m[1],10));
-  });
-  return max+1;
-}
-
-function wireMiscRowInputs(row){
-  if(!row) return;
-
-  row.querySelectorAll("input").forEach(node=>{
-    node.addEventListener("input", function(){
-      if(node.id && node.id.endsWith("Amt") && typeof formatMoneyInputNode === "function"){
-        const cursorAtEnd = node.selectionStart === node.value.length;
-        formatMoneyInputNode(node);
-        if(cursorAtEnd && node.setSelectionRange) node.setSelectionRange(node.value.length, node.value.length);
-      }
-      if(typeof validateRequiredFields === "function") validateRequiredFields();
-      if(typeof calculate === "function") calculate();
-    });
-
-    node.addEventListener("change", function(){
-      if(typeof calculate === "function") calculate();
-    });
-
-    node.addEventListener("blur", function(){
-      if(node.id && node.id.endsWith("Amt") && typeof formatMoneyInputNode === "function"){
-        formatMoneyInputNode(node);
-      }
-    });
-
-    if(node.id && node.id.endsWith("Amt") && typeof formatMoneyInputNode === "function"){
-      formatMoneyInputNode(node);
-    }
-  });
-}
-
-function addMiscExpenseRow(){
-  const body=document.getElementById("miscExpenseBody");
-  if(!body) return;
-
-  const idx=getNextMiscExpenseIndex();
-  const tr=document.createElement("tr");
-  tr.innerHTML =
-    '<td><input id="misc'+idx+'Label" type="text" value="" placeholder="Expense '+idx+'"></td>' +
-    '<td><input id="misc'+idx+'Age" type="number" value="0"></td>' +
-    '<td><input id="misc'+idx+'Amt" type="text" inputmode="decimal" value="0" step="1000"></td>' +
-    '<td><button type="button" class="secondary misc-remove-btn">Remove</button></td>';
-
-  body.appendChild(tr);
-  wireMiscRowInputs(tr);
-
-  if(typeof calculate === "function") calculate();
-}
-
-function removeMiscExpenseRow(button){
-  const row=button ? button.closest("tr") : null;
-  if(!row) return;
-  row.remove();
-
-  if(typeof validateRequiredFields === "function") validateRequiredFields();
-  if(typeof calculate === "function") calculate();
-}
-
-document.addEventListener("DOMContentLoaded", function(){
-  document.querySelectorAll("#miscExpenseBody tr").forEach(wireMiscRowInputs);
-
-  const btn=document.getElementById("addMiscExpenseBtn");
-  if(btn){
-    btn.addEventListener("click", function(evt){
-      evt.preventDefault();
-      addMiscExpenseRow();
-    });
-  }
-
-  const body=document.getElementById("miscExpenseBody");
-  if(body){
-    body.addEventListener("click", function(evt){
-      const target=evt.target;
-      if(target && target.classList && target.classList.contains("misc-remove-btn")){
-        evt.preventDefault();
-        removeMiscExpenseRow(target);
-      }
-    });
-  }
-});
-</script>
-
-
-<script>
 const RETIREMENT_STATE_TAX_RATE_ESTIMATES = {
   "Alabama": 14.0,
   "Alaska": 11.0,
@@ -2501,30 +1166,487 @@ const RETIREMENT_STATE_TAX_RATE_ESTIMATES = {
   "Wyoming": 11.0
 };
 
-function estimateEffectiveTaxRateForState(state){
-  if(!state || !RETIREMENT_STATE_TAX_RATE_ESTIMATES.hasOwnProperty(state)) return null;
-  return RETIREMENT_STATE_TAX_RATE_ESTIMATES[state];
+function safeMoneyValue(id){
+  const node=document.getElementById(id);
+  if(!node)return 0;
+  const n=parseFloat(String(node.value||"").replace(/[$,\s]/g,""));
+  return isFinite(n)?n:0;
 }
 
-function updateEffectiveTaxRateFromState(){
-  const stateNode = document.getElementById("retirementState");
-  const taxNode = document.getElementById("taxRate");
-  if(!stateNode || !taxNode) return;
+function formatMoneyInputValue(value){
+  const raw=String(value||"").replace(/[^0-9.-]/g,"");
+  if(raw===""||raw==="-"||raw==="."||raw==="-.")return raw;
+  const neg=raw.startsWith("-");
+  const cleaned=raw.replace(/-/g,"");
+  const parts=cleaned.split(".");
+  const whole=parts[0]||"";
+  const decimals=parts.length>1?"."+parts.slice(1).join("").slice(0,2):"";
+  const formattedWhole=whole.replace(/^0+(?=\d)/,"").replace(/\B(?=(\d{3})+(?!\d))/g,",");
+  return (neg?"-":"")+(formattedWhole||"0")+decimals;
+}
+function formatMoneyInputNode(node){if(node)node.value=formatMoneyInputValue(node.value);}
 
-  const rate = estimateEffectiveTaxRateForState(stateNode.value);
-  if(rate === null) return;
-
-  taxNode.value = rate.toFixed(1);
-
-  if(typeof validateRequiredFields === "function") validateRequiredFields();
-  if(typeof calculate === "function") calculate();
+function setupMoneyFormatting(){
+  MONEY_FIELD_IDS.forEach(id=>{
+    const node=document.getElementById(id);
+    if(!node)return;
+    node.addEventListener("input",()=>{
+      const atEnd=node.selectionStart===node.value.length;
+      formatMoneyInputNode(node);
+      if(atEnd&&node.setSelectionRange)node.setSelectionRange(node.value.length,node.value.length);
+      updateAccountTotal();
+      validateRequiredFields();
+    });
+    node.addEventListener("blur",()=>formatMoneyInputNode(node));
+    formatMoneyInputNode(node);
+  });
+  document.querySelectorAll("#miscExpenseBody input[id$='Amt']").forEach(node=>{
+    node.addEventListener("input",()=>{formatMoneyInputNode(node); validateRequiredFields();});
+    node.addEventListener("blur",()=>formatMoneyInputNode(node));
+    formatMoneyInputNode(node);
+  });
 }
 
-document.addEventListener("DOMContentLoaded", function(){
-  const stateNode = document.getElementById("retirementState");
-  if(stateNode){
-    stateNode.addEventListener("change", updateEffectiveTaxRateFromState);
+function captureInitialPageValues(){
+  INITIAL_PAGE_VALUES={};
+  document.querySelectorAll("input,select,textarea").forEach(node=>{
+    if(!node.id)return;
+    INITIAL_PAGE_VALUES[node.id]={value:node.value,selectedIndex:node.tagName==="SELECT"?node.selectedIndex:null,checked:(node.type==="checkbox"||node.type==="radio")?node.checked:null};
+  });
+}
+function resetToInitialPageValues(){
+  if(!INITIAL_PAGE_VALUES)captureInitialPageValues();
+  // Remove dynamically added misc rows beyond the initial 3.
+  const body=document.getElementById("miscExpenseBody");
+  if(body){
+    Array.from(body.rows).forEach((row,i)=>{if(i>=3)row.remove();});
   }
+  Object.keys(INITIAL_PAGE_VALUES).forEach(id=>{
+    const node=document.getElementById(id);
+    if(!node)return;
+    const saved=INITIAL_PAGE_VALUES[id];
+    if(node.tagName==="SELECT"&&saved.selectedIndex!==null)node.selectedIndex=saved.selectedIndex;
+    node.value=saved.value;
+    if(saved.checked!==null)node.checked=saved.checked;
+  });
+  setupMoneyFormatting();
+
+  const agePhaseToggle=document.getElementById("useAgeBasedSpending");
+  if(agePhaseToggle){
+    agePhaseToggle.addEventListener("change",()=>setAgeBasedSpendingFieldsDisabled(agePhaseToggle.value!=="yes"));
+  }
+  setAgeBasedSpendingFieldsDisabled(getSelect("useAgeBasedSpending")!=="yes");
+
+  updateToggleDependentFields();
+  calculate();
+}
+
+function closestField(id){const n=document.getElementById(id);return n?n.closest(".field"):null;}
+function showField(id){
+  const n=document.getElementById(id); if(!n)return;
+  const f=n.closest(".field"); if(f){f.classList.remove("hidden-by-toggle","hidden-by-advanced-toggle","disabled-by-toggle","missing");f.style.display="";}
+  n.disabled=false; n.readOnly=false; n.style.opacity="1";
+}
+function hideField(id,cls="hidden-by-toggle"){
+  const n=document.getElementById(id); if(!n)return;
+  const f=n.closest(".field"); if(f){f.classList.add(cls);f.classList.remove("missing");}
+  n.disabled=true;
+}
+function showMany(ids){ids.forEach(showField);}
+function hideMany(ids,cls){ids.forEach(id=>hideField(id,cls));}
+
+function fixCoreSectionHeaders(){
+  const core=["Timeline","Base Income","Taxes / Costs","Rental Property Sale","Primary Residence Sale","Monte Carlo Simulation","Retirement Spending","Age-Based Spending Phases","Age-Based Extra Income","Age-Based Extra Expenses","College Payments for Children","Miscellaneous One-Time Expenses"];
+  document.querySelectorAll("h3").forEach(h=>{
+    const t=(h.textContent||"").trim();
+    if(core.some(x=>t.startsWith(x))){h.classList.remove("hidden-by-toggle","hidden-by-advanced-toggle","disabled-by-toggle");h.style.display="";}
+  });
+}
+
+function updateAdvancedPlanningVisibility(){
+  const useAdvanced=getSelect("useAdvancedPlanning")==="yes";
+  ADVANCED_FIELD_IDS.forEach(id=>useAdvanced?showField(id):hideField(id,"hidden-by-advanced-toggle"));
+  if(!useAdvanced){
+    ["useDetailedTaxModel","useDetailedTaxEstimate","includeIRMAA","includeIrmaaEstimate","runSequenceStress","runHistoricalSequenceStress","enableSurvivorScenario"].forEach(id=>{const n=document.getElementById(id);if(n)n.value="no";});
+  }
+  fixCoreSectionHeaders();
+}
+
+
+
+function setAgeBasedSpendingFieldsDisabled(disabled){
+  const ids=["spend1Start","spend1End","spend1Amt","spend2Start","spend2End","spend2Amt","spend3Start","spend3End","spend3Amt"];
+  ids.forEach(id=>{
+    const node=document.getElementById(id);
+    if(!node)return;
+    const field=node.closest(".field");
+    if(field){
+      field.classList.toggle("age-phase-disabled",!!disabled);
+      field.classList.remove("hidden-by-toggle","hidden-by-advanced-toggle","missing");
+      field.style.display="";
+      const label=field.querySelector(".field-label");
+      if(label) label.style.color=disabled ? "#9ca3af" : "";
+    }
+    node.disabled=!!disabled;
+    node.readOnly=!!disabled;
+    node.style.backgroundColor=disabled ? "#e5e7eb" : "";
+    node.style.borderColor=disabled ? "#d1d5db" : "";
+    node.style.color=disabled ? "#9ca3af" : "";
+    node.style.cursor=disabled ? "not-allowed" : "";
+    node.style.boxShadow=disabled ? "none" : "";
+  });
+}
+
+
+function updateToggleDependentFields(){
+  const simple=getSelect("simpleMode")==="yes",useMonthly=getSelect("useMonthlyContribution")==="yes",useAccounts=getSelect("useAccountModeling")==="yes",usePhases=getSelect("useAgeBasedSpending")==="yes",sellRental=getSelect("sellRealEstate")==="yes",sellPrimary=getSelect("sellRealEstate2")==="yes";
+  const timeline=["currentAge","spouseAge","retireAge","endAge"];
+  const baseIncome=["ssAge","spouseSsAge","ssMonthly","spouseSsMonthly","rentalMonthly"];
+  const taxes=["retirementState","taxRate","feeRate"];
+  const rental=["propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate","stopRentalAfterSale"];
+  const primary=["property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate","rental2Monthly","stopRental2AfterSale"];
+  showMany(["simpleYears","portfolio","contrib","monthlyContribution","useAgeBasedSpending","constantRetirementSpending","sellRealEstate","sellRealEstate2"].concat(timeline,baseIncome,taxes,ACCOUNT_FIELD_IDS,rental,primary));
+  if(simple){
+    hideMany(timeline.concat(baseIncome,taxes,["useAgeBasedSpending","constantRetirementSpending","sellRealEstate","sellRealEstate2"],rental,primary));
+    showField("simpleYears");
+  }else{
+    hideField("simpleYears");
+  }
+  useMonthly?(hideField("contrib"),showField("monthlyContribution")):(showField("contrib"),hideField("monthlyContribution"));
+  useAccounts?(hideField("portfolio"),showMany(ACCOUNT_FIELD_IDS)):(showField("portfolio"),hideMany(ACCOUNT_FIELD_IDS));
+  if(!simple){
+    if(usePhases){
+      hideField("constantRetirementSpending");
+      showMany(["spend1Start","spend1End","spend1Amt","spend2Start","spend2End","spend2Amt","spend3Start","spend3End","spend3Amt"]);
+      setAgeBasedSpendingFieldsDisabled(false);
+    }else{
+      showField("constantRetirementSpending");
+      showMany(["spend1Start","spend1End","spend1Amt","spend2Start","spend2End","spend2Amt","spend3Start","spend3End","spend3Amt"]);
+      setAgeBasedSpendingFieldsDisabled(true);
+    }
+    sellRental?showMany(rental):hideMany(rental);
+    sellPrimary?showMany(primary):hideMany(primary);
+  }
+  updateAdvancedPlanningVisibility();
+  updateAccountTotal();
+  syncSpendingPhaseStarts();
+  updateReturnRateLabelForAccountMode();
+  validateRequiredFields();
+  setAgeBasedSpendingFieldsDisabled(getSelect("useAgeBasedSpending")!=="yes");
+}
+
+function updateReturnRateLabelForAccountMode(){
+  const label=document.getElementById("returnRateLabel");
+  const info=document.getElementById("returnRateInfo") || (label?label.querySelector(".info"):null);
+  const useAccounts=getSelect("useAccountModeling")==="yes";
+  if(!label)return;
+  label.childNodes[0].nodeValue=useAccounts?"Fallback Growth Rate % ":"Annual Interest Rate % ";
+  if(info)info.setAttribute("data-tooltip",useAccounts?"Fallback annual growth rate used only where an account-specific growth rate is blank or zero. Low/Medium/High scenarios still use Growth Variance Range ± %.":"Expected nominal annual return before inflation. This is the primary portfolio return assumption when account-level modeling is off.");
+}
+
+function syncSpendingPhaseStarts(){
+  const retireAge=document.getElementById("retireAge"),planEnd=document.getElementById("endAge");
+  const earlyStart=document.getElementById("spend1Start"),earlyEnd=document.getElementById("spend1End"),midStart=document.getElementById("spend2Start"),midEnd=document.getElementById("spend2End"),lateStart=document.getElementById("spend3Start"),lateEnd=document.getElementById("spend3End");
+  if(!earlyStart||!earlyEnd||!midStart||!midEnd||!lateStart||!lateEnd)return;
+  const r=parseInt(retireAge&&retireAge.value?retireAge.value:"",10);
+  if(!Number.isNaN(r)){earlyStart.value=r;earlyEnd.min=r;}
+  const e1=parseInt(earlyEnd.value||"",10);
+  if(!Number.isNaN(e1)){midStart.value=e1+1;midEnd.min=e1+1;} else midStart.value="";
+  const e2=parseInt(midEnd.value||"",10);
+  if(!Number.isNaN(e2)){lateStart.value=e2+1;lateEnd.min=e2+1;} else lateStart.value="";
+  const finalAge=parseInt(planEnd&&planEnd.value?planEnd.value:"",10);
+  if(!Number.isNaN(finalAge))lateEnd.value=finalAge;
+  [earlyStart,midStart,lateStart,lateEnd].forEach(n=>{n.readOnly=true;});
+}
+
+function monthlyContributionAmount(){
+  return getSelect("useMonthlyContribution")==="yes"?safeMoneyValue("monthlyContribution"):safeMoneyValue("contrib")/12;
+}
+
+function miscOneTimeExpensesAtMonth(age,month,infFactor){
+  if(month!==1)return 0;
+  let total=0;
+  document.querySelectorAll("#miscExpenseBody tr").forEach(row=>{
+    const ageInput=row.querySelector('input[id$="Age"]');
+    const amtInput=row.querySelector('input[id$="Amt"]');
+    const eventAge=ageInput?parseFloat(String(ageInput.value||"").replace(/[$,\s]/g,""))||0:0;
+    const amount=amtInput?parseFloat(String(amtInput.value||"").replace(/[$,\s]/g,""))||0:0;
+    if(age===eventAge)total+=amount*infFactor;
+  });
+  return total;
+}
+function miscOneTimeExpenses(age,infFactor){return miscOneTimeExpensesAtMonth(age,1,infFactor);}
+
+function validate(){
+  const simple=getSelect("simpleMode")==="yes";
+  if(simple){
+    if(getVal("simpleYears")<=0)throw new Error("Simple Years must be greater than 0.");
+  }else{
+    if(getVal("endAge")<getVal("currentAge"))throw new Error("Plan Until Your Age must be >= Current Age.");
+    if(getVal("retireAge")<getVal("currentAge"))throw new Error("Retirement Age must be >= Current Age.");
+  }
+  if(getVal("returnRate")<-99)throw new Error("Return rate is too low.");
+}
+
+function readNormalizedModel(){
+  const accountMode=getSelect("useAccountModeling")==="yes";
+  const useAdvanced=getSelect("useAdvancedPlanning")==="yes";
+  const useDetailedTax=useAdvanced && getAliasSelect("useDetailedTaxModel",["useDetailedTaxEstimate"],"no")==="yes";
+  const ownerContributions={
+    tradYou:safeMoneyValue("contribTradYouAnnual"),
+    tradSpouse:safeMoneyValue("contribTradSpouseAnnual"),
+    rothYou:safeMoneyValue("contribRothYouAnnual"),
+    rothSpouse:safeMoneyValue("contribRothSpouseAnnual"),
+    taxable:safeMoneyValue("contribTaxableAnnual"),
+    cash:safeMoneyValue("contribCashAnnual")
+  };
+  return {
+    simple:getSelect("simpleMode")==="yes",accountMode,useAdvanced,useDetailedTax,
+    currentAge:getVal("currentAge"),spouseAge:getVal("spouseAge"),retireAge:getVal("retireAge"),endAge:getVal("endAge"),
+    portfolio:safeMoneyValue("portfolio"),baseReturn:getVal("returnRate")/100,inflation:getVal("inflation")/100,feeRate:getVal("feeRate")/100,compoundFreq:parseFloat(getSelect("compoundFreq"))||1,
+    taxRate:getVal("taxRate")/100,taxableTaxRate:getVal("taxableWithdrawalTaxRate")/100,withdrawalStrategy:getSelect("withdrawalStrategy")||"taxAware",
+    ssAge:getVal("ssAge"),spouseSsAge:getVal("spouseSsAge")||getVal("ssAge"),yourSsMonthly:safeMoneyValue("ssMonthly"),spouseSsMonthly:safeMoneyValue("spouseSsMonthly"),rentalAnnual:safeMoneyValue("rentalMonthly")*12,
+    accounts:{tradYou:safeMoneyValue("tradYouBalance"),tradSpouse:safeMoneyValue("tradSpouseBalance"),rothYou:safeMoneyValue("rothYouBalance"),rothSpouse:safeMoneyValue("rothSpouseBalance"),taxable:safeMoneyValue("taxableBalance"),cash:safeMoneyValue("cashBalance")},
+    accountReturns:{tradYou:(getVal("tradYouReturn")||getVal("returnRate"))/100,tradSpouse:(getVal("tradSpouseReturn")||getVal("returnRate"))/100,rothYou:(getVal("rothYouReturn")||getVal("returnRate"))/100,rothSpouse:(getVal("rothSpouseReturn")||getVal("returnRate"))/100,taxable:(getVal("taxableReturn")||getVal("returnRate"))/100,cash:(getVal("cashReturn")||0)/100},
+    ownerContributions,
+    advanced:{filingStatus:getAliasSelect("filingStatus",[],"mfj"),stateTaxRate:getVal("stateTaxRate")/100,preMed:getAliasNumber("preMedHealthcareAnnual",["preMedicareHealthcareAnnual"],0),medicarePer:getAliasNumber("medicareAnnualPerPerson",["medicareHealthcareAnnual"],0),medicareAge:getAliasNumber("medicareAge",["medicareStartAge"],65)||65,includeIRMAA:getAliasSelect("includeIRMAA",["includeIrmaaEstimate"],"no")==="yes",annualRothConversion:safeMoneyValue("annualRothConversion"),rothConversionStartAge:getVal("rothConversionStartAge"),rothConversionEndAge:getVal("rothConversionEndAge"),runSequenceStress:getAliasSelect("runSequenceStress",["runHistoricalSequenceStress"],"no")==="yes",survivor:getSelect("enableSurvivorScenario")==="yes",firstDeathPerson:getAliasSelect("firstDeathPerson",["firstDeath"],"you")||"you",firstDeathAge:getVal("firstDeathAge"),survivorSpendingPct:(getVal("survivorSpendingPct")||80)/100}
+  };
+}
+
+function normalizedAccountTotal(a){return Math.max(0,a.tradYou||0)+Math.max(0,a.tradSpouse||0)+Math.max(0,a.rothYou||0)+Math.max(0,a.rothSpouse||0)+Math.max(0,a.taxable||0)+Math.max(0,a.cash||0);}
+function accountTotal(a){return normalizedAccountTotal(a||{});}
+function getStartingAccounts(){const m=readNormalizedModel();return m.accountMode?{...m.accounts}:{tradYou:0,tradSpouse:0,rothYou:0,rothSpouse:0,taxable:m.portfolio,cash:0};}
+function defaultRmdStartAgeFromCurrentAge(){const birthYear=2026-getVal("currentAge");return birthYear>=1960?75:73;}
+function withdrawFromOwnerAccount(accounts,key,grossNeeded){const amount=Math.min(Math.max(0,accounts[key]||0),Math.max(0,grossNeeded));accounts[key]=(accounts[key]||0)-amount;return amount;}
+function withdrawForNetNeed(accounts,netNeed,taxRate,taxableTaxRate,strategy){
+  let remaining=Math.max(0,netNeed),gross=0,details={cash:0,taxable:0,trad:0,roth:0,tradYou:0,tradSpouse:0,rothYou:0,rothSpouse:0};
+  const total=normalizedAccountTotal(accounts);
+  if(strategy==="proRata"&&total>0){
+    const grossApprox=remaining/(1-taxRate);
+    ["cash","taxable","tradYou","tradSpouse","rothYou","rothSpouse"].forEach(k=>{const share=Math.max(0,accounts[k]||0)/total;const amt=withdrawFromOwnerAccount(accounts,k,grossApprox*share);details[k]+=amt;gross+=amt;});
+    details.trad=details.tradYou+details.tradSpouse;details.roth=details.rothYou+details.rothSpouse;return{grossWithdrawal:gross,details};
+  }
+  let amt=withdrawFromOwnerAccount(accounts,"cash",remaining);details.cash+=amt;gross+=amt;remaining-=amt;
+  amt=withdrawFromOwnerAccount(accounts,"taxable",remaining/(1-taxableTaxRate));details.taxable+=amt;gross+=amt;remaining-=amt*(1-taxableTaxRate);
+  amt=withdrawFromOwnerAccount(accounts,"tradYou",remaining/(1-taxRate));details.tradYou+=amt;details.trad+=amt;gross+=amt;remaining-=amt*(1-taxRate);
+  amt=withdrawFromOwnerAccount(accounts,"tradSpouse",remaining/(1-taxRate));details.tradSpouse+=amt;details.trad+=amt;gross+=amt;remaining-=amt*(1-taxRate);
+  amt=withdrawFromOwnerAccount(accounts,"rothYou",remaining);details.rothYou+=amt;details.roth+=amt;gross+=amt;remaining-=amt;
+  amt=withdrawFromOwnerAccount(accounts,"rothSpouse",remaining);details.rothSpouse+=amt;details.roth+=amt;gross+=amt;remaining-=amt;
+  return{grossWithdrawal:gross,details};
+}
+function applyNormalizedMonthlyGrowth(accounts,model,annualReturn){
+  const before=normalizedAccountTotal(accounts);
+  if(!model.accountMode){const r=Math.pow(1+annualReturn-model.feeRate,1/12)-1;accounts.taxable=Math.max(0,accounts.taxable*(1+r));return normalizedAccountTotal(accounts)-before;}
+  const adj=annualReturn-model.baseReturn;
+  const rates={tradYou:model.accountReturns.tradYou,tradSpouse:model.accountReturns.tradSpouse,rothYou:model.accountReturns.rothYou,rothSpouse:model.accountReturns.rothSpouse,taxable:model.accountReturns.taxable,cash:model.accountReturns.cash};
+  accounts.tradYou=Math.max(0,accounts.tradYou*(1+Math.pow(1+rates.tradYou+adj-model.feeRate,1/12)-1));
+  accounts.tradSpouse=Math.max(0,accounts.tradSpouse*(1+Math.pow(1+rates.tradSpouse+adj-model.feeRate,1/12)-1));
+  accounts.rothYou=Math.max(0,accounts.rothYou*(1+Math.pow(1+rates.rothYou+adj-model.feeRate,1/12)-1));
+  accounts.rothSpouse=Math.max(0,accounts.rothSpouse*(1+Math.pow(1+rates.rothSpouse+adj-model.feeRate,1/12)-1));
+  accounts.taxable=Math.max(0,accounts.taxable*(1+Math.pow(1+rates.taxable+adj-model.feeRate,1/12)-1));
+  accounts.cash=Math.max(0,accounts.cash*(1+Math.pow(1+rates.cash,1/12)-1));
+  return normalizedAccountTotal(accounts)-before;
+}
+function routeContribution(accounts,model,monthlyContribution){
+  if(!model.accountMode){
+    accounts.taxable+=monthlyContribution;
+    return;
+  }
+
+  const annualTotal =
+    model.ownerContributions.tradYou +
+    model.ownerContributions.tradSpouse +
+    model.ownerContributions.rothYou +
+    model.ownerContributions.rothSpouse +
+    model.ownerContributions.taxable +
+    model.ownerContributions.cash;
+
+  if(annualTotal > 0){
+    accounts.tradYou += model.ownerContributions.tradYou / 12;
+    accounts.tradSpouse += model.ownerContributions.tradSpouse / 12;
+    accounts.rothYou += model.ownerContributions.rothYou / 12;
+    accounts.rothSpouse += model.ownerContributions.rothSpouse / 12;
+    accounts.taxable += model.ownerContributions.taxable / 12;
+    accounts.cash += model.ownerContributions.cash / 12;
+  } else {
+    // Backward-compatible fallback: if owner-specific contribution fields are all blank,
+    // route the general contribution amount to your pre-tax account.
+    accounts.tradYou += monthlyContribution;
+  }
+}
+function splitOwnerEndingRows(row,accounts){
+  row.tradYouEnd=accounts.tradYou||0;row.tradSpouseEnd=accounts.tradSpouse||0;row.rothYouEnd=accounts.rothYou||0;row.rothSpouseEnd=accounts.rothSpouse||0;
+  row.tradEnd=row.tradYouEnd+row.tradSpouseEnd;row.rothEnd=row.rothYouEnd+row.rothSpouseEnd;row.taxableEnd=accounts.taxable||0;row.cashEnd=accounts.cash||0;
+}
+
+function estimateEffectiveTaxRateForState(state){return state&&RETIREMENT_STATE_TAX_RATE_ESTIMATES.hasOwnProperty(state)?RETIREMENT_STATE_TAX_RATE_ESTIMATES[state]:null;}
+function updateEffectiveTaxRateFromState(){const s=document.getElementById("retirementState"),t=document.getElementById("taxRate");if(!s||!t)return;const r=estimateEffectiveTaxRateForState(s.value);if(r!==null){t.value=r.toFixed(1);validateRequiredFields();calculate();}}
+
+function estimateFederalTaxFromTaxable2026(taxableIncome,filingStatus){
+  const single=filingStatus==="single";
+  const b=single?[[0,.10],[11925,.12],[48475,.22],[103350,.24],[197300,.32],[250525,.35],[626350,.37]]:[[0,.10],[23850,.12],[96950,.22],[206700,.24],[394600,.32],[501050,.35],[751600,.37]];
+  let tax=0; for(let i=0;i<b.length;i++){const start=b[i][0],rate=b[i][1],end=i<b.length-1?b[i+1][0]:Infinity;if(taxableIncome>start)tax+=(Math.min(taxableIncome,end)-start)*rate;} return Math.max(0,tax);
+}
+function estimateTax(ordinaryIncome,ssIncome,taxableGainIncome,filingStatus){
+  const m=readNormalizedModel(); if(!m.useDetailedTax)return Math.max(0,ordinaryIncome||0)*m.taxRate;
+  const mfj=filingStatus!=="single",std=mfj?32200:16100;
+  const provisional=Math.max(0,ordinaryIncome||0)+Math.max(0,taxableGainIncome||0)+.5*Math.max(0,ssIncome||0);
+  const b1=mfj?32000:25000,b2=mfj?44000:34000; let taxableSS=0;
+  if(provisional>b2)taxableSS=Math.min(.85*ssIncome,.85*(provisional-b2)+Math.min(.5*ssIncome,mfj?6000:4500)); else if(provisional>b1)taxableSS=Math.min(.5*ssIncome,.5*(provisional-b1));
+  const taxableIncome=Math.max(0,ordinaryIncome+taxableGainIncome+taxableSS-std);
+  return estimateFederalTaxFromTaxable2026(taxableIncome,filingStatus)+Math.max(0,ordinaryIncome+taxableGainIncome+taxableSS)*m.advanced.stateTaxRate;
+}
+function estimateHealthcareCostNormalized(age,spouseCurrent,filingStatus,ordinaryIncome,ssIncome,taxableGainIncome,survivorActive){
+  const m=readNormalizedModel(); if(!m.useAdvanced)return 0;
+  const people=survivorActive?1:2; let cost=0;
+  if(people===1)cost+=age>=m.advanced.medicareAge?m.advanced.medicarePer:m.advanced.preMed/2;
+  else{cost+=age>=m.advanced.medicareAge?m.advanced.medicarePer:m.advanced.preMed/2;cost+=spouseCurrent>=m.advanced.medicareAge?m.advanced.medicarePer:m.advanced.preMed/2;}
+  if(m.advanced.includeIRMAA){const magi=Math.max(0,ordinaryIncome+taxableGainIncome+Math.min(ssIncome*.85,ssIncome));const th=filingStatus==="single"?109000:218000;const medPeople=people===1?(age>=m.advanced.medicareAge?1:0):(age>=m.advanced.medicareAge?1:0)+(spouseCurrent>=m.advanced.medicareAge?1:0);let sur=0;if(magi>th*2.5)sur=5000;else if(magi>th*1.5)sur=3000;else if(magi>th)sur=1000;cost+=sur*medPeople;}
+  return Math.max(0,cost);
+}
+function makeHistoricalPairedRecords(){const returns=typeof HISTORICAL_STOCK_RETURNS!=="undefined"?HISTORICAL_STOCK_RETURNS:[];const infl=typeof HISTORICAL_INFLATION_RATES!=="undefined"?HISTORICAL_INFLATION_RATES:[];const n=Math.min(returns.length,infl.length);const start=typeof HISTORICAL_START_YEAR!=="undefined"?HISTORICAL_START_YEAR:(2026-n);const rec=[];for(let i=0;i<n;i++)rec.push({year:start+i,stockReturn:returns[i],inflation:infl[i]});return rec;}
+const HISTORICAL_PAIRED_RECORDS=makeHistoricalPairedRecords();
+function getPairedHistoricalRecord(randomize,yearIndex,options){if(!HISTORICAL_PAIRED_RECORDS.length)return{stockReturn:getVal("returnRate")/100,inflation:getVal("inflation")/100};if(randomize==="sequence"){const idx=(options&&typeof options.sequenceStart==="number"?options.sequenceStart:0)+yearIndex;return idx>=0&&idx<HISTORICAL_PAIRED_RECORDS.length?HISTORICAL_PAIRED_RECORDS[idx]:null;}if(randomize===true)return HISTORICAL_PAIRED_RECORDS[Math.floor(Math.random()*HISTORICAL_PAIRED_RECORDS.length)];return{stockReturn:getVal("returnRate")/100,inflation:getVal("inflation")/100};}
+
+function simulateFull(randomize=false,returnAdjustmentPct=0,options={}){
+  const model=readNormalizedModel(); const spendingTaxRate=model.useDetailedTax?0:model.taxRate; const spendingTaxableRate=model.useDetailedTax?0:(model.accountMode?model.taxableTaxRate:model.taxRate);
+  let accounts=getStartingAccounts(),infFactor=1,propertyFactor=1,propertyFactor2=1,soldProperty=false,soldProperty2=false,totalRothConversions=0,totalEstimatedTax=0; const rows=[];
+  for(let age=model.currentAge;age<=model.endAge;age++){
+    const yearIndex=age-model.currentAge,spouseCurrent=model.spouseAge+yearIndex,paired=getPairedHistoricalRecord(randomize,yearIndex,options); if(!paired)break;
+    const annualReturn=(randomize===true||randomize==="sequence")?paired.stockReturn:(model.baseReturn+returnAdjustmentPct),annualInflation=(randomize===true||randomize==="sequence")?paired.inflation:model.inflation;
+    const monthlyInflation=Math.pow(1+annualInflation,1/12)-1,monthlyPropertyGrowth=Math.pow(1+(randomize===true?randomPropertyGrowth(getVal("propertyGrowth")/100):getVal("propertyGrowth")/100),1/12)-1,monthlyProperty2Growth=Math.pow(1+(randomize===true?randomPropertyGrowth(getVal("property2Growth")/100):getVal("property2Growth")/100),1/12)-1;
+    const startPortfolio=normalizedAccountTotal(accounts); let yearInterest=0,yearContribution=0,yearWithdrawal=0,bsAnnual=0,eeAnnual=0,totalSpendAnnual=0,biAnnual=0,ssIncomeAnnual=0,eiAnnual=0,rmdAnnual=0,healthcareAnnual=0,estimatedTaxAnnual=0,rothConversionAnnual=0,ordinaryIncomeAnnual=0,taxableGainIncomeAnnual=0,propertySale=0,propertySale2=0;
+    let propertyInfo={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0},propertyInfo2={saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};
+    const survivorActive=model.useAdvanced&&(options.survivor===true||model.advanced.survivor)&&model.advanced.firstDeathAge>0&&age>=model.advanced.firstDeathAge,filingStatus=survivorActive?"single":model.advanced.filingStatus;
+    const priorTradYou=accounts.tradYou,priorTradSpouse=accounts.tradSpouse;
+    for(let month=1;month<=12;month++){
+      const monthIndex=yearIndex*12+month; if(monthIndex>1){infFactor*=1+monthlyInflation;propertyFactor*=1+monthlyPropertyGrowth;propertyFactor2*=1+monthlyProperty2Growth;}
+      if(getSelect("sellRealEstate")==="yes"&&age===getVal("propertySaleAge")&&month===1&&!soldProperty){propertyInfo=calcPropertySaleInfo(age,propertyFactor);propertySale=propertyInfo.saleProceeds;accounts.taxable+=propertySale;soldProperty=true;taxableGainIncomeAnnual+=propertyInfo.gain||0;}
+      if(getSelect("sellRealEstate2")==="yes"&&age===getVal("property2SaleAge")&&month===1&&!soldProperty2){propertyInfo2=calcPropertySaleInfo2(age,propertyFactor2);propertySale2=propertyInfo2.saleProceeds;accounts.taxable+=propertySale2;soldProperty2=true;taxableGainIncomeAnnual+=propertyInfo2.gain||0;}
+      if(model.accountMode&&month===1&&age>=model.retireAge){
+        const youRmdStart=getVal("rmdStartAge")||defaultRmdStartAgeFromCurrentAge(),spouseBirthYear=2026-model.spouseAge,spouseRmdStart=spouseBirthYear>=1960?75:73; let rmdGross=0;
+        if(age>=youRmdStart&&priorTradYou>0){const d=rmdDivisor(age);rmdGross+=withdrawFromOwnerAccount(accounts,"tradYou",d?priorTradYou/d:0);}
+        if(spouseCurrent>=spouseRmdStart&&priorTradSpouse>0){const d=rmdDivisor(spouseCurrent);rmdGross+=withdrawFromOwnerAccount(accounts,"tradSpouse",d?priorTradSpouse/d:0);}
+        if(rmdGross>0){rmdAnnual+=rmdGross;yearWithdrawal+=rmdGross;ordinaryIncomeAnnual+=rmdGross;}
+      }
+      yearInterest+=applyNormalizedMonthlyGrowth(accounts,model,annualReturn);
+      if(age<model.retireAge){
+        const c=monthlyContributionAmount(); routeContribution(accounts,model,c); yearContribution+=c;
+        const need=collegeExpenses(age,infFactor)/12+miscOneTimeExpensesAtMonth(age,month,infFactor);
+        if(need>0){const w=withdrawForNetNeed(accounts,need,spendingTaxRate,spendingTaxableRate,model.withdrawalStrategy);yearWithdrawal+=w.grossWithdrawal;ordinaryIncomeAnnual+=w.details.trad||0;taxableGainIncomeAnnual+=(w.details.taxable||0)*.5;eeAnnual+=need;totalSpendAnnual+=need;}
+      }else{
+        let bs=baseSpending(age,infFactor),college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,month,infFactor),eeBase=extraExpenses(age,infFactor);
+        if(survivorActive){bs*=model.advanced.survivorSpendingPct;eeBase*=model.advanced.survivorSpendingPct;}
+        let bi=soldProperty?0:model.rentalAnnual*infFactor, yourSS=age>=model.ssAge?model.yourSsMonthly:0, spouseSS=spouseCurrent>=model.spouseSsAge?model.spouseSsMonthly:0;
+        if(survivorActive){const survivorSS=Math.max(yourSS,spouseSS);yourSS=survivorSS;spouseSS=0;}
+        const monthlySsIncome=survivorActive?Math.max(yourSS,spouseSS):yourSS+spouseSS,ssGrowthFactor=Math.pow(1+(typeof SS_COLA_RATE==="number"?SS_COLA_RATE:.025),age-model.currentAge),annualSsIncome=monthlySsIncome*12*ssGrowthFactor; bi+=annualSsIncome;
+        const ei=extraIncome(age,infFactor),healthAnnual=estimateHealthcareCostNormalized(age,spouseCurrent,filingStatus,ordinaryIncomeAnnual+annualSsIncome*.85,annualSsIncome,taxableGainIncomeAnnual,survivorActive),healthMonthly=healthAnnual/12; healthcareAnnual+=healthMonthly;
+        let monthlyNeed=Math.max(0,(bs/12)+(eeBase/12)+(college/12)+misc+healthMonthly-(bi/12)-(ei/12));
+        if(rmdAnnual>0&&month===1){const rmdNet=rmdAnnual*(1-spendingTaxRate),before=monthlyNeed;monthlyNeed=Math.max(0,before-rmdNet);const excess=Math.max(0,rmdNet-before);if(excess>0)accounts.taxable+=excess;}
+        if(model.accountMode&&model.useAdvanced&&month===1&&model.advanced.annualRothConversion>0&&age>=model.advanced.rothConversionStartAge&&age<=model.advanced.rothConversionEndAge){
+          let conv=Math.min(accounts.tradYou+accounts.tradSpouse,model.advanced.annualRothConversion);const fromYou=withdrawFromOwnerAccount(accounts,"tradYou",conv/2),fromSpouse=withdrawFromOwnerAccount(accounts,"tradSpouse",conv-fromYou);conv=fromYou+fromSpouse;accounts.rothYou+=fromYou;accounts.rothSpouse+=fromSpouse;rothConversionAnnual+=conv;totalRothConversions+=conv;ordinaryIncomeAnnual+=conv;const convTax=estimateTax(conv,0,0,filingStatus);const tp=withdrawForNetNeed(accounts,convTax,0,0,model.withdrawalStrategy);yearWithdrawal+=tp.grossWithdrawal;estimatedTaxAnnual+=convTax;
+        }
+        const w=withdrawForNetNeed(accounts,monthlyNeed,spendingTaxRate,spendingTaxableRate,model.withdrawalStrategy); yearWithdrawal+=w.grossWithdrawal;ordinaryIncomeAnnual+=w.details.trad||0;taxableGainIncomeAnnual+=(w.details.taxable||0)*.5;
+        bsAnnual+=bs/12;eeAnnual+=(eeBase/12)+(college/12)+misc+healthMonthly;totalSpendAnnual+=(bs/12)+(eeBase/12)+(college/12)+misc+healthMonthly;biAnnual+=bi/12;ssIncomeAnnual+=annualSsIncome/12;eiAnnual+=ei/12;
+      }
+    }
+    if(model.useAdvanced){const taxBill=estimateTax(ordinaryIncomeAnnual,ssIncomeAnnual,taxableGainIncomeAnnual,filingStatus);estimatedTaxAnnual+=taxBill;totalEstimatedTax+=estimatedTaxAnnual;if(taxBill>0){const w=withdrawForNetNeed(accounts,taxBill,0,0,model.withdrawalStrategy);yearWithdrawal+=w.grossWithdrawal;}}
+    const row={age,spouseAge:spouseCurrent,startPortfolio,propertySale,propertySale2,propertyInfo,propertyInfo2,contribution:yearContribution,growth:yearInterest,bs:bsAnnual,ee:eeAnnual,totalSpend:totalSpendAnnual,bi:biAnnual,ssIncome:ssIncomeAnnual,ei:eiAnnual,withdrawal:yearWithdrawal,rmd:rmdAnnual,healthcare:healthcareAnnual,estimatedTax:estimatedTaxAnnual,rothConversion:rothConversionAnnual,totalEstimatedTax,totalRothConversions,endPortfolio:normalizedAccountTotal(accounts)};
+    splitOwnerEndingRows(row,accounts); rows.push(row);
+  }
+  return rows;
+}
+function simulate(randomize,returnAdjustmentPct=0){return getSelect("simpleMode")==="yes"?simulateSimple(randomize):simulateFull(randomize,returnAdjustmentPct);}
+function calculate(){
+  try{
+    el("errorBox").style.display="none";
+    if(!validateRequiredFields()){renderEmptyState();return;}
+    validate(); const variance=Math.max(0,getVal("growthVariance"))/100,variancePct=Math.max(0,getVal("growthVariance"));
+    const lowRows=simulate(false,-variance),rows=simulate(false,0),highRows=simulate(false,variance);
+    const ending=rows.length?rows[rows.length-1].endPortfolio:safeMoneyValue("portfolio"),lowest=rows.length?Math.min(...rows.map(r=>r.endPortfolio)):ending,depletion=rows.find(r=>r.endPortfolio<=0),saleRow=rows.find(r=>r.propertySale>0);
+    updateSaleMetrics(saleRow?saleRow.propertyInfo:calcPropertySaleInfo(getVal("propertySaleAge"),null)); renderSummary(ending,lowest,depletion?depletion.age:null); renderSensitivitySummary(lowRows,rows,highRows,variancePct); renderAccountEndingMetrics(rows); renderTable(rows,lowRows,highRows);
+    drawMultiLineChart("portfolioChart",[{label:"Low",points:lowRows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)})),color:"#b91c1c"},{label:"Medium",points:rows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)})),color:"#2563eb"},{label:"High",points:highRows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)})),color:"#15803d"}]);
+  }catch(e){el("errorBox").textContent=e.message;el("errorBox").style.display="block";}
+}
+function runHistoricalSequenceStress(){
+  const m=readNormalizedModel(); if(!m.useAdvanced||!m.advanced.runSequenceStress)return null;
+  const horizon=Math.max(1,m.endAge-m.currentAge+1),maxStart=HISTORICAL_PAIRED_RECORDS.length-horizon; if(maxStart<0)return null;
+  let worstEnding=Infinity,worstStart=HISTORICAL_PAIRED_RECORDS[0].year,successes=0,count=0;
+  for(let i=0;i<=maxStart;i++){const rows=simulateFull("sequence",0,{sequenceStart:i}); if(!rows.length)continue; const ending=rows[rows.length-1].endPortfolio,failed=rows.some(r=>r.endPortfolio<=0); if(!failed)successes++; if(ending<worstEnding){worstEnding=ending;worstStart=HISTORICAL_PAIRED_RECORDS[i].year;} count++;}
+  return{worstEnding,worstStart,successRate:count?successes/count:0};
+}
+function renderAdvancedMetrics(rows){
+  const last=rows&&rows.length?rows[rows.length-1]:null; if(el("lastYearTaxEstimate"))el("lastYearTaxEstimate").textContent=fmtMoney(last?last.estimatedTax||0:0); if(el("lastYearHealthcareEstimate"))el("lastYearHealthcareEstimate").textContent=fmtMoney(last?last.healthcare||0:0); if(el("totalRothConversions"))el("totalRothConversions").textContent=fmtMoney(last?last.totalRothConversions||0:0);
+  const stress=runHistoricalSequenceStress(); if(el("historicalWorstSequence"))el("historicalWorstSequence").textContent=stress?fmtMoney(stress.worstEnding):"—"; if(el("historicalWorstStartYear"))el("historicalWorstStartYear").textContent=stress?String(stress.worstStart):"—"; if(el("historicalSequenceSuccess"))el("historicalSequenceSuccess").textContent=stress?fmtPct(stress.successRate):"—";
+  if(getSelect("enableSurvivorScenario")==="yes"){const survivorRows=simulateFull(false,0,{survivor:true}),survivorLast=survivorRows.length?survivorRows[survivorRows.length-1]:null,dep=survivorRows.find(r=>r.endPortfolio<=0);if(el("survivorScenarioEnding"))el("survivorScenarioEnding").textContent=survivorLast?fmtMoney(survivorLast.endPortfolio):"—";if(el("survivorDepletionAge"))el("survivorDepletionAge").textContent=dep?String(dep.age):"None";}else{if(el("survivorScenarioEnding"))el("survivorScenarioEnding").textContent="—";if(el("survivorDepletionAge"))el("survivorDepletionAge").textContent="—";}
+}
+function renderTable(rows,lowRows=[],highRows=[]){
+  const body=el("projectionBody"); if(!body)return; body.innerHTML="";
+  rows.forEach((r,i)=>{const low=(lowRows&&lowRows[i])?lowRows[i].endPortfolio:r.endPortfolio,med=r.endPortfolio,high=(highRows&&highRows[i])?highRows[i].endPortfolio:r.endPortfolio;const tr=document.createElement("tr");
+    [r.age,r.spouseAge,fmtMoney(r.startPortfolio),fmtMoney(r.propertySale),fmtMoney(r.propertySale2),fmtMoney(r.contribution),fmtMoney(r.growth),fmtMoney(r.bs),fmtMoney(r.ee),fmtMoney(r.totalSpend),fmtMoney(r.bi),fmtMoney(r.ssIncome||0),fmtMoney(r.healthcare||0),fmtMoney(r.estimatedTax||0),fmtMoney(r.rothConversion||0),fmtMoney(r.ei),fmtMoney(r.withdrawal),fmtMoney(r.rmd||0),fmtMoney(r.tradEnd||0),fmtMoney(r.rothEnd||0),fmtMoney(r.taxableEnd||0),fmtMoney(r.cashEnd||0),fmtMoney(low),fmtMoney(med),fmtMoney(high),fmtMoney(r.endPortfolio)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td);}); body.appendChild(tr);});
+  renderAdvancedMetrics(rows);
+}
+function runMonteCarlo(){
+  try{
+    el("errorBox").style.display="none"; if(!validateRequiredFields()){renderEmptyState();return;} calculate();
+    const trials=10000,endings=[],failureAges=[],allPaths=[]; let successes=0;
+    for(let i=0;i<trials;i++){const rows=simulateFull(true,0,{}); if(!rows.length)continue; const ending=rows[rows.length-1].endPortfolio,fail=rows.find(r=>r.endPortfolio<=0); endings.push(ending); allPaths.push(rows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)}))); if(!fail)successes++; else failureAges.push(fail.age);}
+    endings.sort((a,b)=>a-b); const successRate=endings.length?successes/endings.length:0,median=percentile(endings,.5),p10=percentile(endings,.1),worst=endings[0]||0;
+    el("mcSuccess").textContent=fmtPct(successRate); el("mcSuccess").className=successRate>=.85?"value success":successRate>=.70?"value warn":"value danger"; el("mcMedian").textContent=fmtMoney(median); el("mcMedian").className=median>=0?"value success":"value danger"; el("mcP10").textContent=fmtMoney(p10); el("mcP10").className=p10>=0?"value success":"value danger"; el("mcWorst").textContent=fmtMoney(worst); el("mcWorst").className=worst>=0?"value success":"value danger"; drawMonteCarloPercentileChart("mcPercentileChart",allPaths);
+    const avgFailure=failureAges.length?failureAges.reduce((a,b)=>a+b,0)/failureAges.length:null; if(el("mcNote"))el("mcNote").textContent=failureAges.length?("Failures: "+failureAges.length+" of "+endings.length+". Average failure age among failed trials: "+avgFailure.toFixed(1)+"."):"No failures in "+endings.length+" trials.";
+  }catch(e){el("errorBox").textContent=e.message;el("errorBox").style.display="block";}
+}
+function clearMC(){["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el(id)){el(id).textContent="—";el(id).className="value"}}); if(el("mcNote"))el("mcNote").textContent=""; clearCanvas("mcPercentileChart");}
+
+function requiredFields(){
+  const m=readNormalizedModel(),useMonthly=getSelect("useMonthlyContribution")==="yes",usePhases=getSelect("useAgeBasedSpending")==="yes"; let fields=[];
+  if(m.simple){fields=["simpleMode","simpleYears","returnRate","compoundFreq",useMonthly?"monthlyContribution":"contrib"]; if(m.accountMode)fields=fields.concat(["tradYouReturn","tradSpouseReturn","rothYouReturn","rothSpouseReturn","taxableReturn","cashReturn"]); else fields.push("portfolio"); return fields;}
+  fields=["simpleMode","currentAge","retireAge","endAge","returnRate","growthVariance","compoundFreq","inflation","ssAge","taxRate",useMonthly?"monthlyContribution":"contrib"]; if(document.getElementById("spouseSsAge"))fields.push("spouseSsAge");
+  if(m.accountMode)fields=fields.concat(["tradYouReturn","tradSpouseReturn","rothYouReturn","rothSpouseReturn","taxableReturn","cashReturn","rmdStartAge","taxableWithdrawalTaxRate"]); else fields.push("portfolio");
+  if(usePhases)fields=fields.concat(["spend1Amt","spend2Amt","spend3Amt"]); else if(document.getElementById("constantRetirementSpending"))fields.push("constantRetirementSpending");
+  if(getSelect("sellRealEstate")==="yes")fields=fields.concat(["propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate"]);
+  if(getSelect("sellRealEstate2")==="yes")fields=fields.concat(["property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGainTaxRate"]);
+  if(m.useAdvanced&&m.useDetailedTax)fields=fields.concat(["filingStatus","stateTaxRate"]); return fields;
+}
+function markRequiredFields(){
+  document.querySelectorAll(".required-star").forEach(e=>e.remove());
+  requiredFields().forEach(id=>{const field=closestField(id);const label=field?field.querySelector(".field-label"):null;if(label&&!label.querySelector(".required-star")){const s=document.createElement("span");s.className="required-star";s.textContent=" *";label.appendChild(s);}});
+}
+function validateRequiredFields(){
+  markRequiredFields(); let missing=[]; document.querySelectorAll(".field.missing").forEach(f=>f.classList.remove("missing"));
+  requiredFields().forEach(id=>{const node=document.getElementById(id);if(!node||node.disabled)return;const field=node.closest(".field");if(field&&(window.getComputedStyle(field).display==="none"||field.classList.contains("hidden-by-toggle")||field.classList.contains("hidden-by-advanced-toggle")))return;const miss=String(node.value||"").trim()===""; if(miss){if(field)field.classList.add("missing");const label=field?field.querySelector(".field-label"):null;missing.push(label?label.textContent.replace("*","").trim():id);}});
+  if(getSelect("useAccountModeling")==="yes"){const total=safeMoneyValue("tradYouBalance")+safeMoneyValue("tradSpouseBalance")+safeMoneyValue("rothYouBalance")+safeMoneyValue("rothSpouseBalance")+safeMoneyValue("taxableBalance")+safeMoneyValue("cashBalance"); if(total<=0){["tradYouBalance","tradSpouseBalance","rothYouBalance","rothSpouseBalance","taxableBalance","cashBalance"].forEach(id=>{const f=closestField(id);if(f&&!f.classList.contains("hidden-by-toggle"))f.classList.add("missing");});missing.push("At least one account balance");} const ownerContributionIds=["contribCashAnnual"];
+    ownerContributionIds.forEach(id=>{
+      const node=document.getElementById(id);
+      const field=closestField(id);
+      if(node && String(node.value||"").trim()!=="" && safeMoneyValue(id)<0){
+        if(field) field.classList.add("missing");
+        missing.push("Owner-specific annual contributions cannot be negative");
+      }
+    });}
+  const box=document.getElementById("validationBox"); if(box){if(missing.length){box.style.display="block";box.innerHTML="<strong>Required fields missing or invalid:</strong> "+missing.join(", ")+".";}else box.style.display="none";} return missing.length===0;
+}
+
+function updateAccountTotal(){const total=safeMoneyValue("tradYouBalance")+safeMoneyValue("tradSpouseBalance")+safeMoneyValue("rothYouBalance")+safeMoneyValue("rothSpouseBalance")+safeMoneyValue("taxableBalance")+safeMoneyValue("cashBalance");const n=document.getElementById("totalAccounts");if(n)n.textContent=fmtMoney(total);}
+
+function getNextMiscExpenseIndex(){let max=0;document.querySelectorAll("#miscExpenseBody input[id^='misc']").forEach(node=>{const m=node.id.match(/^misc(\d+)/);if(m)max=Math.max(max,parseInt(m[1],10));});return max+1;}
+function wireMiscRowInputs(row){if(!row)return;row.querySelectorAll("input").forEach(node=>{node.addEventListener("input",()=>{if(node.id&&node.id.endsWith("Amt"))formatMoneyInputNode(node);validateRequiredFields();calculate();});node.addEventListener("change",calculate);});}
+function addMiscExpenseRow(){const body=document.getElementById("miscExpenseBody");if(!body)return;const i=getNextMiscExpenseIndex(),tr=document.createElement("tr");tr.innerHTML='<td><input id="misc'+i+'Label" type="text" value="" placeholder="Expense '+i+'"></td><td><input id="misc'+i+'Age" type="number" value="0"></td><td><input id="misc'+i+'Amt" type="text" inputmode="decimal" value="0" step="1000"></td><td><button type="button" class="secondary misc-remove-btn">Remove</button></td>';body.appendChild(tr);wireMiscRowInputs(tr);calculate();}
+function removeMiscExpenseRow(button){const row=button?button.closest("tr"):null;if(row){row.remove();validateRequiredFields();calculate();}}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  setupMoneyFormatting();
+  document.querySelectorAll("#miscExpenseBody tr").forEach(wireMiscRowInputs);
+  const addBtn=document.getElementById("addMiscExpenseBtn"); if(addBtn)addBtn.addEventListener("click",e=>{e.preventDefault();addMiscExpenseRow();});
+  const miscBody=document.getElementById("miscExpenseBody"); if(miscBody)miscBody.addEventListener("click",e=>{if(e.target&&e.target.classList&&e.target.classList.contains("misc-remove-btn")){e.preventDefault();removeMiscExpenseRow(e.target);}});
+  const stateNode=document.getElementById("retirementState"); if(stateNode)stateNode.addEventListener("change",updateEffectiveTaxRateFromState);
+  ["simpleMode","useMonthlyContribution","useAccountModeling","useAgeBasedSpending","sellRealEstate","sellRealEstate2","useAdvancedPlanning"].forEach(id=>{const n=document.getElementById(id);if(n)n.addEventListener("change",()=>{updateToggleDependentFields();calculate();});});
+  ["retireAge","endAge","spend1End","spend2End"].forEach(id=>{const n=document.getElementById(id);if(n){n.addEventListener("input",()=>{syncSpendingPhaseStarts();validateRequiredFields();});n.addEventListener("blur",()=>{syncSpendingPhaseStarts();calculate();});}});
+  document.querySelectorAll("input,select").forEach(n=>n.addEventListener("input",()=>{updateAccountTotal();validateRequiredFields();}));
+  document.querySelectorAll("button").forEach(btn=>{if(btn.textContent&&btn.textContent.toLowerCase().includes("reset"))btn.onclick=e=>{if(e)e.preventDefault();resetToInitialPageValues();};});
+  updateToggleDependentFields();
+  setTimeout(()=>{captureInitialPageValues();},0);
+  calculate();
 });
 </script>
 
