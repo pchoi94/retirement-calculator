@@ -452,6 +452,14 @@ main {
   white-space: nowrap;
 }
 
+
+.calculated-text-value {
+  font-weight: 800;
+  font-size: 15px;
+  padding: 10px 0;
+  color: #111827;
+}
+
 </style>
 </head>
 <body>
@@ -483,7 +491,7 @@ main {
 <div class="field"><div class="field-label" id="returnRateLabel">Annual Interest Rate % <span class="info" id="returnRateInfo" data-tooltip="Expected nominal annual return before inflation. This is one of the most sensitive assumptions in the model.">i</span></div><input id="returnRate" value="8" step="0.1"></div>
 <div class="field"><div class="field-label">Growth Variance Range ± % <span class="info" data-tooltip="Used for the non-Monte-Carlo base sensitivity view. Example: 1 means low = return minus 1%, medium = return, high = return plus 1%.">i</span></div><input id="growthVariance" value="2" step="0.1"></div>
 <div class="field"><div class="field-label">Compound Frequency <span class="info" data-tooltip="How often interest is credited: annually, semiannually, quarterly, monthly, or daily. In match mode this follows Investor.gov-style discrete compounding.">i</span></div><select id="compoundFreq"><option value="1" selected>Annually</option><option value="2">Semiannually</option><option value="4">Quarterly</option><option value="12">Monthly</option><option value="365">Daily</option></select></div>
-<div class="field"><div class="field-label">Inflation % <span class="info" data-tooltip="Annual increase applied to future spending, income, and related cash-flow assumptions in the full model.">i</span></div><input id="inflation" type="number" value="" step="0.1"></div>
+<div class="field"><div class="field-label">Inflation % <span class="info" data-tooltip="Annual increase applied to future spending, income, and related cash-flow assumptions in the full model.">i</span></div><input id="inflation" type="number" value="3.0" step="0.1"></div>
 
 
 <h3>Investment Account Types <span class="info" data-tooltip="Optional account-level modeling. If enabled, the calculator uses these account balances and growth rates instead of only a single portfolio total.">i</span></h3>
@@ -495,8 +503,9 @@ main {
 <div class="field"><div class="field-label">Taxable Investments Balance $ <span class="info" data-tooltip="Taxable brokerage or other non-retirement investment balance.">i</span></div><input id="taxableBalance" type="text" inputmode="decimal" value="" step="10000"></div>
 <div class="field"><div class="field-label">Taxable Investments Growth % <span class="info" data-tooltip="Expected annual growth rate for taxable investments.">i</span></div><input id="taxableReturn" type="number" value="8" step="0.1"></div>
 <div class="field"><div class="field-label">Cash Savings Balance $ <span class="info" data-tooltip="Cash, checking, savings, money market, or emergency reserve balance.">i</span></div><input id="cashBalance" type="text" inputmode="decimal" value="" step="1000"></div>
-<div class="field"><div class="field-label">Total Across Accounts $ <span class="info" data-tooltip="Automatically calculated sum of all account balances when account-level modeling is enabled.">i</span></div><input id="totalAccounts" type="text" inputmode="decimal" value="" readonly></div>
 <div class="field"><div class="field-label">Cash Savings Growth % <span class="info" data-tooltip="Expected annual interest rate for cash savings.">i</span></div><input id="cashReturn" type="number" value="4" step="0.1"></div>
+<div class="field"><div class="field-label">Total Across Accounts $ <span class="info" data-tooltip="Automatically calculated sum of all account balances when account-level modeling is enabled.">i</span></div><div id="totalAccounts" class="calculated-text-value">$0</div></div>
+
 <div class="field"><div class="field-label">RMD Start Age <span class="info" data-tooltip="Age when required minimum distributions begin for pre-tax retirement accounts.">i</span></div><input id="rmdStartAge" type="number" value="73"></div>
 <div class="field"><div class="field-label">Taxable Withdrawal Tax Rate % <span class="info" data-tooltip="Simplified tax rate applied to taxable-investment withdrawals.">i</span></div><input id="taxableWithdrawalTaxRate" type="number" value="10" step="0.5"></div>
 <div class="field"><div class="field-label">Withdrawal Strategy <span class="info" data-tooltip="Tax-aware default uses RMDs first, then cash, taxable investments, pre-tax accounts, and Roth last.">i</span></div><select id="withdrawalStrategy"><option value="taxAware">Tax-Aware Default</option><option value="proRata">Pro Rata</option></select></div>
@@ -1307,7 +1316,7 @@ function updateAccountTotal(){
     getVal("rothBalance") +
     getVal("taxableBalance") +
     getVal("cashBalance");
-  if(el("totalAccounts")) el("totalAccounts").value = total || "";
+  if(el("totalAccounts")) el("totalAccounts").textContent = fmtMoney ? fmtMoney(total || 0) : "$" + (total || 0).toLocaleString();
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
@@ -1335,7 +1344,8 @@ const RESET_DEFAULTS = {
   growthVariance: 2,
   useAccountModeling: "no",
   withdrawalStrategy: "taxAware"
-};
+,
+  inflation: 3.0};
 
 function resetFormClean(){
   document.querySelectorAll("input, select").forEach(node=>{
