@@ -1178,5 +1178,49 @@ document.addEventListener("DOMContentLoaded",()=>{
 });
 </script>
 
+
+<script>
+const RESET_DEFAULTS = {
+  currentAge: 50,
+  spouseAge: 55,
+  endAge: 90,
+  compoundFreq: "annually",
+  ssAge: 67,
+  spouseSsAge: 67,
+  returnRate: 8,
+  growthVariance: 2,
+  useAccountModeling: "no",
+  withdrawalStrategy: "taxAware"
+};
+
+function resetFormClean(){
+  document.querySelectorAll("input, select").forEach(node=>{
+    const id = node.id;
+    if(!id) return;
+
+    if(RESET_DEFAULTS.hasOwnProperty(id)){
+      node.value = RESET_DEFAULTS[id];
+    } else {
+      if(node.tagName === "SELECT"){
+        node.selectedIndex = 0;
+      } else {
+        node.value = "";
+      }
+    }
+  });
+
+  if(typeof renderEmptyState === "function") renderEmptyState();
+  if(typeof validateRequiredFields === "function") validateRequiredFields();
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  document.querySelectorAll("button").forEach(btn=>{
+    if(btn.textContent.toLowerCase().includes("reset")){
+      btn.onclick = resetFormClean;
+    }
+  });
+});
+</script>
+
 </body>
 </html>
