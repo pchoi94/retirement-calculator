@@ -591,6 +591,76 @@ canvas {
   }
 }
 
+
+/* Right output panel responsive scaling */
+.output {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.output .card,
+.output .summary-grid,
+.output .metric,
+.output .chart-wrap,
+.output canvas,
+.output .table-wrap {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.chart-wrap {
+  width: 100%;
+  height: clamp(260px, 34vw, 360px);
+}
+
+canvas {
+  width: 100% !important;
+  max-width: 100%;
+}
+
+.summary-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
+}
+
+.table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.main-table {
+  width: max-content;
+  min-width: min(980px, 100%);
+}
+
+@media (max-width: 1180px) {
+  main {
+    grid-template-columns: minmax(0, 390px) minmax(0, 1fr);
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(125px, 100%), 1fr));
+  }
+}
+
+@media (max-width: 1040px) {
+  main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .inputs {
+    position: relative;
+    top: auto;
+    max-height: none;
+  }
+
+  .chart-wrap {
+    height: clamp(260px, 44vw, 340px);
+  }
+}
+
 </style>
 </head>
 <body>
