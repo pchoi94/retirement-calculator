@@ -1373,6 +1373,124 @@ select:disabled {
   }
 }
 
+
+/* Dynamic age-based spending phase controls */
+#ageSpendingPhaseTable input {
+  width: 100%;
+}
+
+#ageSpendingPhaseTable .spend-phase-name {
+  text-align: left;
+}
+
+#ageSpendingPhaseTable .spend-phase-remove-btn {
+  min-height: 34px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+#ageSpendingPhaseTable tr.missing input,
+#ageSpendingPhaseTable input.missing-input {
+  border: 2px solid var(--danger);
+  background: color-mix(in srgb, var(--danger) 7%, var(--control-bg-focus));
+}
+
+#ageSpendingPhaseTable tr.age-phase-disabled input {
+  opacity: 0.72;
+}
+
+.required-input {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--danger) 40%, transparent);
+}
+
+
+/* Input-panel tooltip portal fix: avoids clipping from responsive scroll containers */
+.inputs .info:hover::after,
+.inputs .info:focus::after,
+.inputs .info:hover::before,
+.inputs .info:focus::before {
+  display: none !important;
+}
+
+.input-tooltip-portal {
+  position: fixed;
+  z-index: 2147483000;
+  max-width: min(320px, calc(100vw - 24px));
+  width: max-content;
+  background: rgba(29, 29, 31, 0.94);
+  color: #ffffff;
+  padding: 9px 11px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 440;
+  line-height: 1.35;
+  text-align: left;
+  white-space: normal;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(3px);
+  transition: opacity 120ms ease, transform 120ms ease;
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+}
+
+.input-tooltip-portal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-color-scheme: dark) {
+  .input-tooltip-portal {
+    background: rgba(44, 44, 46, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+}
+
+
+/* Output-panel tooltip portal fix: match input-panel near-icon behavior */
+.output .info:hover::after,
+.output .info:focus::after,
+.output .info:hover::before,
+.output .info:focus::before {
+  display: none !important;
+}
+
+.output-tooltip-portal {
+  position: fixed;
+  z-index: 2147483000;
+  max-width: min(320px, calc(100vw - 24px));
+  width: max-content;
+  background: rgba(29, 29, 31, 0.94);
+  color: #ffffff;
+  padding: 9px 11px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 440;
+  line-height: 1.35;
+  text-align: left;
+  white-space: normal;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(3px);
+  transition: opacity 120ms ease, transform 120ms ease;
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+}
+
+.output-tooltip-portal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-color-scheme: dark) {
+  .output-tooltip-portal {
+    background: rgba(44, 44, 46, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+}
+
 </style>
 <meta name="description" content="Retirement Planning Calculator">
 <meta property="og:title" content="Retirement Planning Calculator">
@@ -1529,12 +1647,14 @@ select:disabled {
 <div class="field"><div class="field-label">Use Age-Based Spending Phases <span class="info" data-tooltip="When No, the calculator uses one constant annual spending amount throughout retirement. When Yes, it uses the Early/Mid/Late phase table below.">i</span></div><select id="useAgeBasedSpending"><option value="no" selected>No - Constant Spending</option><option value="yes">Yes - Age-Based Phases</option></select></div>
 <div class="field"><div class="field-label">Constant Annual Retirement Spending $ <span class="info" data-tooltip="Annual retirement spending in today's dollars, used every retirement year when age-based phases are turned off.">i</span></div><input id="constantRetirementSpending" type="text" inputmode="decimal" value="" step="5000"></div>
 
-<h3>Age-Based Spending Phases <span class="info" data-tooltip="When Use Age-Based Spending Phases is set to No, these fields are grayed out and ignored. Turn it to Yes to edit separate early, mid, and late retirement spending phases.">i</span></h3>
-<div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Phase</th><th>Start</th><th>End</th><th>Annual $</th></tr></thead><tbody>
-<tr><td>Early <span class="info" data-tooltip="Higher-spending early retirement phase, often driven by travel, activity, and lifestyle upgrades.">i</span></td><td><input id="spend1Start" type="number" value=""></td><td><input id="spend1End" value="70"></td><td><input id="spend1Amt" type="text" inputmode="decimal" value="" step="5000"></td></tr>
-<tr><td>Mid <span class="info" data-tooltip="Middle retirement phase with more stable or moderate spending.">i</span></td><td><input id="spend2Start" value="71"></td><td><input id="spend2End" value="75"></td><td><input id="spend2Amt" type="text" inputmode="decimal" value="" step="5000"></td></tr>
-<tr><td>Late <span class="info" data-tooltip="Later retirement phase. Lifestyle spending may decline, but healthcare risk may rise.">i</span></td><td><input id="spend3Start" value="75"></td><td><input id="spend3End" value="90"></td><td><input id="spend3Amt" type="text" inputmode="decimal" value="" step="5000"></td></tr>
+<h3>Age-Based Spending Phases <span class="info" data-tooltip="When Use Age-Based Spending Phases is set to No, these fields are grayed out and ignored. Turn it to Yes to customize named retirement spending phases. The first phase starts at retirement age, the last phase ends at plan end age, and guardrails prevent overlapping age ranges.">i</span></h3>
+<div class="mini-table-wrap"><table class="mini-table" id="ageSpendingPhaseTable"><thead><tr><th>Phase Name</th><th>Start</th><th>End</th><th>Annual $</th><th></th></tr></thead><tbody id="ageSpendingPhaseBody">
+<tr data-phase-id="1"><td><input id="spendPhaseName1" class="spend-phase-name" type="text" value="Early"></td><td><input id="spendPhaseStart1" class="spend-phase-start" type="number" value="" readonly></td><td><input id="spendPhaseEnd1" class="spend-phase-end" type="number" value="70"></td><td><input id="spendPhaseAmt1" class="spend-phase-amt" type="text" inputmode="decimal" value="" step="5000"></td><td><button type="button" class="secondary spend-phase-remove-btn">Remove</button></td></tr>
+<tr data-phase-id="2"><td><input id="spendPhaseName2" class="spend-phase-name" type="text" value="Mid"></td><td><input id="spendPhaseStart2" class="spend-phase-start" type="number" value="" readonly></td><td><input id="spendPhaseEnd2" class="spend-phase-end" type="number" value="80"></td><td><input id="spendPhaseAmt2" class="spend-phase-amt" type="text" inputmode="decimal" value="" step="5000"></td><td><button type="button" class="secondary spend-phase-remove-btn">Remove</button></td></tr>
+<tr data-phase-id="3"><td><input id="spendPhaseName3" class="spend-phase-name" type="text" value="Late"></td><td><input id="spendPhaseStart3" class="spend-phase-start" type="number" value="" readonly></td><td><input id="spendPhaseEnd3" class="spend-phase-end" type="number" value="" readonly></td><td><input id="spendPhaseAmt3" class="spend-phase-amt" type="text" inputmode="decimal" value="" step="5000"></td><td><button type="button" class="secondary spend-phase-remove-btn">Remove</button></td></tr>
 </tbody></table></div>
+<div class="buttons"><button id="addSpendingPhaseBtn" type="button" class="secondary">Add Spending Phase</button></div>
+<div class="note" id="ageSpendingPhaseNote">The first phase always starts at Retirement Age. The last phase always ends at Plan Until Your Age. Intermediate starts are calculated from the previous phase end to prevent overlaps. End-age guardrails apply after you leave the field.</div>
 
 <h3>Age-Based Extra Income <span class="info" data-tooltip="Optional extra income streams by age range, such as part-time work, pension, annuity, or family support.">i</span></h3>
 <div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Item</th><th>Start</th><th>End</th><th>Annual $</th></tr></thead><tbody>
@@ -1746,17 +1866,140 @@ function fmtPct(n){return isFinite(n)?(n*100).toFixed(1)+"%":"—"}
 
 
 function active(age,start,end,amt,infFactor){return age>=start&&age<=end?amt*infFactor:0}
+
+let spendingPhaseNextId = 4;
+
+function getAgeSpendingPhaseRows(){
+  return Array.from(document.querySelectorAll("#ageSpendingPhaseBody tr"));
+}
+
+function getAgeSpendingPhaseInputs(row){
+  return {
+    name: row.querySelector(".spend-phase-name"),
+    start: row.querySelector(".spend-phase-start"),
+    end: row.querySelector(".spend-phase-end"),
+    amt: row.querySelector(".spend-phase-amt"),
+    remove: row.querySelector(".spend-phase-remove-btn")
+  };
+}
+
+function scheduleAgePhaseCalculation(){
+  if(typeof scheduleInputCalculation==="function") scheduleInputCalculation();
+  else { validateRequiredFields(); calculate(); if(typeof clearMC==="function") clearMC(); }
+}
+
+function wireAgeSpendingPhaseRow(row){
+  const inputs=getAgeSpendingPhaseInputs(row);
+  [inputs.name,inputs.start,inputs.end,inputs.amt].forEach(node=>{
+    if(!node || node.dataset.agePhaseWired==="true")return;
+    node.dataset.agePhaseWired="true";
+
+    node.addEventListener("input",()=>{
+      if(node.classList.contains("spend-phase-amt"))formatMoneyInputNode(node);
+      validateRequiredFields();
+      if(typeof clearMC==="function") clearMC();
+      if(!node.classList.contains("spend-phase-end"))scheduleAgePhaseCalculation();
+    });
+
+    node.addEventListener("change",()=>{
+      if(node.classList.contains("spend-phase-amt"))formatMoneyInputNode(node);
+      syncSpendingPhaseStarts();
+      scheduleAgePhaseCalculation();
+    });
+
+    node.addEventListener("blur",()=>{
+      if(node.classList.contains("spend-phase-amt"))formatMoneyInputNode(node);
+      syncSpendingPhaseStarts();
+      scheduleAgePhaseCalculation();
+    });
+
+    if(node.classList.contains("spend-phase-amt"))formatMoneyInputNode(node);
+  });
+
+  if(inputs.remove && inputs.remove.dataset.agePhaseWired!=="true"){
+    inputs.remove.dataset.agePhaseWired="true";
+    inputs.remove.addEventListener("click",e=>{
+      e.preventDefault();
+      removeAgeSpendingPhaseRow(row);
+    });
+  }
+}
+
+function wireAgeSpendingPhaseRows(){
+  getAgeSpendingPhaseRows().forEach(wireAgeSpendingPhaseRow);
+  syncSpendingPhaseStarts();
+}
+
+function createAgeSpendingPhaseRow(name="", end="", amt=""){
+  const id=spendingPhaseNextId++;
+  const tr=document.createElement("tr");
+  tr.setAttribute("data-phase-id",String(id));
+  tr.innerHTML='<td><input id="spendPhaseName'+id+'" class="spend-phase-name" type="text" value="'+escapeHtml(name||("Phase "+id))+'"></td>'+
+    '<td><input id="spendPhaseStart'+id+'" class="spend-phase-start" type="number" value="" readonly></td>'+
+    '<td><input id="spendPhaseEnd'+id+'" class="spend-phase-end" type="number" value="'+escapeHtml(String(end||""))+'"></td>'+
+    '<td><input id="spendPhaseAmt'+id+'" class="spend-phase-amt" type="text" inputmode="decimal" value="'+escapeHtml(String(amt||""))+'" step="5000"></td>'+
+    '<td><button type="button" class="secondary spend-phase-remove-btn">Remove</button></td>';
+  return tr;
+}
+
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
+}
+
+function addAgeSpendingPhaseRow(){
+  const body=document.getElementById("ageSpendingPhaseBody");
+  if(!body)return;
+  const rows=getAgeSpendingPhaseRows();
+  const planEnd=getVal("endAge")||90;
+  const newRow=createAgeSpendingPhaseRow("Phase "+(rows.length+1),planEnd,"");
+  body.appendChild(newRow);
+  wireAgeSpendingPhaseRow(newRow);
+  syncSpendingPhaseStarts();
+  setAgeBasedSpendingFieldsDisabled(getSelect("useAgeBasedSpending")!=="yes");
+  scheduleAgePhaseCalculation();
+}
+
+function removeAgeSpendingPhaseRow(row){
+  const rows=getAgeSpendingPhaseRows();
+  if(rows.length<=1)return;
+  row.remove();
+  syncSpendingPhaseStarts();
+  setAgeBasedSpendingFieldsDisabled(getSelect("useAgeBasedSpending")!=="yes");
+  scheduleAgePhaseCalculation();
+}
+
+function readAgeSpendingPhases(){
+  const rows=getAgeSpendingPhaseRows();
+  const retireAge=Math.floor(getVal("retireAge"));
+  const planEnd=Math.floor(getVal("endAge"));
+  let nextStart=retireAge>0?retireAge:null;
+
+  return rows.map((row,index)=>{
+    const inputs=getAgeSpendingPhaseInputs(row);
+    const isLast=index===rows.length-1;
+    const start=nextStart;
+    const rawEnd=inputs.end ? parseInt(inputs.end.value||"",10) : NaN;
+    const end=isLast && planEnd>0 ? planEnd : rawEnd;
+    const amount=inputs.amt ? parseFloat(String(inputs.amt.value||"").replace(/[$,\s]/g,""))||0 : 0;
+    const phase={
+      row,
+      name: inputs.name ? inputs.name.value : "",
+      start,
+      end,
+      amount
+    };
+    nextStart=!Number.isNaN(end)?end+1:null;
+    return phase;
+  }).filter(p=>p.start!==null&&!Number.isNaN(p.start)&&!Number.isNaN(p.end));
+}
+
 function baseSpending(age,infFactor){
  if(getSelect("useAgeBasedSpending")!=="yes"){
    return age>=getVal("retireAge") ? getVal("constantRetirementSpending")*infFactor : 0;
  }
- const phases=[
-   [getVal("spend1Start"),getVal("spend1End"),getVal("spend1Amt")],
-   [getVal("spend2Start"),getVal("spend2End"),getVal("spend2Amt")],
-   [getVal("spend3Start"),getVal("spend3End"),getVal("spend3Amt")]
- ];
+ const phases=readAgeSpendingPhases();
  for(let p of phases){
-   if(age>=p[0]&&age<=p[1])return p[2]*infFactor;
+   if(age>=p.start&&age<=p.end)return p.amount*infFactor;
  }
  return 0;
 }
@@ -2191,7 +2434,7 @@ function setupMoneyFormatting(){
     node.addEventListener("blur",()=>formatMoneyInputNode(node));
     formatMoneyInputNode(node);
   });
-  document.querySelectorAll("#miscExpenseBody input[id$='Amt']").forEach(node=>{
+  document.querySelectorAll("#miscExpenseBody input[id$='Amt'], #ageSpendingPhaseBody .spend-phase-amt").forEach(node=>{
     node.addEventListener("input",()=>{formatMoneyInputNode(node); validateRequiredFields();});
     node.addEventListener("blur",()=>formatMoneyInputNode(node));
     formatMoneyInputNode(node);
@@ -2296,20 +2539,17 @@ function updateAdvancedPlanningVisibility(){
 
 
 function setAgeBasedSpendingFieldsDisabled(disabled){
-  const ids=["spend1Start","spend1End","spend1Amt","spend2Start","spend2End","spend2Amt","spend3Start","spend3End","spend3Amt"];
-  ids.forEach(id=>{
-    const node=document.getElementById(id);
-    if(!node)return;
-    const field=node.closest(".field");
-    if(field){
-      field.classList.toggle("age-phase-disabled",!!disabled);
-      field.classList.remove("hidden-by-toggle","hidden-by-advanced-toggle","missing");
-      field.style.display="";
-      const label=field.querySelector(".field-label");
-      if(label) label.style.color=disabled ? "#9ca3af" : "";
+  const nodes=Array.from(document.querySelectorAll("#ageSpendingPhaseBody input, #ageSpendingPhaseBody button, #addSpendingPhaseBtn"));
+  nodes.forEach(node=>{
+    const row=node.closest("tr");
+    if(row)row.classList.toggle("age-phase-disabled",!!disabled);
+    const isComputed=node.classList.contains("spend-phase-start") || node.classList.contains("spend-phase-end") && row===getAgeSpendingPhaseRows().at(-1);
+    if(node.id==="addSpendingPhaseBtn" || node.classList.contains("spend-phase-remove-btn")){
+      node.disabled=!!disabled || (node.classList.contains("spend-phase-remove-btn") && getAgeSpendingPhaseRows().length<=1);
+    }else{
+      node.disabled=!!disabled;
+      node.readOnly=!!disabled || isComputed;
     }
-    node.disabled=!!disabled;
-    node.readOnly=!!disabled;
     node.style.backgroundColor=disabled ? "#e5e7eb" : "";
     node.style.borderColor=disabled ? "#d1d5db" : "";
     node.style.color=disabled ? "#9ca3af" : "";
@@ -2373,11 +2613,11 @@ function updateToggleDependentFields(){
   if(!simple){
     if(usePhases){
       hideField("constantRetirementSpending");
-      showMany(["spend1Start","spend1End","spend1Amt","spend2Start","spend2End","spend2Amt","spend3Start","spend3End","spend3Amt"]);
+      wireAgeSpendingPhaseRows();
       setAgeBasedSpendingFieldsDisabled(false);
     }else{
       showField("constantRetirementSpending");
-      showMany(["spend1Start","spend1End","spend1Amt","spend2Start","spend2End","spend2Amt","spend3Start","spend3End","spend3Amt"]);
+      wireAgeSpendingPhaseRows();
       setAgeBasedSpendingFieldsDisabled(true);
     }
     sellRental?showMany(rental):hideMany(rental);
@@ -2403,18 +2643,63 @@ function updateReturnRateLabelForAccountMode(){
 }
 
 function syncSpendingPhaseStarts(){
-  const retireAge=document.getElementById("retireAge"),planEnd=document.getElementById("endAge");
-  const earlyStart=document.getElementById("spend1Start"),earlyEnd=document.getElementById("spend1End"),midStart=document.getElementById("spend2Start"),midEnd=document.getElementById("spend2End"),lateStart=document.getElementById("spend3Start"),lateEnd=document.getElementById("spend3End");
-  if(!earlyStart||!earlyEnd||!midStart||!midEnd||!lateStart||!lateEnd)return;
-  const r=parseInt(retireAge&&retireAge.value?retireAge.value:"",10);
-  if(!Number.isNaN(r)){earlyStart.value=r;earlyEnd.min=r;}
-  const e1=parseInt(earlyEnd.value||"",10);
-  if(!Number.isNaN(e1)){midStart.value=e1+1;midEnd.min=e1+1;} else midStart.value="";
-  const e2=parseInt(midEnd.value||"",10);
-  if(!Number.isNaN(e2)){lateStart.value=e2+1;lateEnd.min=e2+1;} else lateStart.value="";
-  const finalAge=parseInt(planEnd&&planEnd.value?planEnd.value:"",10);
-  if(!Number.isNaN(finalAge))lateEnd.value=finalAge;
-  [earlyStart,midStart,lateStart,lateEnd].forEach(n=>{n.readOnly=true;});
+  const rows=getAgeSpendingPhaseRows();
+  if(!rows.length)return;
+
+  const retireAge=getVal("retireAge");
+  const planEnd=getVal("endAge");
+  const hasRetire=retireAge>0;
+  const hasPlanEnd=planEnd>0;
+  let nextStart=hasRetire?Math.floor(retireAge):null;
+  const active=document.activeElement;
+
+  rows.forEach((row,index)=>{
+    const inputs=getAgeSpendingPhaseInputs(row);
+    const isLast=index===rows.length-1;
+    const remainingAfter=rows.length-index-1;
+
+    if(inputs.start){
+      inputs.start.value=nextStart!==null?String(nextStart):"";
+      inputs.start.readOnly=true;
+    }
+
+    if(inputs.end){
+      if(isLast){
+        inputs.end.value=hasPlanEnd?String(Math.floor(planEnd)):"";
+        inputs.end.readOnly=true;
+      }else{
+        inputs.end.readOnly=false;
+        if(nextStart!==null)inputs.end.min=String(nextStart);
+        if(hasPlanEnd)inputs.end.max=String(Math.floor(planEnd)-remainingAfter);
+
+        const userIsTypingThisEnd = active===inputs.end;
+        let endVal=parseInt(inputs.end.value||"",10);
+        const minVal=nextStart!==null?nextStart:null;
+        const maxVal=hasPlanEnd?Math.floor(planEnd)-remainingAfter:null;
+
+        if(!userIsTypingThisEnd){
+          if(Number.isNaN(endVal)){
+            endVal=minVal!==null?minVal:null;
+          }
+          if(minVal!==null && endVal<minVal)endVal=minVal;
+          if(maxVal!==null && endVal>maxVal)endVal=maxVal;
+          if(endVal!==null && !Number.isNaN(endVal))inputs.end.value=String(endVal);
+        }
+      }
+    }
+
+    const currentEnd=inputs.end?parseInt(inputs.end.value||"",10):NaN;
+    nextStart=Number.isNaN(currentEnd)?null:currentEnd+1;
+  });
+
+  rows.forEach((row,index)=>{
+    const inputs=getAgeSpendingPhaseInputs(row);
+    if(inputs.remove){
+      inputs.remove.disabled=rows.length<=1 || getSelect("useAgeBasedSpending")!=="yes";
+      inputs.remove.style.opacity=rows.length<=1?"0.5":"";
+      inputs.remove.style.cursor=rows.length<=1?"not-allowed":"";
+    }
+  });
 }
 
 function monthlyContributionAmount(){
@@ -3088,7 +3373,7 @@ function requiredFields(){
   }
 
   if(usePhases){
-    fields=fields.concat(["spend1Amt","spend2Amt","spend3Amt"]);
+    fields=fields.concat(getAgeSpendingPhaseRows().map(row=>getAgeSpendingPhaseInputs(row).amt&&getAgeSpendingPhaseInputs(row).amt.id).filter(Boolean));
   }else if(document.getElementById("constantRetirementSpending")){
     fields.push("constantRetirementSpending");
   }
@@ -3100,7 +3385,17 @@ function requiredFields(){
 }
 function markRequiredFields(){
   document.querySelectorAll(".required-star").forEach(e=>e.remove());
-  requiredFields().forEach(id=>{const field=closestField(id);const label=field?field.querySelector(".field-label"):null;if(label&&!label.querySelector(".required-star")){const s=document.createElement("span");s.className="required-star";s.textContent=" *";label.appendChild(s);}});
+  document.querySelectorAll(".required-input").forEach(e=>e.classList.remove("required-input"));
+  requiredFields().forEach(id=>{
+    const node=document.getElementById(id);
+    const field=closestField(id);
+    const label=field?field.querySelector(".field-label"):null;
+    if(label&&!label.querySelector(".required-star")){
+      const s=document.createElement("span");s.className="required-star";s.textContent=" *";label.appendChild(s);
+    }else if(node){
+      node.classList.add("required-input");
+    }
+  });
 }
 
 function validateSocialSecurityAges(missing){
@@ -3139,7 +3434,24 @@ function validateSocialSecurityAges(missing){
 
 function validateRequiredFields(){
   markRequiredFields(); let missing=[]; document.querySelectorAll(".field.missing").forEach(f=>f.classList.remove("missing"));
-  requiredFields().forEach(id=>{const node=document.getElementById(id);if(!node||node.disabled)return;const field=node.closest(".field");if(field&&(window.getComputedStyle(field).display==="none"||field.classList.contains("hidden-by-toggle")||field.classList.contains("hidden-by-advanced-toggle")))return;const miss=String(node.value||"").trim()===""; if(miss){if(field)field.classList.add("missing");const label=field?field.querySelector(".field-label"):null;missing.push(label?label.textContent.replace("*","").trim():id);}});
+  requiredFields().forEach(id=>{
+    const node=document.getElementById(id);if(!node||node.disabled)return;
+    const field=node.closest(".field");
+    const row=node.closest("tr");
+    if(field&&(window.getComputedStyle(field).display==="none"||field.classList.contains("hidden-by-toggle")||field.classList.contains("hidden-by-advanced-toggle")))return;
+    const miss=String(node.value||"").trim()==="";
+    if(miss){
+      if(field)field.classList.add("missing");
+      else if(row)row.classList.add("missing");
+      node.classList.add("missing-input");
+      const label=field?field.querySelector(".field-label"):null;
+      const phaseName=row?((row.querySelector(".spend-phase-name")||{}).value||"Spending phase"):"";
+      missing.push(label?label.textContent.replace("*","").trim():(phaseName?phaseName+" annual spending":id));
+    }else{
+      node.classList.remove("missing-input");
+      if(row)row.classList.remove("missing");
+    }
+  });
   if(getSelect("useAccountModeling")==="yes"){const total=safeMoneyValue("tradYouBalance")+safeMoneyValue("tradSpouseBalance")+safeMoneyValue("rothYouBalance")+safeMoneyValue("rothSpouseBalance")+safeMoneyValue("taxableBalance")+safeMoneyValue("cashBalance"); if(total<=0){["tradYouBalance","tradSpouseBalance","rothYouBalance","rothSpouseBalance","taxableBalance","cashBalance"].forEach(id=>{const f=closestField(id);if(f&&!f.classList.contains("hidden-by-toggle"))f.classList.add("missing");});missing.push("At least one account balance");} const ownerContributionIds=["contribTradYouAnnual","contribTradSpouseAnnual","contribRothYouAnnual","contribRothSpouseAnnual","contribTaxableAnnual","contribCashAnnual"];
     ownerContributionIds.forEach(id=>{
       const node=document.getElementById(id);
@@ -3174,6 +3486,156 @@ function scheduleInputCalculation(){
   },120);
 }
 
+
+let inputTooltipPortal=null;
+let activeInputTooltipSource=null;
+
+function ensureInputTooltipPortal(){
+  if(inputTooltipPortal)return inputTooltipPortal;
+  inputTooltipPortal=document.createElement("div");
+  inputTooltipPortal.className="input-tooltip-portal";
+  inputTooltipPortal.setAttribute("role","tooltip");
+  document.body.appendChild(inputTooltipPortal);
+  return inputTooltipPortal;
+}
+
+function positionInputTooltip(source){
+  const tip=ensureInputTooltipPortal();
+  if(!source || !tip.classList.contains("is-visible"))return;
+
+  const rect=source.getBoundingClientRect();
+  const margin=12;
+  const maxWidth=Math.min(320, window.innerWidth-(margin*2));
+  tip.style.maxWidth=maxWidth+"px";
+
+  const tipRect=tip.getBoundingClientRect();
+  let left=rect.left + (rect.width/2) - (tipRect.width/2);
+  left=Math.max(margin, Math.min(left, window.innerWidth-tipRect.width-margin));
+
+  let top=rect.bottom + 8;
+  if(top + tipRect.height + margin > window.innerHeight){
+    top=rect.top - tipRect.height - 8;
+  }
+  top=Math.max(margin, Math.min(top, window.innerHeight-tipRect.height-margin));
+
+  tip.style.left=left+"px";
+  tip.style.top=top+"px";
+}
+
+function showInputTooltip(source){
+  const text=source ? source.getAttribute("data-tooltip") : "";
+  if(!text)return;
+  const tip=ensureInputTooltipPortal();
+  activeInputTooltipSource=source;
+  tip.textContent=text;
+  tip.classList.add("is-visible");
+  positionInputTooltip(source);
+}
+
+function hideInputTooltip(){
+  if(!inputTooltipPortal)return;
+  inputTooltipPortal.classList.remove("is-visible");
+  activeInputTooltipSource=null;
+}
+
+function setupInputPanelTooltips(){
+  document.querySelectorAll(".inputs .info[data-tooltip]").forEach(node=>{
+    if(node.dataset.portalTooltipWired==="true")return;
+    node.dataset.portalTooltipWired="true";
+    node.addEventListener("mouseenter",()=>showInputTooltip(node));
+    node.addEventListener("mouseleave",hideInputTooltip);
+    node.addEventListener("focus",()=>showInputTooltip(node));
+    node.addEventListener("blur",hideInputTooltip);
+  });
+
+  const inputPanel=document.querySelector(".inputs");
+  if(inputPanel && inputPanel.dataset.portalTooltipScrollWired!=="true"){
+    inputPanel.dataset.portalTooltipScrollWired="true";
+    inputPanel.addEventListener("scroll",()=>positionInputTooltip(activeInputTooltipSource),{passive:true});
+  }
+
+  if(window.__inputTooltipPortalResizeWired!=="true"){
+    window.__inputTooltipPortalResizeWired="true";
+    window.addEventListener("resize",()=>positionInputTooltip(activeInputTooltipSource),{passive:true});
+    window.addEventListener("scroll",()=>positionInputTooltip(activeInputTooltipSource),{passive:true});
+  }
+}
+
+
+let outputTooltipPortal=null;
+let activeOutputTooltipSource=null;
+
+function ensureOutputTooltipPortal(){
+  if(outputTooltipPortal)return outputTooltipPortal;
+  outputTooltipPortal=document.createElement("div");
+  outputTooltipPortal.className="output-tooltip-portal";
+  outputTooltipPortal.setAttribute("role","tooltip");
+  document.body.appendChild(outputTooltipPortal);
+  return outputTooltipPortal;
+}
+
+function positionOutputTooltip(source){
+  const tip=ensureOutputTooltipPortal();
+  if(!source || !tip.classList.contains("is-visible"))return;
+
+  const rect=source.getBoundingClientRect();
+  const margin=12;
+  const maxWidth=Math.min(320, window.innerWidth-(margin*2));
+  tip.style.maxWidth=maxWidth+"px";
+
+  const tipRect=tip.getBoundingClientRect();
+  let left=rect.left + (rect.width/2) - (tipRect.width/2);
+  left=Math.max(margin, Math.min(left, window.innerWidth-tipRect.width-margin));
+
+  let top=rect.bottom + 8;
+  if(top + tipRect.height + margin > window.innerHeight){
+    top=rect.top - tipRect.height - 8;
+  }
+  top=Math.max(margin, Math.min(top, window.innerHeight-tipRect.height-margin));
+
+  tip.style.left=left+"px";
+  tip.style.top=top+"px";
+}
+
+function showOutputTooltip(source){
+  const text=source ? source.getAttribute("data-tooltip") : "";
+  if(!text)return;
+  const tip=ensureOutputTooltipPortal();
+  activeOutputTooltipSource=source;
+  tip.textContent=text;
+  tip.classList.add("is-visible");
+  positionOutputTooltip(source);
+}
+
+function hideOutputTooltip(){
+  if(!outputTooltipPortal)return;
+  outputTooltipPortal.classList.remove("is-visible");
+  activeOutputTooltipSource=null;
+}
+
+function setupOutputPanelTooltips(){
+  document.querySelectorAll(".output .info[data-tooltip]").forEach(node=>{
+    if(node.dataset.portalTooltipWired==="true")return;
+    node.dataset.portalTooltipWired="true";
+    node.addEventListener("mouseenter",()=>showOutputTooltip(node));
+    node.addEventListener("mouseleave",hideOutputTooltip);
+    node.addEventListener("focus",()=>showOutputTooltip(node));
+    node.addEventListener("blur",hideOutputTooltip);
+  });
+
+  const outputPanel=document.querySelector(".output");
+  if(outputPanel && outputPanel.dataset.portalTooltipScrollWired!=="true"){
+    outputPanel.dataset.portalTooltipScrollWired="true";
+    outputPanel.addEventListener("scroll",()=>positionOutputTooltip(activeOutputTooltipSource),{passive:true});
+  }
+
+  if(window.__outputTooltipPortalResizeWired!=="true"){
+    window.__outputTooltipPortalResizeWired="true";
+    window.addEventListener("resize",()=>positionOutputTooltip(activeOutputTooltipSource),{passive:true});
+    window.addEventListener("scroll",()=>positionOutputTooltip(activeOutputTooltipSource),{passive:true});
+  }
+}
+
 document.addEventListener("DOMContentLoaded",()=>{
   
   const retirementStateNode=document.getElementById("retirementState");
@@ -3182,6 +3644,8 @@ document.addEventListener("DOMContentLoaded",()=>{
   if(taxRateNode && !String(taxRateNode.value||"").trim()) taxRateNode.value="15.0";
 
   setupMoneyFormatting();
+  setupInputPanelTooltips();
+  setupOutputPanelTooltips();
 
   ["yourFraAge","spouseFraAge"].forEach(id=>{
     const n=document.getElementById(id);
@@ -3203,6 +3667,13 @@ document.addEventListener("DOMContentLoaded",()=>{
     }
   });
   updateSpousalBenefitFieldState();
+
+  
+  wireAgeSpendingPhaseRows();
+  const addSpendingPhaseBtn=document.getElementById("addSpendingPhaseBtn");
+  if(addSpendingPhaseBtn)addSpendingPhaseBtn.addEventListener("click",e=>{e.preventDefault();addAgeSpendingPhaseRow();});
+  const ageSpendingPhaseBody=document.getElementById("ageSpendingPhaseBody");
+  if(ageSpendingPhaseBody)ageSpendingPhaseBody.addEventListener("click",e=>{if(e.target&&e.target.classList&&e.target.classList.contains("spend-phase-remove-btn")){e.preventDefault();removeAgeSpendingPhaseRow(e.target.closest("tr"));}});
 
   document.querySelectorAll("#miscExpenseBody tr").forEach(wireMiscRowInputs);
   const addBtn=document.getElementById("addMiscExpenseBtn"); if(addBtn)addBtn.addEventListener("click",e=>{e.preventDefault();addMiscExpenseRow();});
