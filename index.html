@@ -1749,6 +1749,44 @@ select:disabled {
   }
 }
 
+
+/* Monte Carlo spaghetti chart readability */
+.monte-carlo-fan-wrap {
+  height: clamp(300px, 36vw, 400px);
+}
+
+
+
+
+/* Clean SVG renderer for Monte Carlo Spaghetti Chart */
+.spaghetti-chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 340px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.spaghetti-chart-container svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.spaghetti-empty-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  background: #ffffff;
+}
+
 </style>
 <meta name="description" content="Retirement Planning Calculator">
 <meta property="og:title" content="Retirement Planning Calculator">
@@ -1895,10 +1933,11 @@ select:disabled {
 <div class="field"><div class="field-label">Survivor Spending % <span class="info" data-tooltip="Percent of household retirement spending retained after first death. Many plans use 70%–85%, not 50%.">i</span></div><input id="survivorSpendingPct" type="number" value="80" step="1"></div>
 
 
-<h3>Monte Carlo Simulation <span class="info" data-tooltip="Runs 10,000 simulations using historical S&P 500 annual total return years sampled randomly with replacement. No user volatility inputs are required.">i</span></h3>
+<h3>Monte Carlo Simulation <span class="info" data-tooltip="Runs the selected number of simulations using paired historical return/inflation observations sampled randomly with replacement. Higher trial counts improve stability but can take longer.">i</span></h3>
 <div class="note" id="monteCarloLimitationsNote"><strong>Monte Carlo note:</strong> The simulation uses paired historical return/inflation observations but does not yet preserve multi-year market regimes with block bootstrap or model full asset-class allocation.</div>
-
-<div class="note"><strong>Historical mode:</strong> Monte Carlo uses 10,000 simulations and samples annual stock returns from historical S&P 500 total-return data from 1928–2024. User-entered volatility, return floor, return cap, and trial count are not used.</div>
+<div class="field"><div class="field-label">Monte Carlo Simulations <span class="info" data-tooltip="Choose how many Monte Carlo trials to run. Higher values generally produce more stable results but require more browser processing time.">i</span></div><select id="monteCarloTrials"><option value="100">100</option><option value="500">500</option><option value="1000" selected>1,000</option><option value="2000">2,000</option><option value="5000">5,000</option><option value="10000">10,000</option></select></div>
+<div class="note"><strong>Performance note:</strong> Higher simulation counts generally produce more accurate and stable results, but they take longer to run. At higher values, the browser may appear to freeze while it calculates. This is normal; wait for the run to finish.</div>
+<div class="note"><strong>Historical mode:</strong> Monte Carlo samples annual paired return/inflation observations from historical data. User-entered volatility, return floor, and return cap are not used.</div>
 
 
 <h3>Retirement Spending <span class="info" data-tooltip="Choose constant spending throughout retirement or use custom age-based spending phases. Amounts are in today's dollars and are inflated over time.">i</span></h3>
@@ -2050,8 +2089,8 @@ select:disabled {
 <div class="metric"><div class="metric-title">Survivor Depletion Age <span class="info" data-tooltip="First depletion age under the survivor scenario, if any.">i</span></div><div id="survivorDepletionAge" class="value">—</div></div>
 </div>
 
-<div class="card"><h2>Portfolio Projection <span class="info" data-tooltip="Chart of projected ending portfolio value by year or age.">i</span></h2><div class="chart-wrap"><canvas id="portfolioChart"></canvas></div></div>
-<div class="card" style="margin-top:14px"><h2>Monte Carlo Percentile Paths <span class="info" data-tooltip="Shows how the 10th, 25th, 50th, 75th, and 90th percentile portfolio paths evolve over time across all simulations.">i</span></h2><div class="chart-wrap"><canvas id="mcPercentileChart"></canvas></div><div class="note">P10 = downside path, Median = typical path, P90 = upside path. Based on 10,000 historical-return simulations.</div></div>
+<div class="card"><h2>Portfolio Projection <span class="info" data-tooltip="Chart of projected ending portfolio value by year or age. The y-axis includes space below $0 so depletion is visible; after depletion, chart lines continue as estimated unfunded deficit for visual clarity.">i</span></h2><div class="chart-wrap"><canvas id="portfolioChart"></canvas></div></div>
+<div class="card" style="margin-top:14px"><h2>Monte Carlo Spaghetti Chart <span class="info" data-tooltip="Shows a readable sample of individual Monte Carlo paths. Each line represents one simulated retirement path, including paths that continue below $0 after depletion.">i</span></h2><div class="chart-wrap monte-carlo-fan-wrap"><div id="mcFanChart" class="spaghetti-chart-container" role="img" aria-label="Monte Carlo Spaghetti Chart"></div></div><div class="note">Each thin line shows one sampled Monte Carlo simulation path. The chart is intentionally sampled for readability so you can see the spread of possible outcomes without turning the chart into visual noise.</div></div>
 <div class="card" style="margin-top:14px"><h2>Annual Base Projection <span class="info" data-tooltip="Year-by-year table of the base-case calculation. On mobile, scroll sideways inside the table.">i</span></h2><div class="table-wrap"><table class="main-table"><thead><tr><th>Age/Year</th><th>Spouse Age</th><th>Start Portfolio</th><th>Property Sale</th><th>Property 2 Sale</th><th>Net Contribution</th><th>Interest</th><th>Base Spending</th><th>Extra Expenses</th><th>Total Spending</th><th>Base Income</th><th>Social Security Income</th><th>Healthcare</th><th>Est. Tax</th><th>Roth Conversion</th><th>Extra Income</th><th>Gross Withdrawal</th><th>RMD</th><th>401(k)/Trad End</th><th>Roth End</th><th>Taxable End</th><th>Cash End</th><th>Low End Portfolio</th><th>Medium End Portfolio</th><th>High End Portfolio</th><th>End Portfolio</th></tr></thead><tbody id="projectionBody"></tbody></table></div></div>
 </section>
 </main>
@@ -2077,6 +2116,9 @@ select:disabled {
 
 <script>
 const defaults={};
+let LAST_MONTE_CARLO_PATHS=null;
+let MONTE_CARLO_PRESERVE_UNTIL=0;
+let MONTE_CARLO_IS_RUNNING=false;
 
 const HISTORICAL_SP500_TOTAL_RETURNS = [
   0.4381,-0.0830,-0.2512,-0.4384,-0.0864,0.4998,-0.0119,0.4674,0.3194,-0.3534,
@@ -2412,15 +2454,25 @@ function percentile(sorted,p){if(sorted.length===0)return 0;const idx=(sorted.le
 
 
 
-function clearMC(){["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{el(id).textContent="—";el(id).className="value"});if(el("mcNote"))el("mcNote").textContent="Run Monte Carlo to populate this chart using 10,000 historical-return simulations.";if(el("mcChart"))if(el("mcPercentileChart"))clearCanvas("mcPercentileChart")}
+function clearMC(force=false){
+  if(!force && shouldPreserveMonteCarloChart()){
+    redrawMonteCarloChartIfAvailable();
+    return;
+  }
+  LAST_MONTE_CARLO_PATHS=null;
+  MONTE_CARLO_PRESERVE_UNTIL=0;
+  ["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el(id)){el(id).textContent="—";el(id).className="value"}});
+  if(el("mcNote"))el("mcNote").textContent="Run Monte Carlo to populate this chart using the selected number of simulations.";
+  if(el("mcFanChart"))clearCanvas("mcFanChart");
+}
 
 function renderEmptyState(){
   setRecommendedRetirementAgeDisplay("—","value");
  ["result","endingPortfolio","lowestPortfolio","depletionAge","lowEndingPortfolio","mediumEndingPortfolio","highEndingPortfolio","varianceRangeMetric","saleProceedsMetric","saleValueMetric","mortgageMetric","saleTaxMetric","sale2ProceedsMetric","sale2ValueMetric","mortgage2Metric","sale2TaxMetric","mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el(id)){el(id).textContent="—";el(id).className="value";}});
  if(el("projectionBody"))el("projectionBody").innerHTML="";
  if(el("portfolioChart"))clearCanvas("portfolioChart");
- 
- if(el("mcPercentileChart"))clearCanvas("mcPercentileChart");
+ if(el("mcFanChart"))clearCanvas("mcFanChart");
+ ;
  if(el("mcNote"))if(el("mcNote"))el("mcNote").textContent="Enter required fields to calculate.";
 }
 
@@ -2476,24 +2528,115 @@ function registerChartInteractivity(id,points){
 }
 
 function prepCanvas(id){const canvas=el(id);if(!canvas){return {canvas:null,ctx:null,w:0,h:0};}const ctx=canvas.getContext("2d"),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,rect.width,rect.height);ctx.fillStyle="#fff";ctx.fillRect(0,0,rect.width,rect.height);return{canvas,ctx,w:rect.width,h:rect.height}}
-function clearCanvas(id){if(el(id))prepCanvas(id)}
-function drawLineChart(id,points,title){const{ctx,w,h}=prepCanvas(id),p={left:70,right:18,top:24,bottom:42};if(points.length===0)return;const vals=points.map(pt=>pt.y),xs=points.map(pt=>pt.x),maxVal=Math.max(...vals,1),roundedMax=Math.ceil(maxVal/500000)*500000||500000;const xAt=i=>points.length===1?p.left:p.left+(i/(points.length-1))*(w-p.left-p.right),yAt=v=>p.top+(1-v/roundedMax)*(h-p.top-p.bottom);ctx.strokeStyle="#e5e7eb";ctx.lineWidth=1;ctx.fillStyle="#6b7280";ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";for(let i=0;i<=5;i++){const val=roundedMax*i/5,y=yAt(val);ctx.beginPath();ctx.moveTo(p.left,y);ctx.lineTo(w-p.right,y);ctx.stroke();ctx.textAlign="right";ctx.fillText("$"+Math.round(val/1000).toLocaleString()+"k",p.left-6,y+4)}const ticks=Math.min(6,points.length);for(let i=0;i<ticks;i++){const idx=Math.round(i*(points.length-1)/(ticks-1||1)),x=xAt(idx);ctx.beginPath();ctx.moveTo(x,p.top);ctx.lineTo(x,h-p.bottom);ctx.stroke();ctx.textAlign="center";ctx.fillText(xs[idx],x,h-20)}ctx.strokeStyle="#111827";ctx.beginPath();ctx.moveTo(p.left,p.top);ctx.lineTo(p.left,h-p.bottom);ctx.lineTo(w-p.right,h-p.bottom);ctx.stroke();ctx.strokeStyle="#2563eb";ctx.lineWidth=2.5;ctx.beginPath();const interactivePoints=[];vals.forEach((v,i)=>{const x=xAt(i),y=yAt(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);interactivePoints.push({cx:x,cy:y,label:"<strong>Portfolio</strong><br>Age/Year: "+xs[i]+"<br>Value: "+fmtChartValue(v)});});ctx.stroke();registerChartInteractivity(id,interactivePoints);ctx.fillStyle="#111827";ctx.font="12px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="left";ctx.fillText(title,p.left,17)}
+function clearCanvas(id){
+  const node=el(id);
+  const svg=document.getElementById(id+"Svg");
+  if(svg)svg.remove();
+  if(!node)return;
+  if(node.tagName && node.tagName.toLowerCase()==="canvas"){
+    node.style.visibility="";
+    prepCanvas(id);
+  }else{
+    node.innerHTML="";
+  }
+}
+
+function buildCenteredChartScale(values){
+  const finiteVals=(values||[]).filter(v=>Number.isFinite(v));
+  const maxPositive=Math.max(...finiteVals,1);
+  const minNegative=Math.min(...finiteVals,0);
+  const maxAbs=Math.max(Math.abs(maxPositive),Math.abs(minNegative),1);
+  const niceStep=Math.pow(10,Math.floor(Math.log10(maxAbs)));
+  const scaled=Math.ceil(maxAbs/niceStep*1.12)*niceStep;
+  const maxVal=Math.max(scaled,500000);
+  return {min:-maxVal,max:maxVal,range:maxVal*2};
+}
+
+function fmtAxisMoney(v){
+  const sign=v<0?"-":"";
+  const abs=Math.abs(v);
+  if(abs>=1000000)return sign+"$"+(abs/1000000).toFixed(abs>=10000000?0:1).replace(/\.0$/,"")+"M";
+  return sign+"$"+Math.round(abs/1000).toLocaleString()+"k";
+}
+
+function drawCenteredGrid(ctx,w,h,p,scale,xs,xAt,yAt){
+  ctx.strokeStyle="rgba(156,163,175,0.35)";
+  ctx.lineWidth=1;
+  ctx.fillStyle="#6b7280";
+  ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";
+
+  const ticks=[scale.min,scale.min/2,0,scale.max/2,scale.max];
+  ticks.forEach(val=>{
+    const y=yAt(val);
+    ctx.beginPath();ctx.moveTo(p.left,y);ctx.lineTo(w-p.right,y);ctx.stroke();
+    ctx.textAlign="right";
+    ctx.fillText(fmtAxisMoney(val),p.left-6,y+4);
+  });
+
+  const n=xs.length;
+  const ticksX=Math.min(6,n);
+  for(let i=0;i<ticksX;i++){
+    const idx=Math.round(i*(n-1)/(ticksX-1||1)),x=xAt(idx);
+    ctx.beginPath();ctx.moveTo(x,p.top);ctx.lineTo(x,h-p.bottom);ctx.stroke();
+    ctx.textAlign="center";
+    ctx.fillText(xs[idx],x,h-22);
+  }
+
+  const zeroY=yAt(0);
+  ctx.strokeStyle="#111827";
+  ctx.lineWidth=1.4;
+  ctx.beginPath();ctx.moveTo(p.left,zeroY);ctx.lineTo(w-p.right,zeroY);ctx.stroke();
+  ctx.fillStyle="#374151";
+  ctx.textAlign="left";
+  ctx.fillText("$0",w-p.right-18,zeroY-5);
+
+  ctx.strokeStyle="#111827";
+  ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(p.left,p.top);ctx.lineTo(p.left,h-p.bottom);ctx.stroke();
+}
+
+function drawLineChart(id,points,title){
+ const{ctx,w,h}=prepCanvas(id),p={left:74,right:22,top:26,bottom:48};
+ if(points.length===0)return;
+ const vals=points.map(pt=>pt.y),xs=points.map(pt=>pt.x);
+ const scale=buildCenteredChartScale(vals);
+ const xAt=i=>points.length===1?p.left:p.left+(i/(points.length-1))*(w-p.left-p.right);
+ const yAt=v=>p.top+(1-(v-scale.min)/scale.range)*(h-p.top-p.bottom);
+
+ drawCenteredGrid(ctx,w,h,p,scale,xs,xAt,yAt);
+
+ ctx.strokeStyle="#2563eb";ctx.lineWidth=2.5;ctx.beginPath();
+ const interactivePoints=[];
+ vals.forEach((v,i)=>{
+   const x=xAt(i),y=yAt(v);
+   if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+   interactivePoints.push({cx:x,cy:y,label:"<strong>Portfolio</strong><br>Age/Year: "+xs[i]+"<br>Value: "+fmtChartValue(v)});
+ });
+ ctx.stroke();
+ registerChartInteractivity(id,interactivePoints);
+ ctx.fillStyle="#111827";ctx.font="12px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="left";ctx.fillText(title,p.left,17);
+}
 
 function drawMultiLineChart(id,series,title){
  const allPoints=series.flatMap(s=>s.points);
  if(allPoints.length===0){clearCanvas(id);return;}
- const{ctx,w,h}=prepCanvas(id),p={left:70,right:18,top:64,bottom:50};
- const vals=allPoints.map(pt=>pt.y),xs=series[0].points.map(pt=>pt.x),maxVal=Math.max(...vals,1),roundedMax=Math.ceil(maxVal/500000)*500000||500000;
+ const{ctx,w,h}=prepCanvas(id),p={left:74,right:22,top:64,bottom:50};
+ const vals=allPoints.map(pt=>pt.y),xs=series[0].points.map(pt=>pt.x);
+ const scale=buildCenteredChartScale(vals);
  const n=series[0].points.length;
- const xAt=i=>n===1?p.left:p.left+(i/(n-1))*(w-p.left-p.right),yAt=v=>p.top+(1-v/roundedMax)*(h-p.top-p.bottom);
- ctx.strokeStyle="#e5e7eb";ctx.lineWidth=1;ctx.fillStyle="#6b7280";ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";
- for(let i=0;i<=5;i++){const val=roundedMax*i/5,y=yAt(val);ctx.beginPath();ctx.moveTo(p.left,y);ctx.lineTo(w-p.right,y);ctx.stroke();ctx.textAlign="right";ctx.fillText("$"+Math.round(val/1000).toLocaleString()+"k",p.left-6,y+4)}
- const ticks=Math.min(6,n);for(let i=0;i<ticks;i++){const idx=Math.round(i*(n-1)/(ticks-1||1)),x=xAt(idx);ctx.beginPath();ctx.moveTo(x,p.top);ctx.lineTo(x,h-p.bottom);ctx.stroke();ctx.textAlign="center";ctx.fillText(xs[idx],x,h-22)}
- ctx.strokeStyle="#111827";ctx.beginPath();ctx.moveTo(p.left,p.top);ctx.lineTo(p.left,h-p.bottom);ctx.lineTo(w-p.right,h-p.bottom);ctx.stroke();
+ const xAt=i=>n===1?p.left:p.left+(i/(n-1))*(w-p.left-p.right);
+ const yAt=v=>p.top+(1-(v-scale.min)/scale.range)*(h-p.top-p.bottom);
+
+ drawCenteredGrid(ctx,w,h,p,scale,xs,xAt,yAt);
+
  const interactivePoints=[];
  series.forEach(s=>{
   ctx.strokeStyle=s.color;ctx.lineWidth=2.5;ctx.beginPath();
-  s.points.forEach((pt,i)=>{const x=xAt(i),y=yAt(pt.y);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);interactivePoints.push({cx:x,cy:y,label:"<strong>"+s.label+"</strong><br>Age/Year: "+pt.x+"<br>Value: "+fmtChartValue(pt.y)});});
+  s.points.forEach((pt,i)=>{
+    const x=xAt(i),y=yAt(pt.y);
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    interactivePoints.push({cx:x,cy:y,label:"<strong>"+s.label+"</strong><br>Age/Year: "+pt.x+"<br>Value: "+fmtChartValue(pt.y)});
+  });
   ctx.stroke();
  });
  registerChartInteractivity(id,interactivePoints);
@@ -2503,33 +2646,129 @@ function drawMultiLineChart(id,series,title){
 }
 
 
-function drawMonteCarloPercentileChart(id,paths){
- if(!paths || paths.length===0){clearCanvas(id);return;}
- const years=paths[0].length;
- const p10=[],p25=[],p50=[],p75=[],p90=[];
- for(let t=0;t<years;t++){
-   const vals=paths.map(path=>path[t].y).sort((a,b)=>a-b);
-   const x=paths[0][t].x;
-   p10.push({x:x,y:percentile(vals,.10)});
-   p25.push({x:x,y:percentile(vals,.25)});
-   p50.push({x:x,y:percentile(vals,.50)});
-   p75.push({x:x,y:percentile(vals,.75)});
-   p90.push({x:x,y:percentile(vals,.90)});
- }
- drawMultiLineChart(id,[
-   {label:"P10",points:p10,color:"#b91c1c"},
-   {label:"P25",points:p25,color:"#f97316"},
-   {label:"Median",points:p50,color:"#2563eb"},
-   {label:"P75",points:p75,color:"#22c55e"},
-   {label:"P90",points:p90,color:"#047857"}
- ],"Monte Carlo Portfolio Paths: P10 / P25 / Median / P75 / P90");
+
+
+
+function createChartSvgNode(name,attrs={}){
+  const node=document.createElementNS("http://www.w3.org/2000/svg",name);
+  Object.entries(attrs).forEach(([k,v])=>node.setAttribute(k,String(v)));
+  return node;
 }
+
+function chartSvgPathFromPoints(points,xAt,yAt){
+  return points.map((pt,i)=>(i===0?"M":"L")+xAt(i).toFixed(2)+" "+yAt(pt.y).toFixed(2)).join(" ");
+}
+
+function drawMonteCarloFanChart(id,paths){
+  const container=el(id);
+  if(!container)return;
+  container.innerHTML="";
+
+  const validPaths=(paths||[]).filter(path=>Array.isArray(path)&&path.length&&path.every(pt=>pt&&Number.isFinite(pt.y)));
+  if(!validPaths.length){
+    container.innerHTML='<div class="spaghetti-empty-state">Run Monte Carlo to populate this chart.</div>';
+    return;
+  }
+
+  const maxDisplayedPaths=140;
+  const sampleStep=Math.max(1,Math.floor(validPaths.length/Math.min(maxDisplayedPaths,validPaths.length)));
+  const sampledPaths=[];
+  for(let i=0;i<validPaths.length&&sampledPaths.length<maxDisplayedPaths;i+=sampleStep){
+    sampledPaths.push(validPaths[i]);
+  }
+
+  const w=Math.max(720,Math.round(container.clientWidth||container.getBoundingClientRect().width||760));
+  const h=Math.max(340,Math.round(container.clientHeight||container.getBoundingClientRect().height||380));
+  const p={left:84,right:32,top:74,bottom:62};
+  const xs=sampledPaths[0].map(pt=>pt.x);
+  const allVals=sampledPaths.flatMap(path=>path.map(pt=>pt.y)).filter(Number.isFinite);
+  const maxAbs=Math.max(500000,...allVals.map(v=>Math.abs(v)));
+  const niceStep=Math.pow(10,Math.floor(Math.log10(maxAbs)));
+  const axisMax=Math.ceil((maxAbs*1.15)/niceStep)*niceStep;
+  const scale={min:-axisMax,max:axisMax,range:axisMax*2};
+
+  const n=xs.length;
+  const xAt=i=>n===1?p.left:p.left+(i/(n-1))*(w-p.left-p.right);
+  const yAt=v=>p.top+(1-(v-scale.min)/scale.range)*(h-p.top-p.bottom);
+  const zeroY=yAt(0);
+
+  const svg=createChartSvgNode("svg",{
+    class:"spaghetti-svg-layer",
+    viewBox:"0 0 "+w+" "+h,
+    preserveAspectRatio:"none",
+    role:"img",
+    "aria-label":"Monte Carlo Spaghetti Chart"
+  });
+
+  svg.appendChild(createChartSvgNode("rect",{x:0,y:0,width:w,height:h,fill:"#ffffff"}));
+
+  function appendText(text,x,y,attrs={}){
+    const node=createChartSvgNode("text",Object.assign({
+      x,y,
+      fill:"#374151",
+      "font-family":"-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif",
+      "font-size":"12"
+    },attrs));
+    node.textContent=text;
+    svg.appendChild(node);
+    return node;
+  }
+
+  appendText("Monte Carlo Spaghetti Chart",p.left,26,{fill:"#111827","font-size":"13","font-weight":"700"});
+
+  const ticks=[scale.min,scale.min/2,0,scale.max/2,scale.max];
+  ticks.forEach(val=>{
+    const y=yAt(val);
+    svg.appendChild(createChartSvgNode("line",{x1:p.left,y1:y,x2:w-p.right,y2:y,stroke:val===0?"#111827":"#d1d5db","stroke-width":val===0?"2":"1"}));
+    appendText(fmtAxisMoney(val),p.left-8,y+4,{"text-anchor":"end"});
+  });
+
+  const ticksX=Math.min(6,n);
+  for(let i=0;i<ticksX;i++){
+    const idx=Math.round(i*(n-1)/(ticksX-1||1));
+    const x=xAt(idx);
+    svg.appendChild(createChartSvgNode("line",{x1:x,y1:p.top,x2:x,y2:h-p.bottom,stroke:"#e5e7eb","stroke-width":"1"}));
+    appendText(String(xs[idx]),x,h-28,{"text-anchor":"middle"});
+  }
+
+  svg.appendChild(createChartSvgNode("line",{x1:p.left,y1:p.top,x2:p.left,y2:h-p.bottom,stroke:"#111827","stroke-width":"1.4"}));
+  appendText("$0",w-p.right-18,zeroY-8,{fill:"#111827","text-anchor":"end"});
+
+  sampledPaths.forEach((path,pathIndex)=>{
+    const depleted=path.some(pt=>pt.y<0);
+    const pathNode=createChartSvgNode("path",{
+      d:chartSvgPathFromPoints(path,xAt,yAt),
+      fill:"none",
+      stroke:depleted?"rgba(220,38,38,0.46)":"rgba(37,99,235,0.40)",
+      "stroke-width":depleted?"1.7":"1.45",
+      "stroke-linecap":"round",
+      "stroke-linejoin":"round",
+      "vector-effect":"non-scaling-stroke"
+    });
+    const title=createChartSvgNode("title");
+    title.textContent="Sample path "+(pathIndex+1)+(depleted?" — depleted":" — positive");
+    pathNode.appendChild(title);
+    svg.appendChild(pathNode);
+  });
+
+  const legendY=45;
+  svg.appendChild(createChartSvgNode("rect",{x:p.left,y:legendY-10,width:15,height:5,rx:2,fill:"rgba(37,99,235,0.72)"}));
+  appendText("Positive sampled paths",p.left+21,legendY-5);
+  svg.appendChild(createChartSvgNode("rect",{x:p.left+184,y:legendY-10,width:15,height:5,rx:2,fill:"rgba(220,38,38,0.72)"}));
+  appendText("Depleted sampled paths",p.left+205,legendY-5);
+
+  container.appendChild(svg);
+}
+
+
+
+
 
 function drawHistogram(id,values){const{ctx,w,h}=prepCanvas(id),p={left:70,right:18,top:24,bottom:42};const min=Math.min(...values),max=Math.max(...values),bins=30,range=max-min||1,counts=Array(bins).fill(0);values.forEach(v=>{let idx=Math.floor((v-min)/range*bins);if(idx>=bins)idx=bins-1;if(idx<0)idx=0;counts[idx]++});const maxCount=Math.max(...counts,1),barW=(w-p.left-p.right)/bins;ctx.strokeStyle="#e5e7eb";ctx.fillStyle="#6b7280";ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.lineWidth=1;for(let i=0;i<=5;i++){const y=p.top+(1-i/5)*(h-p.top-p.bottom);ctx.beginPath();ctx.moveTo(p.left,y);ctx.lineTo(w-p.right,y);ctx.stroke();ctx.textAlign="right";ctx.fillText(Math.round(maxCount*i/5),p.left-6,y+4)}ctx.fillStyle="#2563eb";counts.forEach((c,i)=>{const x=p.left+i*barW,y=p.top+(1-c/maxCount)*(h-p.top-p.bottom),bh=(c/maxCount)*(h-p.top-p.bottom);ctx.fillRect(x+1,y,Math.max(1,barW-2),bh)});ctx.strokeStyle="#111827";ctx.beginPath();ctx.moveTo(p.left,p.top);ctx.lineTo(p.left,h-p.bottom);ctx.lineTo(w-p.right,h-p.bottom);ctx.stroke();ctx.fillStyle="#111827";ctx.font="12px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="left";ctx.fillText("Ending Portfolio Distribution",p.left,17);ctx.fillStyle="#6b7280";ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="center";ctx.fillText(fmtMoney(min),p.left,h-20);ctx.fillText(fmtMoney(max),w-p.right,h-20);ctx.fillText("Ending Portfolio",w/2,h-20)}
 let resizeRecalcTimer=null;
 window.addEventListener("resize",()=>{
   clearTimeout(resizeRecalcTimer);
-  resizeRecalcTimer=setTimeout(()=>calculate(),200);
+  resizeRecalcTimer=setTimeout(()=>{calculate(); if(LAST_MONTE_CARLO_PATHS){drawMonteCarloFanChart("mcFanChart",LAST_MONTE_CARLO_PATHS);}},200);
 });
 /* Legacy DOMContentLoaded initializer removed; single-source init below handles all setup. */
 
@@ -3488,6 +3727,49 @@ function simulateFull(randomize=false,returnAdjustmentPct=0,options={}){
   return rows;
 }
 function simulate(randomize,returnAdjustmentPct=0){return getSelect("simpleMode")==="yes"?simulateSimple(randomize):simulateFull(randomize,returnAdjustmentPct);}
+
+function estimateUnfundedAnnualNeedForChart(row){
+  if(!row)return 0;
+  const spending=Math.max(0,row.totalSpend||0);
+  const estimatedTax=Math.max(0,row.estimatedTax||0);
+  const income=Math.max(0,row.bi||0)+Math.max(0,row.ei||0);
+  const contribution=Math.max(0,row.contribution||0);
+  const directGap=Math.max(0,spending+estimatedTax-income-contribution);
+  const withdrawalGap=Math.max(0,(row.withdrawal||0)-Math.max(0,row.startPortfolio||0));
+  return Math.max(directGap,withdrawalGap,1);
+}
+
+function rowsToVisualContinuationPath(rows){
+  if(!rows || !rows.length)return [];
+  const points=[];
+  let depleted=false;
+  let visualBalance=null;
+
+  rows.forEach((row,index)=>{
+    const actual=Number(row.endPortfolio)||0;
+    if(!depleted && actual>0){
+      points.push({x:row.age,y:actual});
+      return;
+    }
+
+    if(!depleted){
+      depleted=true;
+      const previous=index>0 ? points[index-1]?.y : Number(row.startPortfolio)||0;
+      const deficit=estimateUnfundedAnnualNeedForChart(row);
+      visualBalance=Math.min(actual,0);
+      if(visualBalance>=0)visualBalance=Math.min(0,previous-deficit);
+      if(visualBalance===0)visualBalance=-deficit;
+    }else{
+      const deficit=estimateUnfundedAnnualNeedForChart(row);
+      visualBalance-=deficit;
+    }
+
+    points.push({x:row.age,y:visualBalance});
+  });
+
+  return points;
+}
+
 function calculate(){
   try{
     if(typeof syncFraDefaults==="function") syncFraDefaults();
@@ -3498,7 +3780,7 @@ function calculate(){
     const lowRows=simulate(false,-variance),rows=simulate(false,0),highRows=simulate(false,variance);
     const ending=rows.length?rows[rows.length-1].endPortfolio:safeMoneyValue("portfolio"),lowest=rows.length?Math.min(...rows.map(r=>r.endPortfolio)):ending,depletion=rows.find(r=>r.endPortfolio<=0),saleRow=rows.find(r=>r.propertySale>0);
     updateSaleMetrics(saleRow?saleRow.propertyInfo:calcPropertySaleInfo(getVal("propertySaleAge"),null)); renderSummary(ending,lowest,depletion?depletion.age:null); renderSensitivitySummary(lowRows,rows,highRows,variancePct); renderAccountEndingMetrics(rows); renderTable(rows,lowRows,highRows);
-    drawMultiLineChart("portfolioChart",[{label:"Low",points:lowRows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)})),color:"#b91c1c"},{label:"Medium",points:rows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)})),color:"#2563eb"},{label:"High",points:highRows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)})),color:"#15803d"}]);
+    drawMultiLineChart("portfolioChart",[{label:"Low",points:rowsToVisualContinuationPath(lowRows),color:"#b91c1c"},{label:"Medium",points:rowsToVisualContinuationPath(rows),color:"#2563eb"},{label:"High",points:rowsToVisualContinuationPath(highRows),color:"#15803d"}]);
   }catch(e){el("errorBox").textContent=e.message;el("errorBox").style.display="block";}
 }
 function runHistoricalSequenceStress(){
@@ -3602,17 +3884,66 @@ function updateRecommendedRetirementAge(){
   }
 }
 
+
+function selectedMonteCarloTrialCount(){
+  const allowed=[100,500,1000,2000,5000,10000];
+  const raw=parseInt(getSelect("monteCarloTrials")||"1000",10);
+  return allowed.includes(raw)?raw:1000;
+}
+
 function runMonteCarlo(){
   try{
-    el("errorBox").style.display="none"; if(!validateRequiredFields()){renderEmptyState();return;} calculate();
-    const trials=10000,endings=[],failureAges=[],allPaths=[]; let successes=0;
-    for(let i=0;i<trials;i++){const rows=simulateFull(true,0,{}); if(!rows.length)continue; const ending=rows[rows.length-1].endPortfolio,fail=rows.find(r=>r.endPortfolio<=0); endings.push(ending); allPaths.push(rows.map(r=>({x:r.age,y:Math.max(0,r.endPortfolio)}))); if(!fail)successes++; else failureAges.push(fail.age);}
-    endings.sort((a,b)=>a-b); const successRate=endings.length?successes/endings.length:0,median=percentile(endings,.5),p10=percentile(endings,.1),worst=endings[0]||0;
-    el("mcSuccess").textContent=fmtPct(successRate); el("mcSuccess").className=successRate>=.85?"value success":successRate>=.70?"value warn":"value danger"; el("mcMedian").textContent=fmtMoney(median); el("mcMedian").className=median>=0?"value success":"value danger"; el("mcP10").textContent=fmtMoney(p10); el("mcP10").className=p10>=0?"value success":"value danger"; el("mcWorst").textContent=fmtMoney(worst); el("mcWorst").className=worst>=0?"value success":"value danger"; drawMonteCarloPercentileChart("mcPercentileChart",allPaths);
-    const avgFailure=failureAges.length?failureAges.reduce((a,b)=>a+b,0)/failureAges.length:null; if(el("mcNote"))el("mcNote").textContent=failureAges.length?("Failures: "+failureAges.length+" of "+endings.length+". Average failure age among failed trials: "+avgFailure.toFixed(1)+"."):"No failures in "+endings.length+" trials.";
-  }catch(e){el("errorBox").textContent=e.message;el("errorBox").style.display="block";}
+    MONTE_CARLO_IS_RUNNING=true;
+    cancelPendingAutoRecalculations();
+    clearMC(true);
+    el("errorBox").style.display="none";
+    if(!validateRequiredFields()){renderEmptyState();MONTE_CARLO_IS_RUNNING=false;return;}
+    calculate();
+
+    const trials=selectedMonteCarloTrialCount(),endings=[],failureAges=[],allPaths=[];
+    let successes=0;
+    for(let i=0;i<trials;i++){
+      const rows=simulateFull(true,0,{});
+      if(!rows.length)continue;
+      const ending=rows[rows.length-1].endPortfolio;
+      const fail=rows.find(r=>r.endPortfolio<=0);
+      endings.push(ending);
+      allPaths.push(rowsToVisualContinuationPath(rows));
+      if(!fail)successes++; else failureAges.push(fail.age);
+    }
+
+    endings.sort((a,b)=>a-b);
+    const successRate=endings.length?successes/endings.length:0;
+    const median=percentile(endings,.5),p10=percentile(endings,.1),worst=endings[0]||0;
+
+    el("mcSuccess").textContent=fmtPct(successRate);
+    el("mcSuccess").className=successRate>=.85?"value success":successRate>=.70?"value warn":"value danger";
+    el("mcMedian").textContent=fmtMoney(median);
+    el("mcMedian").className=median>=0?"value success":"value danger";
+    el("mcP10").textContent=fmtMoney(p10);
+    el("mcP10").className=p10>=0?"value success":"value danger";
+    el("mcWorst").textContent=fmtMoney(worst);
+    el("mcWorst").className=worst>=0?"value success":"value danger";
+
+    LAST_MONTE_CARLO_PATHS=allPaths;
+    preserveMonteCarloChartBriefly(2000);
+    drawMonteCarloFanChart("mcFanChart",allPaths);
+
+    // Chrome can repaint/reflow after the long synchronous Monte Carlo loop. Redraw after the browser has processed that layout.
+    requestAnimationFrame(()=>redrawMonteCarloChartIfAvailable());
+    setTimeout(()=>redrawMonteCarloChartIfAvailable(),250);
+    setTimeout(()=>redrawMonteCarloChartIfAvailable(),750);
+
+    const avgFailure=failureAges.length?failureAges.reduce((a,b)=>a+b,0)/failureAges.length:null;
+    if(el("mcNote"))el("mcNote").textContent=failureAges.length?("Failures: "+failureAges.length+" of "+endings.length+". Average failure age among failed trials: "+avgFailure.toFixed(1)+"."):"No failures in "+endings.length+" trials.";
+    MONTE_CARLO_IS_RUNNING=false;
+  }catch(e){
+    MONTE_CARLO_IS_RUNNING=false;
+    el("errorBox").textContent=e.message;
+    el("errorBox").style.display="block";
+  }
 }
-function clearMC(){["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el(id)){el(id).textContent="—";el(id).className="value"}}); if(el("mcNote"))el("mcNote").textContent=""; setRecommendedRetirementAgeDisplay("—","value"); clearCanvas("mcPercentileChart");}
+
 
 function requiredFields(){
   const m=readNormalizedModel(),usePhases=getSelect("useAgeBasedSpending")==="yes"; let fields=[];
@@ -3732,14 +4063,45 @@ function removeMiscExpenseRow(button){const row=button?button.closest("tr"):null
 
 
 let inputCalculationTimer=null;
+
+function preserveMonteCarloChartBriefly(ms=1500){
+  MONTE_CARLO_PRESERVE_UNTIL=Date.now()+ms;
+}
+
+function shouldPreserveMonteCarloChart(){
+  return !!LAST_MONTE_CARLO_PATHS && Date.now()<MONTE_CARLO_PRESERVE_UNTIL;
+}
+
+function cancelPendingAutoRecalculations(){
+  if(typeof inputCalculationTimer!=="undefined" && inputCalculationTimer){
+    clearTimeout(inputCalculationTimer);
+    inputCalculationTimer=null;
+  }
+  if(typeof resizeRecalcTimer!=="undefined" && resizeRecalcTimer){
+    clearTimeout(resizeRecalcTimer);
+    resizeRecalcTimer=null;
+  }
+}
+
+function redrawMonteCarloChartIfAvailable(){
+  if(LAST_MONTE_CARLO_PATHS && el("mcFanChart")){
+    drawMonteCarloFanChart("mcFanChart",LAST_MONTE_CARLO_PATHS);
+  }
+}
+
 function scheduleInputCalculation(){
   clearTimeout(inputCalculationTimer);
   inputCalculationTimer=setTimeout(()=>{
+    inputCalculationTimer=null;
     updateCalculatedSocialSecurityDisplay();
     updateAccountTotal();
     validateRequiredFields();
     calculate();
-    clearMC();
+    if(shouldPreserveMonteCarloChart()){
+      redrawMonteCarloChartIfAvailable();
+    }else{
+      clearMC();
+    }
   },120);
 }
 
@@ -3947,8 +4309,10 @@ document.addEventListener("DOMContentLoaded",()=>{
   });
   ["currentAge","spouseAge"].forEach(id=>{
     const n=document.getElementById(id);
-    if(n)n.addEventListener("change",()=>{syncFraDefaults();updateSpousalBenefitFieldState();calculate();clearMC();});
+    if(n)n.addEventListener("change",()=>{syncFraDefaults();updateSpousalBenefitFieldState();calculate();clearMC(true);});
   });
+  const monteCarloTrialsNode=document.getElementById("monteCarloTrials");
+  if(monteCarloTrialsNode)monteCarloTrialsNode.addEventListener("change",()=>clearMC(true));
   syncFraDefaults();
 
 
@@ -3956,8 +4320,8 @@ document.addEventListener("DOMContentLoaded",()=>{
   ["spouseUsesSpousalBenefit","spousalTopUpMode","yourPiaMonthly","spousePiaMonthly","ssAge","yourFraAge","spouseFraAge","spouseSsAge","currentAge","spouseAge"].forEach(id=>{
     const n=document.getElementById(id);
     if(n){
-      n.addEventListener("input",()=>{updateSpousalBenefitFieldState();validateRequiredFields();calculate();clearMC();});
-      n.addEventListener("change",()=>{updateSpousalBenefitFieldState();validateRequiredFields();calculate();clearMC();});
+      n.addEventListener("input",()=>{updateSpousalBenefitFieldState();validateRequiredFields();calculate();clearMC(true);});
+      n.addEventListener("change",()=>{updateSpousalBenefitFieldState();validateRequiredFields();calculate();clearMC(true);});
     }
   });
   updateSpousalBenefitFieldState();
