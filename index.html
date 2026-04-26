@@ -1491,6 +1491,264 @@ select:disabled {
   }
 }
 
+
+/* Compact sizing for primary base-result output metrics only */
+.output .compact-base-metric {
+  padding: 8px 10px;
+  border-radius: 14px;
+  min-height: auto;
+}
+
+.output .compact-base-metric .metric-title {
+  font-size: 10.75px;
+  line-height: 1.15;
+  margin-bottom: 4px;
+  gap: 4px;
+}
+
+.output .compact-base-metric .value {
+  font-size: clamp(14px, 1.55vw, 17px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+
+.output .compact-base-metric .info {
+  width: 15px;
+  height: 15px;
+  font-size: 10px;
+}
+
+
+/* Prevent output metric cards from stretching to match taller neighboring cards */
+.output .summary-grid {
+  align-items: start;
+}
+
+.output .metric {
+  align-self: start;
+}
+
+.output .compact-base-metric {
+  height: auto !important;
+  min-height: 0 !important;
+  align-self: start !important;
+  display: block;
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
+}
+
+.output .compact-base-metric .metric-title {
+  min-height: 0 !important;
+}
+
+.output .compact-base-metric .value {
+  min-height: 0 !important;
+}
+
+
+/* Efficient top-output summary layout: no nested metric grids, no forced blank space */
+.output-primary-summary,
+.account-ending-summary {
+  align-items: start;
+}
+
+.output-primary-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.output-primary-summary .metric,
+.account-ending-summary .metric {
+  align-self: start;
+}
+
+.output-primary-summary .base-status-metric,
+.output-primary-summary .compact-base-metric {
+  padding: 8px 10px;
+  border-radius: 14px;
+  min-height: 0;
+  height: auto;
+}
+
+.output-primary-summary .metric-title {
+  font-size: 10.75px;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+
+.output-primary-summary .value {
+  font-size: clamp(14px, 1.55vw, 17px);
+  line-height: 1.08;
+}
+
+.account-ending-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.account-ending-summary .metric {
+  padding: 8px 10px;
+  border-radius: 14px;
+}
+
+.account-ending-summary .metric-title {
+  font-size: 10.75px;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+
+.account-ending-summary .value {
+  font-size: clamp(13.5px, 1.45vw, 16px);
+  line-height: 1.08;
+}
+
+@media (max-width: 900px) {
+  .output-primary-summary,
+  .account-ending-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 430px) {
+  .output-primary-summary,
+  .account-ending-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/* Monte Carlo recommended-age note layout: fill negative space cleanly */
+.monte-carlo-summary-grid {
+  align-items: start;
+}
+
+.monte-carlo-summary-grid .recommended-age-action {
+  align-self: stretch;
+  min-width: 0;
+  display: flex;
+}
+
+.monte-carlo-summary-grid .recommended-age-action button {
+  width: 100%;
+  align-self: stretch;
+}
+
+#recommendedRetirementAgeSearchNote {
+  grid-column: 1 / -1;
+  margin-top: -2px;
+  margin-bottom: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 901px) {
+  .monte-carlo-summary-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  #recommendedRetirementAgeSearchNote {
+    grid-column: span 3;
+  }
+}
+
+@media (max-width: 900px) {
+  .monte-carlo-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #recommendedRetirementAgeSearchNote {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 430px) {
+  .monte-carlo-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/* Final single-column wheel-scroll fix */
+@media (max-width: 1040px) {
+  html,
+  body {
+    height: auto !important;
+    min-height: 100% !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: auto !important;
+  }
+
+  body {
+    display: block !important;
+    position: static !important;
+  }
+
+  main {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    align-items: start !important;
+  }
+
+  .inputs,
+  .output {
+    position: relative !important;
+    top: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: auto !important;
+    scrollbar-gutter: auto !important;
+  }
+
+  .table-wrap,
+  .mini-table-wrap {
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+@media (min-width: 1041px) {
+  html,
+  body {
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+
+  main {
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .inputs,
+  .output {
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+
+/* Single-column input-panel wheel forwarding support */
+@media (max-width: 1040px) {
+  .inputs {
+    overscroll-behavior: auto !important;
+  }
+
+  .inputs .mini-table-wrap,
+  .inputs .table-wrap {
+    overscroll-behavior: contain;
+  }
+}
+
 </style>
 <meta name="description" content="Retirement Planning Calculator">
 <meta property="og:title" content="Retirement Planning Calculator">
@@ -1730,20 +1988,19 @@ select:disabled {
 <section class="output">
 <div id="errorBox" class="error"></div>
 <div id="validationBox" class="error" style="display:none"></div>
-<div class="summary-grid">
-<div class="metric"><div class="metric-title">Base Case Result <span class="info" data-tooltip="Whether the deterministic base-case projection lasts through the plan period.">i</span></div>
 
+<div class="summary-grid output-primary-summary">
+<div class="metric base-status-metric"><div class="metric-title">Base Case Result <span class="info" data-tooltip="Whether the deterministic base-case projection lasts through the plan period.">i</span></div><div id="result" class="value">—</div></div>
+<div class="metric compact-base-metric"><div class="metric-title">Base Ending Portfolio <span class="info" data-tooltip="Final portfolio value at the end of the base-case projection.">i</span></div><div id="endingPortfolio" class="value">—</div></div>
+<div class="metric compact-base-metric"><div class="metric-title">Base Lowest Portfolio <span class="info" data-tooltip="Lowest portfolio value reached at any point in the base-case projection. Shows how close the plan gets to failure.">i</span></div><div id="lowestPortfolio" class="value">—</div></div>
+<div class="metric compact-base-metric"><div class="metric-title">Base First Depletion Age <span class="info" data-tooltip="First age when the portfolio falls to zero or below in the base-case projection.">i</span></div><div id="depletionAge" class="value">—</div></div>
+</div>
 
-<div class="summary-grid">
+<div class="summary-grid account-ending-summary">
 <div class="metric"><div class="metric-title">Ending 401(k) / Traditional <span class="info" data-tooltip="Projected ending balance in pre-tax retirement accounts after growth, withdrawals, and RMDs.">i</span></div><div id="endingTradBalance" class="value">—</div></div>
 <div class="metric"><div class="metric-title">Ending Roth IRA <span class="info" data-tooltip="Projected ending Roth balance. Roth is preserved longest under the tax-aware strategy.">i</span></div><div id="endingRothBalance" class="value">—</div></div>
 <div class="metric"><div class="metric-title">Ending Taxable <span class="info" data-tooltip="Projected ending taxable investment balance.">i</span></div><div id="endingTaxableBalance" class="value">—</div></div>
 <div class="metric"><div class="metric-title">Ending Cash <span class="info" data-tooltip="Projected ending cash savings balance.">i</span></div><div id="endingCashBalance" class="value">—</div></div>
-</div>
-<div id="result" class="value">—</div></div>
-<div class="metric"><div class="metric-title">Base Ending Portfolio <span class="info" data-tooltip="Final portfolio value at the end of the base-case projection.">i</span></div><div id="endingPortfolio" class="value">—</div></div>
-<div class="metric"><div class="metric-title">Base Lowest Portfolio <span class="info" data-tooltip="Lowest portfolio value reached at any point in the base-case projection. Shows how close the plan gets to failure.">i</span></div><div id="lowestPortfolio" class="value">—</div></div>
-<div class="metric"><div class="metric-title">Base First Depletion Age <span class="info" data-tooltip="First age when the portfolio falls to zero or below in the base-case projection.">i</span></div><div id="depletionAge" class="value">—</div></div>
 </div>
 
 <div class="summary-grid">
@@ -1767,14 +2024,14 @@ select:disabled {
 <div class="metric"><div class="metric-title">Property 2 Estimated Sale Tax <span class="info" data-tooltip="Estimated capital-gains tax due from property 2 sale.">i</span></div><div id="sale2TaxMetric" class="value">—</div></div>
 </div>
 
-<div class="summary-grid">
+<div class="summary-grid monte-carlo-summary-grid">
 <div class="metric"><div class="metric-title">Monte Carlo Success Rate <span class="info" data-tooltip="Percentage of 10,000 historical-return simulations where the portfolio does not run out of money.">i</span></div><div id="mcSuccess" class="value">—</div></div>
 <div class="metric"><div class="metric-title">Median Ending Portfolio <span class="info" data-tooltip="Middle outcome from the Monte Carlo simulations. Half of simulations ended higher and half lower.">i</span></div><div id="mcMedian" class="value">—</div></div>
 <div class="metric"><div class="metric-title">10th Percentile Ending <span class="info" data-tooltip="Downside outcome: 90% of simulations ended higher, 10% ended lower.">i</span></div><div id="mcP10" class="value">—</div></div>
 <div class="metric"><div class="metric-title">Worst Case Ending <span class="info" data-tooltip="Lowest ending portfolio value across the Monte Carlo simulations.">i</span></div><div id="mcWorst" class="value">—</div></div>
 
 <div class="metric"><div class="metric-title">Earliest Successful Age at or After Selected Retirement Age <span class="info" data-tooltip="Earliest retirement age at or after your selected retirement age where the base projection does not deplete and estimated Monte Carlo success rate is at least 85%. Calculated when Monte Carlo is run using a lower-trial search to reduce browser slowdown.">i</span></div><div id="recommendedRetirementAge" class="value">—</div></div>
-<button id="findRecommendedAgeBtn" type="button" class="secondary">Find Earliest Successful Age</button>
+<div class="recommended-age-action"><button id="findRecommendedAgeBtn" type="button" class="secondary">Find Earliest Successful Age</button></div>
 <div class="note" id="recommendedRetirementAgeSearchNote">Recommended-age search uses fewer Monte Carlo trials than the main Monte Carlo run and only runs when you click the button. Treat it as directional.</div>
 </div>
 
@@ -3636,6 +3893,42 @@ function setupOutputPanelTooltips(){
   }
 }
 
+
+function isSingleColumnLayout(){
+  return window.matchMedia && window.matchMedia("(max-width: 1040px)").matches;
+}
+
+function setupSingleColumnInputWheelForwarding(){
+  const inputPanel=document.querySelector(".inputs");
+  if(!inputPanel || inputPanel.dataset.singleColumnWheelWired==="true")return;
+  inputPanel.dataset.singleColumnWheelWired="true";
+
+  inputPanel.addEventListener("wheel",event=>{
+    if(!isSingleColumnLayout())return;
+
+    const target=event.target;
+    const scrollContainer=target && target.closest ? target.closest(".table-wrap,.mini-table-wrap,textarea,select") : null;
+
+    if(scrollContainer){
+      const canScrollVertically=scrollContainer.scrollHeight>scrollContainer.clientHeight;
+      if(canScrollVertically){
+        const atTop=scrollContainer.scrollTop<=0;
+        const atBottom=Math.ceil(scrollContainer.scrollTop+scrollContainer.clientHeight)>=scrollContainer.scrollHeight;
+        const scrollingUp=event.deltaY<0;
+        const scrollingDown=event.deltaY>0;
+        if((scrollingUp&&!atTop)||(scrollingDown&&!atBottom)){
+          return;
+        }
+      }
+    }
+
+    if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){
+      event.preventDefault();
+      window.scrollBy({top:event.deltaY,left:0,behavior:"auto"});
+    }
+  },{passive:false});
+}
+
 document.addEventListener("DOMContentLoaded",()=>{
   
   const retirementStateNode=document.getElementById("retirementState");
@@ -3646,6 +3939,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   setupMoneyFormatting();
   setupInputPanelTooltips();
   setupOutputPanelTooltips();
+  setupSingleColumnInputWheelForwarding();
 
   ["yourFraAge","spouseFraAge"].forEach(id=>{
     const n=document.getElementById(id);
