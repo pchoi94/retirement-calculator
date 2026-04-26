@@ -983,6 +983,396 @@ canvas {
   }
 }
 
+
+/* Apple-inspired visual refresh: typography, colors, surfaces, light/dark mode */
+:root {
+  color-scheme: light dark;
+  --bg: #f5f5f7;
+  --card: rgba(255, 255, 255, 0.86);
+  --card-solid: #ffffff;
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --border: rgba(0, 0, 0, 0.10);
+  --accent: #0071e3;
+  --accent-soft: rgba(0, 113, 227, 0.12);
+  --success: #248a3d;
+  --danger: #d70015;
+  --warn: #b26a00;
+  --soft: rgba(0, 113, 227, 0.10);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.10);
+  --control-bg: rgba(255, 255, 255, 0.92);
+  --control-bg-focus: #ffffff;
+  --control-border: rgba(0, 0, 0, 0.14);
+  --header-bg: linear-gradient(135deg, #0b1220 0%, #111827 42%, #1d4ed8 100%);
+  --table-header: rgba(245, 245, 247, 0.94);
+  --metric-bg: rgba(255, 255, 255, 0.72);
+  --glass-blur: saturate(180%) blur(18px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --card: rgba(28, 28, 30, 0.84);
+    --card-solid: #1c1c1e;
+    --text: #f5f5f7;
+    --muted: #a1a1a6;
+    --border: rgba(255, 255, 255, 0.14);
+    --accent: #0a84ff;
+    --accent-soft: rgba(10, 132, 255, 0.20);
+    --success: #30d158;
+    --danger: #ff453a;
+    --warn: #ffd60a;
+    --soft: rgba(10, 132, 255, 0.16);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 14px 36px rgba(0, 0, 0, 0.48);
+    --shadow-lg: 0 20px 56px rgba(0, 0, 0, 0.58);
+    --control-bg: rgba(44, 44, 46, 0.88);
+    --control-bg-focus: rgba(58, 58, 60, 0.98);
+    --control-border: rgba(255, 255, 255, 0.18);
+    --header-bg: linear-gradient(135deg, #050505 0%, #111827 50%, #0a3a75 100%);
+    --table-header: rgba(28, 28, 30, 0.94);
+    --metric-bg: rgba(44, 44, 46, 0.62);
+  }
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background:
+    radial-gradient(circle at 20% -10%, rgba(0, 113, 227, 0.13), transparent 36%),
+    radial-gradient(circle at 92% 8%, rgba(88, 86, 214, 0.12), transparent 32%),
+    var(--bg);
+  color: var(--text);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+header {
+  background: var(--header-bg);
+  box-shadow: var(--shadow-md);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+header h1 {
+  font-weight: 760;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+header p {
+  color: rgba(255, 255, 255, 0.76);
+  font-weight: 450;
+  letter-spacing: -0.012em;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  box-shadow: var(--shadow-md);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.inputs,
+.output {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.45) transparent;
+}
+
+.inputs::-webkit-scrollbar,
+.output::-webkit-scrollbar,
+.table-wrap::-webkit-scrollbar,
+.mini-table-wrap::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.inputs::-webkit-scrollbar-track,
+.output::-webkit-scrollbar-track,
+.table-wrap::-webkit-scrollbar-track,
+.mini-table-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.inputs::-webkit-scrollbar-thumb,
+.output::-webkit-scrollbar-thumb,
+.table-wrap::-webkit-scrollbar-thumb,
+.mini-table-wrap::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.38);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+
+h2 {
+  font-weight: 720;
+  letter-spacing: -0.028em;
+  color: var(--text);
+}
+
+h3 {
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  font-weight: 680;
+  letter-spacing: -0.018em;
+}
+
+.field-label {
+  color: var(--muted);
+  font-weight: 540;
+  letter-spacing: -0.01em;
+}
+
+input,
+select,
+textarea {
+  background: var(--control-bg);
+  color: var(--text);
+  border: 1px solid var(--control-border);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-sm);
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease, transform 150ms ease;
+  font-weight: 510;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--control-border));
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  background: var(--control-bg-focus);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft), var(--shadow-sm);
+}
+
+select {
+  cursor: pointer;
+}
+
+button {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 96%, white), var(--accent));
+  color: #ffffff;
+  border-radius: 999px;
+  font-weight: 680;
+  letter-spacing: -0.012em;
+  box-shadow: 0 8px 18px rgba(0, 113, 227, 0.24);
+  transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(0, 113, 227, 0.28);
+  filter: brightness(1.03);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 14px rgba(0, 113, 227, 0.20);
+}
+
+button.secondary {
+  background: linear-gradient(180deg, #6b7280, #4b5563);
+  box-shadow: 0 8px 18px rgba(75, 85, 99, 0.22);
+}
+
+button.green {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--success) 86%, white), var(--success));
+  box-shadow: 0 8px 18px rgba(36, 138, 61, 0.22);
+}
+
+.info {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 780;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.info:hover,
+.info:focus {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.info:hover::after,
+.info:focus::after {
+  background: rgba(29, 29, 31, 0.94);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.summary-grid {
+  gap: 12px;
+}
+
+.metric {
+  background: var(--metric-bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.metric-title {
+  color: var(--muted);
+  font-weight: 560;
+  letter-spacing: -0.012em;
+}
+
+.metric .value {
+  color: var(--text);
+  letter-spacing: -0.032em;
+}
+
+.metric .value.success,
+.success {
+  color: var(--success);
+}
+
+.metric .value.danger,
+.danger {
+  color: var(--danger);
+}
+
+.metric .value.warn,
+.warn {
+  color: var(--warn);
+}
+
+.note,
+.mobile-help {
+  background: var(--soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border));
+  border-radius: 14px;
+  color: color-mix(in srgb, var(--text) 76%, var(--muted));
+  padding: 10px 12px;
+}
+
+.error {
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--danger) 9%, var(--card-solid));
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 28%, var(--border));
+}
+
+.chart-wrap canvas,
+canvas {
+  background: var(--card-solid);
+  border-color: var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.table-wrap,
+.mini-table-wrap {
+  border-color: var(--border);
+  border-radius: 18px;
+  background: var(--card);
+}
+
+.main-table,
+.mini-table {
+  color: var(--text);
+}
+
+.main-table th,
+.mini-table th {
+  background: var(--table-header);
+  color: var(--muted);
+  font-weight: 680;
+  letter-spacing: -0.01em;
+}
+
+.main-table th,
+.main-table td,
+.mini-table th,
+.mini-table td {
+  border-bottom-color: var(--border);
+}
+
+.main-table th:first-child,
+.main-table td:first-child {
+  background: var(--table-header);
+}
+
+.required-asterisk {
+  color: var(--danger);
+}
+
+.field.missing input,
+.field.missing select {
+  border: 2px solid var(--danger);
+  background: color-mix(in srgb, var(--danger) 7%, var(--control-bg-focus));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger) 13%, transparent);
+}
+
+.field.missing .field-label {
+  color: var(--danger);
+}
+
+.age-phase-disabled input,
+.age-phase-disabled select,
+input:disabled,
+select:disabled {
+  opacity: 0.72;
+  background: color-mix(in srgb, var(--muted) 12%, var(--control-bg));
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.calculated-text-value {
+  color: var(--text);
+  font-weight: 680;
+  letter-spacing: -0.012em;
+}
+
+@media (prefers-color-scheme: dark) {
+  header p {
+    color: rgba(255, 255, 255, 0.70);
+  }
+
+  .info:hover::after,
+  .info:focus::after {
+    background: rgba(44, 44, 46, 0.96);
+  }
+
+  button {
+    box-shadow: 0 8px 22px rgba(10, 132, 255, 0.30);
+  }
+
+  .chart-wrap canvas,
+  canvas {
+    background: rgba(28, 28, 30, 0.98);
+  }
+}
+
+@media (max-width: 620px) {
+  header h1 {
+    letter-spacing: -0.028em;
+  }
+
+  .card {
+    border-radius: 18px;
+  }
+
+  input,
+  select,
+  textarea {
+    border-radius: 12px;
+  }
+}
+
 </style>
 <meta name="description" content="Retirement Planning Calculator">
 <meta property="og:title" content="Retirement Planning Calculator">
