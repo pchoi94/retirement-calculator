@@ -851,6 +851,81 @@ canvas {
   }
 }
 
+
+/* Restore independent panel scrolling on desktop, with normal page scrolling on smaller screens */
+@media (min-width: 1041px) {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    flex: 0 0 auto;
+  }
+
+  main {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: calc(100vh - 92px);
+    overflow: hidden;
+    align-items: stretch;
+  }
+
+  .inputs,
+  .output {
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable;
+  }
+
+  .inputs {
+    position: relative;
+    top: auto;
+  }
+
+  .output {
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 1040px) {
+  html,
+  body {
+    height: auto;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  body {
+    display: block;
+  }
+
+  main {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .inputs,
+  .output {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    scrollbar-gutter: auto;
+  }
+}
+
 </style>
 <meta name="description" content="Retirement Planning Calculator">
 <meta property="og:title" content="Retirement Planning Calculator">
