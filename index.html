@@ -611,8 +611,8 @@ main {
 <div class="note" id="taxModelLimitationsNote"><strong>Tax model note:</strong> Detailed tax mode is still an estimate. It does not fully implement the IRS Social Security worksheet, qualified dividend/LTCG stacking, NIIT, age-65+ deductions, or IRMAA two-year MAGI lookback.</div>
 
 
-<div class="field"><div class="field-label">Retirement State <span class="info" data-tooltip="State where you plan to retire. Selecting a state pre-populates Effective Tax Rate % with a planning estimate that considers federal tax, state income tax treatment of retirement income, Social Security taxability, RMDs, withdrawals, and other taxable retirement income.">i</span></div><select id="retirementState"><option value="">— Select State —</option><option value="Alabama">Alabama</option><option value="Alaska">Alaska</option><option value="Arizona">Arizona</option><option value="Arkansas">Arkansas</option><option value="California">California</option><option value="Colorado">Colorado</option><option value="Connecticut">Connecticut</option><option value="Delaware">Delaware</option><option value="Florida">Florida</option><option value="Georgia">Georgia</option><option value="Hawaii">Hawaii</option><option value="Idaho">Idaho</option><option value="Illinois">Illinois</option><option value="Indiana">Indiana</option><option value="Iowa">Iowa</option><option value="Kansas">Kansas</option><option value="Kentucky">Kentucky</option><option value="Louisiana">Louisiana</option><option value="Maine">Maine</option><option value="Maryland">Maryland</option><option value="Massachusetts">Massachusetts</option><option value="Michigan">Michigan</option><option value="Minnesota">Minnesota</option><option value="Mississippi">Mississippi</option><option value="Missouri">Missouri</option><option value="Montana">Montana</option><option value="Nebraska">Nebraska</option><option value="Nevada">Nevada</option><option value="New Hampshire">New Hampshire</option><option value="New Jersey">New Jersey</option><option value="New Mexico">New Mexico</option><option value="New York">New York</option><option value="North Carolina">North Carolina</option><option value="North Dakota">North Dakota</option><option value="Ohio">Ohio</option><option value="Oklahoma">Oklahoma</option><option value="Oregon">Oregon</option><option value="Pennsylvania">Pennsylvania</option><option value="Rhode Island">Rhode Island</option><option value="South Carolina">South Carolina</option><option value="South Dakota">South Dakota</option><option value="Tennessee">Tennessee</option><option value="Texas">Texas</option><option value="Utah">Utah</option><option value="Vermont">Vermont</option><option value="Virginia">Virginia</option><option value="Washington">Washington</option><option value="West Virginia">West Virginia</option><option value="Wisconsin">Wisconsin</option><option value="Wyoming">Wyoming</option></select></div>
-<div class="field"><div class="field-label">Effective Tax Rate % <span class="info" data-tooltip="Approximate effective tax rate used to gross up retirement withdrawals. Selecting a Retirement State pre-populates this estimate, but you can override it manually.">i</span></div><input id="taxRate" type="number" value="" step="0.5"></div>
+<div class="field"><div class="field-label">Retirement State <span class="info" data-tooltip="State where you plan to retire. Selecting a state pre-populates Effective Tax Rate % with a planning estimate that considers federal tax, state income tax treatment of retirement income, Social Security taxability, RMDs, withdrawals, and other taxable retirement income.">i</span></div><select id="retirementState"><option value="">— Select State —</option><option value="Alabama">Alabama</option><option value="Alaska">Alaska</option><option value="Arizona">Arizona</option><option value="Arkansas">Arkansas</option><option value="California">California</option><option value="Colorado" selected>Colorado</option><option value="Connecticut">Connecticut</option><option value="Delaware">Delaware</option><option value="Florida">Florida</option><option value="Georgia">Georgia</option><option value="Hawaii">Hawaii</option><option value="Idaho">Idaho</option><option value="Illinois">Illinois</option><option value="Indiana">Indiana</option><option value="Iowa">Iowa</option><option value="Kansas">Kansas</option><option value="Kentucky">Kentucky</option><option value="Louisiana">Louisiana</option><option value="Maine">Maine</option><option value="Maryland">Maryland</option><option value="Massachusetts">Massachusetts</option><option value="Michigan">Michigan</option><option value="Minnesota">Minnesota</option><option value="Mississippi">Mississippi</option><option value="Missouri">Missouri</option><option value="Montana">Montana</option><option value="Nebraska">Nebraska</option><option value="Nevada">Nevada</option><option value="New Hampshire">New Hampshire</option><option value="New Jersey">New Jersey</option><option value="New Mexico">New Mexico</option><option value="New York">New York</option><option value="North Carolina">North Carolina</option><option value="North Dakota">North Dakota</option><option value="Ohio">Ohio</option><option value="Oklahoma">Oklahoma</option><option value="Oregon">Oregon</option><option value="Pennsylvania">Pennsylvania</option><option value="Rhode Island">Rhode Island</option><option value="South Carolina">South Carolina</option><option value="South Dakota">South Dakota</option><option value="Tennessee">Tennessee</option><option value="Texas">Texas</option><option value="Utah">Utah</option><option value="Vermont">Vermont</option><option value="Virginia">Virginia</option><option value="Washington">Washington</option><option value="West Virginia">West Virginia</option><option value="Wisconsin">Wisconsin</option><option value="Wyoming">Wyoming</option></select></div>
+<div class="field"><div class="field-label">Effective Tax Rate % <span class="info" data-tooltip="Approximate effective tax rate used to gross up retirement withdrawals. Selecting a Retirement State pre-populates this estimate, but you can override it manually.">i</span></div><input id="taxRate" type="number" value="15.0" step="0.5"></div>
 <div class="field"><div class="field-label">Investment Fee % <span class="info" data-tooltip="Annual fee or return drag subtracted from the annual interest rate. Set to 0 for Investor.gov comparison.">i</span></div><input id="feeRate" type="number" value="" step="0.05"></div>
 
 
@@ -733,6 +733,7 @@ main {
 
 <section class="output">
 <div id="errorBox" class="error"></div>
+<div id="validationBox" class="error" style="display:none"></div>
 <div class="summary-grid">
 <div class="metric"><div class="metric-title">Base Case Result <span class="info" data-tooltip="Whether the deterministic base-case projection lasts through the plan period.">i</span></div>
 
@@ -2196,14 +2197,30 @@ function runMonteCarlo(){
 function clearMC(){["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el(id)){el(id).textContent="—";el(id).className="value"}}); if(el("mcNote"))el("mcNote").textContent=""; setRecommendedRetirementAgeDisplay("—","value"); clearCanvas("mcPercentileChart");}
 
 function requiredFields(){
-  const m=readNormalizedModel(),useMonthly=getSelect("useMonthlyContribution")==="yes",usePhases=getSelect("useAgeBasedSpending")==="yes"; let fields=[];
-  if(m.simple){fields=["simpleMode","simpleYears","returnRate","compoundFreq",useMonthly?"monthlyContribution":"contrib","portfolio"]; return fields;}
-  fields=["simpleMode","currentAge","retireAge","endAge","returnRate","growthVariance","compoundFreq","inflation","ssAge","yourFraAge","yourPiaMonthly","taxRate"]; if(!m.accountMode)fields.push(useMonthly?"monthlyContribution":"contrib"); if(document.getElementById("spouseSsAge") && !spouseUsesSpousalBenefit())fields.push("spouseSsAge"); if(document.getElementById("spouseFraAge"))fields.push("spouseFraAge");
-  if(m.accountMode)fields=fields.concat(["tradYouReturn","tradSpouseReturn","rothYouReturn","rothSpouseReturn","taxableReturn","cashReturn","rmdStartAge","spouseRmdStartAge","taxableWithdrawalTaxRate"]); else fields.push("portfolio");
-  if(usePhases)fields=fields.concat(["spend1Amt","spend2Amt","spend3Amt"]); else if(document.getElementById("constantRetirementSpending"))fields.push("constantRetirementSpending");
+  const m=readNormalizedModel(),usePhases=getSelect("useAgeBasedSpending")==="yes"; let fields=[];
+  if(m.simple){
+    fields=["simpleMode","simpleYears","returnRate","compoundFreq","portfolio"];
+    return fields;
+  }
+
+  fields=["simpleMode","currentAge","retireAge","endAge","returnRate","growthVariance","compoundFreq","inflation","taxRate"];
+
+  if(m.accountMode){
+    fields=fields.concat(["tradYouReturn","tradSpouseReturn","rothYouReturn","rothSpouseReturn","taxableReturn","cashReturn","rmdStartAge","spouseRmdStartAge","taxableWithdrawalTaxRate"]);
+  }else{
+    fields.push("portfolio");
+  }
+
+  if(usePhases){
+    fields=fields.concat(["spend1Amt","spend2Amt","spend3Amt"]);
+  }else if(document.getElementById("constantRetirementSpending")){
+    fields.push("constantRetirementSpending");
+  }
+
   if(getSelect("sellRealEstate")==="yes")fields=fields.concat(["propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate"]);
   if(getSelect("sellRealEstate2")==="yes")fields=fields.concat(["property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGainTaxRate"]);
-  if(m.useAdvanced&&m.useDetailedTax)fields=fields.concat(["filingStatus","stateTaxRate"]); return fields;
+  if(m.useAdvanced&&m.useDetailedTax)fields=fields.concat(["filingStatus","stateTaxRate"]);
+  return fields;
 }
 function markRequiredFields(){
   document.querySelectorAll(".required-star").forEach(e=>e.remove());
@@ -2211,38 +2228,37 @@ function markRequiredFields(){
 }
 
 function validateSocialSecurityAges(missing){
-  const claimingAgeFields=[
-    {id:"ssAge", label:"Your Social Security Claiming Age", always:true},
-    {id:"spouseSsAge", label:"Spouse Social Security Start Age", always:false}
-  ];
+  const yourSsModeled=safeMoneyValue("yourPiaMonthly")>0 || safeMoneyValue("ssMonthly")>0;
+  const spouseSsModeled=safeMoneyValue("spouseSsMonthly")>0 || safeMoneyValue("spousePiaMonthly")>0 || spouseUsesSpousalBenefit();
 
-  claimingAgeFields.forEach(item=>{
-    const node=document.getElementById(item.id);
-    const field=closestField(item.id);
-    const modelUsesSpouseStart = item.id!=="spouseSsAge" || !spouseUsesSpousalBenefit() || getSpousalTopUpMode()==="split";
-    if(!node || (!item.always && !modelUsesSpouseStart)) return;
-    const value=getVal(item.id);
+  if(yourSsModeled){
+    const node=document.getElementById("ssAge"), field=closestField("ssAge"), value=getVal("ssAge");
     if(value>0 && (value<62 || value>70)){
       if(field) field.classList.add("missing");
-      missing.push(item.label+" must be between 62 and 70");
+      missing.push("Your Social Security Claiming Age must be between 62 and 70");
     }
-  });
-
-  const fraFields=[
-    {id:"yourFraAge", label:"Your Full Retirement Age"},
-    {id:"spouseFraAge", label:"Spouse Full Retirement Age"}
-  ];
-
-  fraFields.forEach(item=>{
-    const node=document.getElementById(item.id);
-    const field=closestField(item.id);
-    if(!node) return;
-    const value=getVal(item.id);
-    if(value>0 && (value<65 || value>67)){
-      if(field) field.classList.add("missing");
-      missing.push(item.label+" must be between 65 and 67");
+    const fraNode=document.getElementById("yourFraAge"), fraField=closestField("yourFraAge"), fra=getVal("yourFraAge");
+    if(fra>0 && (fra<65 || fra>67)){
+      if(fraField) fraField.classList.add("missing");
+      missing.push("Your Full Retirement Age must be between 65 and 67");
     }
-  });
+  }
+
+  if(spouseSsModeled){
+    const modelUsesSpouseStart=!spouseUsesSpousalBenefit() || getSpousalTopUpMode()==="split";
+    if(modelUsesSpouseStart){
+      const node=document.getElementById("spouseSsAge"), field=closestField("spouseSsAge"), value=getVal("spouseSsAge");
+      if(value>0 && (value<62 || value>70)){
+        if(field) field.classList.add("missing");
+        missing.push("Spouse Social Security Start Age must be between 62 and 70");
+      }
+    }
+    const fraNode=document.getElementById("spouseFraAge"), fraField=closestField("spouseFraAge"), fra=getVal("spouseFraAge");
+    if(fra>0 && (fra<65 || fra>67)){
+      if(fraField) fraField.classList.add("missing");
+      missing.push("Spouse Full Retirement Age must be between 65 and 67");
+    }
+  }
 }
 
 function validateRequiredFields(){
@@ -2269,7 +2285,26 @@ function wireMiscRowInputs(row){if(!row)return;row.querySelectorAll("input").for
 function addMiscExpenseRow(){const body=document.getElementById("miscExpenseBody");if(!body)return;const i=getNextMiscExpenseIndex(),tr=document.createElement("tr");tr.innerHTML='<td><input id="misc'+i+'Label" type="text" value="" placeholder="Expense '+i+'"></td><td><input id="misc'+i+'Age" type="number" value="0"></td><td><input id="misc'+i+'Amt" type="text" inputmode="decimal" value="0" step="1000"></td><td><button type="button" class="secondary misc-remove-btn">Remove</button></td>';body.appendChild(tr);wireMiscRowInputs(tr);calculate();}
 function removeMiscExpenseRow(button){const row=button?button.closest("tr"):null;if(row){row.remove();validateRequiredFields();calculate();}}
 
+
+let inputCalculationTimer=null;
+function scheduleInputCalculation(){
+  clearTimeout(inputCalculationTimer);
+  inputCalculationTimer=setTimeout(()=>{
+    updateCalculatedSocialSecurityDisplay();
+    updateAccountTotal();
+    validateRequiredFields();
+    calculate();
+    clearMC();
+  },120);
+}
+
 document.addEventListener("DOMContentLoaded",()=>{
+  
+  const retirementStateNode=document.getElementById("retirementState");
+  const taxRateNode=document.getElementById("taxRate");
+  if(retirementStateNode && !retirementStateNode.value) retirementStateNode.value="Colorado";
+  if(taxRateNode && !String(taxRateNode.value||"").trim()) taxRateNode.value="15.0";
+
   setupMoneyFormatting();
 
   ["yourFraAge","spouseFraAge"].forEach(id=>{
@@ -2296,14 +2331,13 @@ document.addEventListener("DOMContentLoaded",()=>{
   document.querySelectorAll("#miscExpenseBody tr").forEach(wireMiscRowInputs);
   const addBtn=document.getElementById("addMiscExpenseBtn"); if(addBtn)addBtn.addEventListener("click",e=>{e.preventDefault();addMiscExpenseRow();});
   const miscBody=document.getElementById("miscExpenseBody"); if(miscBody)miscBody.addEventListener("click",e=>{if(e.target&&e.target.classList&&e.target.classList.contains("misc-remove-btn")){e.preventDefault();removeMiscExpenseRow(e.target);}});
-  const stateNode=document.getElementById("retirementState"); if(stateNode)stateNode.addEventListener("change",updateEffectiveTaxRateFromState);
+  const stateNode=document.getElementById("retirementState"); if(stateNode)stateNode.addEventListener("change",()=>{updateEffectiveTaxRateFromState();scheduleInputCalculation();});
   ["simpleMode","useMonthlyContribution","useAccountModeling","useAgeBasedSpending","sellRealEstate","sellRealEstate2","useAdvancedPlanning"].forEach(id=>{const n=document.getElementById(id);if(n)n.addEventListener("change",()=>{updateToggleDependentFields();calculate();});});
   ["currentAge","spouseAge","retireAge","endAge","spend1End","spend2End"].forEach(id=>{const n=document.getElementById(id);if(n){n.addEventListener("input",()=>{syncSpendingPhaseStarts();validateRequiredFields();});n.addEventListener("blur",()=>{syncSpendingPhaseStarts();calculate();});}});
-  document.querySelectorAll("input,select").forEach(n=>n.addEventListener("input",()=>{
-    updateCalculatedSocialSecurityDisplay();
-    updateAccountTotal();
-    validateRequiredFields();
-  }));
+  document.querySelectorAll("input,select").forEach(n=>{
+    n.addEventListener("input",scheduleInputCalculation);
+    n.addEventListener("change",scheduleInputCalculation);
+  });
   
   ["rmdStartAge","spouseRmdStartAge"].forEach(id=>{
     const n=document.getElementById(id);
