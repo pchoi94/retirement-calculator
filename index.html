@@ -1776,6 +1776,24 @@ select:disabled {
   height: 100%;
 }
 
+.spaghetti-svg-layer path.monte-carlo-path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: geometricPrecision;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  stroke-miterlimit: 1;
+  stroke-width: 0.85;
+}
+
+.spaghetti-svg-layer path.monte-carlo-path.positive {
+  stroke: rgba(37, 99, 235, 0.34);
+}
+
+.spaghetti-svg-layer path.monte-carlo-path.depleted {
+  stroke: rgba(220, 38, 38, 0.26);
+}
+
 .spaghetti-empty-state {
   position: absolute;
   inset: 0;
@@ -2656,7 +2674,15 @@ function createChartSvgNode(name,attrs={}){
 }
 
 function chartSvgPathFromPoints(points,xAt,yAt){
-  return points.map((pt,i)=>(i===0?"M":"L")+xAt(i).toFixed(2)+" "+yAt(pt.y).toFixed(2)).join(" ");
+  if(!Array.isArray(points) || points.length===0)return "";
+  const commands=[];
+  points.forEach((pt,i)=>{
+    const x=xAt(i);
+    const y=yAt(pt.y);
+    if(!Number.isFinite(x) || !Number.isFinite(y))return;
+    commands.push((commands.length===0?"M":"L")+x.toFixed(2)+" "+y.toFixed(2));
+  });
+  return commands.join(" ");
 }
 
 function drawMonteCarloFanChart(id,paths){
@@ -2737,13 +2763,8 @@ function drawMonteCarloFanChart(id,paths){
   sampledPaths.forEach((path,pathIndex)=>{
     const depleted=path.some(pt=>pt.y<0);
     const pathNode=createChartSvgNode("path",{
-      d:chartSvgPathFromPoints(path,xAt,yAt),
-      fill:"none",
-      stroke:depleted?"rgba(220,38,38,0.46)":"rgba(37,99,235,0.40)",
-      "stroke-width":depleted?"1.7":"1.45",
-      "stroke-linecap":"round",
-      "stroke-linejoin":"round",
-      "vector-effect":"non-scaling-stroke"
+      class:"monte-carlo-path "+(depleted?"depleted":"positive"),
+      d:chartSvgPathFromPoints(path,xAt,yAt)
     });
     const title=createChartSvgNode("title");
     title.textContent="Sample path "+(pathIndex+1)+(depleted?" — depleted":" — positive");
