@@ -661,6 +661,196 @@ canvas {
   }
 }
 
+
+/* Cross-browser responsive two-panel layout fix: Chrome, Safari, Firefox */
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+@supports not (overflow-x: clip) {
+  html {
+    overflow-x: hidden;
+  }
+}
+
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+main {
+  width: min(100%, 1520px);
+  max-width: 100%;
+  min-width: 0;
+  margin-left: auto;
+  margin-right: auto;
+  display: grid;
+  grid-template-columns: minmax(280px, clamp(320px, 31vw, 450px)) minmax(0, 1fr);
+  align-items: start;
+  overflow: hidden;
+}
+
+.card,
+.inputs,
+.output {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.inputs,
+.output {
+  contain: inline-size;
+}
+
+.inputs {
+  overflow-x: clip;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+}
+
+@supports not (overflow-x: clip) {
+  .inputs {
+    overflow-x: hidden;
+  }
+}
+
+.output {
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.inputs *,
+.output * {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.field {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) minmax(88px, min(132px, 34%));
+}
+
+.field-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+input,
+select,
+textarea,
+button {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.note,
+.error,
+.metric,
+.summary-grid,
+.chart-wrap,
+.table-wrap,
+.mini-table-wrap {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.chart-wrap {
+  width: 100%;
+  max-width: 100%;
+}
+
+canvas {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.table-wrap,
+.mini-table-wrap {
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.main-table {
+  width: max-content;
+  min-width: 100%;
+}
+
+.mini-table {
+  width: max-content;
+  min-width: 100%;
+}
+
+@media (max-width: 1180px) {
+  main {
+    grid-template-columns: minmax(260px, 36vw) minmax(0, 1fr);
+  }
+
+  .field {
+    grid-template-columns: minmax(0, 1fr) minmax(84px, min(120px, 36%));
+  }
+}
+
+@media (max-width: 1040px) {
+  main {
+    grid-template-columns: minmax(0, 1fr);
+    overflow: visible;
+  }
+
+  .inputs {
+    position: relative;
+    top: auto;
+    max-height: none;
+    overflow: visible;
+    scrollbar-gutter: auto;
+  }
+
+  .output {
+    overflow: visible;
+  }
+}
+
+@media (max-width: 620px) {
+  main {
+    padding-left: max(10px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
+  }
+
+  .field {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    text-align: left;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+  }
+}
+
+@media (max-width: 430px) {
+  .summary-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .buttons {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 </style>
 </head>
 <body>
