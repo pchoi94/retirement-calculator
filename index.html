@@ -516,6 +516,7 @@ main {
 
 <h3>Investor.gov Match Mode <span class="info" data-tooltip="A simplified mode designed to compare directly against the Investor.gov compound interest calculator.">i</span></h3>
 <div class="field"><div class="field-label">Simple Match Mode <span class="info" data-tooltip="When Yes, the app ignores retirement-specific items and uses only initial investment, monthly contribution, years, rate, and compounding frequency.">i</span></div><select id="simpleMode"><option value="no">No - Full Retirement Model</option><option value="yes">Yes - Match Investor.gov</option></select></div>
+<div class="note" id="simpleModeNote">Simple Mode is a basic pooled-portfolio projection. Turn Simple Mode off to use Social Security, taxes, RMDs, real estate, account-level modeling, and advanced retirement assumptions.</div>
 <div class="field"><div class="field-label">Length of Time in Years <span class="info" data-tooltip="Number of years used in Investor.gov match mode.">i</span></div><input id="simpleYears" type="number" value="" step="1"></div>
 <div class="note">For 1:1 comparison: Simple Match Mode = Yes, Investment Fee = 0, Use Monthly Contribution Input = Yes.</div>
 
@@ -537,6 +538,8 @@ main {
 
 
 <h3>Investment Account Types <span class="info" data-tooltip="Optional account-level modeling. If enabled, the calculator uses these account balances and growth rates instead of only a single portfolio total.">i</span></h3>
+<div class="note" id="accountModelLimitationsNote"><strong>Account model note:</strong> RMD modeling is simplified and does not separately model IRA vs 401(k) RMD rules, first-RMD April delay, or workplace-plan RMD delays. Account growth is based on account-level return assumptions, not full stock/bond/cash/alternatives allocation.</div>
+
 <div class="field"><div class="field-label">Use Account-Level Modeling <span class="info" data-tooltip="When Simple Mode is Yes, Account-Level Modeling is disabled because Simple Mode is a pooled-portfolio projection. Set Simple Mode to No to use account-level balances, owner-specific contributions, RMDs, and account-specific growth rates.">i</span></div><select id="useAccountModeling"><option value="no">No</option><option value="yes">Yes</option></select></div>
 <div class="field"><div class="field-label">Your 401(k) / Traditional IRA Balance $ <span class="info" data-tooltip="Your owner-specific pre-tax retirement account balance. Used for owner-specific RMD modeling when account-level modeling is enabled.">i</span></div><input id="tradYouBalance" type="text" inputmode="decimal" value="" step="10000"></div>
 <div class="field"><div class="field-label">Your 401(k) / Traditional IRA Growth % <span class="info" data-tooltip="Expected annual growth rate for your pre-tax retirement accounts.">i</span></div><input id="tradYouReturn" type="number" value="8" step="0.1"></div>
@@ -554,13 +557,14 @@ main {
 <div class="field"><div class="field-label">Taxable Investments Balance $ <span class="info" data-tooltip="Taxable brokerage or other non-retirement investment balance.">i</span></div><input id="taxableBalance" type="text" inputmode="decimal" value="" step="10000"></div>
 <div class="field"><div class="field-label">Taxable Investments Growth % <span class="info" data-tooltip="Expected annual growth rate for taxable investments.">i</span></div><input id="taxableReturn" type="number" value="8" step="0.1"></div>
 <div class="field"><div class="field-label">Taxable Cost Basis $ <span class="info" data-tooltip="Approximate cost basis for taxable investments. Used to estimate taxable gains when withdrawals occur. Blank defaults to current taxable balance, meaning no embedded gain.">i</span></div><input id="taxableCostBasis" type="text" inputmode="decimal" value="" step="10000"></div>
+<div class="note" id="taxableBasisLimitationsNote">Taxable basis modeling is simplified. It estimates embedded gains, dividends, and realized gains, but does not fully track tax lots, reinvested dividends increasing basis, loss harvesting, or qualified dividend/LTCG bracket stacking.</div>
 <div class="field"><div class="field-label">Qualified Dividend Yield % <span class="info" data-tooltip="Estimated annual qualified dividend yield from taxable investments. Adds to taxable capital-gain-style income in detailed tax mode.">i</span></div><input id="qualifiedDividendYield" type="number" value="0" step="0.1"></div>
 <div class="field"><div class="field-label">Nonqualified Dividend Yield % <span class="info" data-tooltip="Estimated annual nonqualified dividend yield from taxable investments. Adds to ordinary income in detailed tax mode.">i</span></div><input id="nonqualifiedDividendYield" type="number" value="0" step="0.1"></div>
 <div class="field"><div class="field-label">Annual Realized Capital Gains % <span class="info" data-tooltip="Estimated annual taxable capital gains realized in taxable investments before withdrawals.">i</span></div><input id="annualRealizedCapGainsPct" type="number" value="0" step="0.1"></div>
 
 <div class="field"><div class="field-label">Cash Savings Balance $ <span class="info" data-tooltip="Cash, checking, savings, money market, or emergency reserve balance.">i</span></div><input id="cashBalance" type="text" inputmode="decimal" value="" step="1000"></div>
 <div class="field"><div class="field-label">Cash Savings Growth % <span class="info" data-tooltip="Expected annual interest rate for cash savings.">i</span></div><input id="cashReturn" type="number" value="4" step="0.1"></div>
-<div class="field"><div class="field-label">Total Across Accounts $ <span class="info" data-tooltip="Automatically calculated sum of all account balances when account-level modeling is enabled.">i</span></div><div id="totalAccounts" class="calculated-text-value">$0</div></div>
+<div class="field"><div class="field-label">Total Across Accounts $ <span class="info" data-tooltip="Automatically calculated sum of all account balances when account-level modeling is enabled.">i</span></div><div id="totalAccounts","accountModelLimitationsNote" class="calculated-text-value">$0</div></div>
 
 
 <div class="field"><div class="field-label">Your 401(k) / Traditional Annual Contribution $ <span class="info" data-tooltip="Annual contribution routed to your pre-tax retirement accounts when account-level modeling is enabled.">i</span></div><input id="contribTradYouAnnual" type="text" inputmode="decimal" value="" step="1000"></div>
@@ -581,20 +585,31 @@ main {
 <div class="field"><div class="field-label">Withdrawal Strategy <span class="info" data-tooltip="Tax-aware default uses RMDs first, then cash, taxable investments, pre-tax accounts, and Roth last.">i</span></div><select id="withdrawalStrategy"><option value="taxAware">Tax-Aware Default</option><option value="proRata">Pro Rata</option></select></div>
 
 <h3>Base Income <span class="info" data-tooltip="Recurring income sources that reduce required portfolio withdrawals.">i</span></h3>
-<div class="field"><div class="field-label">Your Social Security Claiming Age <span class="info" data-tooltip="Your age when you plan to claim Social Security. Your monthly benefit is automatically adjusted from your full-retirement-age benefit.">i</span></div><input id="ssAge" value="67"></div>
-<div class="field"><div class="field-label">Your Full Retirement Age <span class="info" data-tooltip="Your Social Security full retirement age. Default is 67 for people born in 1960 or later.">i</span></div><input id="yourFraAge" type="number" value="67" step="1"></div>
-<div class="field"><div class="field-label">Spouse Social Security Start Age <span class="info" data-tooltip="Your spouse’s age when their own Social Security benefit begins. If Spouse Uses Spousal Benefit is Yes, this field is ignored and the spousal benefit starts when you file, assuming spouse is at least age 62.">i</span></div><input id="spouseSsAge" type="number" value="67"></div>
-<div class="field"><div class="field-label">Spouse Full Retirement Age <span class="info" data-tooltip="Your spouse’s Social Security full retirement age. Used to calculate the optimal spousal benefit start age without early-claiming reduction.">i</span></div><input id="spouseFraAge" type="number" value="67" step="1"></div>
+<div class="note" id="socialSecurityEstimateNote"><strong>Social Security estimate note:</strong> Spouse-benefit modeling is an estimate. Actual SSA benefits may differ due to deemed filing, excess spousal-benefit rules, early-filing reductions, survivor-benefit rules, and SSA-specific calculations. Inputs are treated as today’s dollars and are inflated using the app’s Social Security COLA assumption when benefits are paid.</div>
+
+<div class="field"><div class="field-label">Your Social Security Claiming Age <span class="info" data-tooltip="Your age when you plan to claim Social Security. Your monthly benefit is automatically adjusted from your full-retirement-age benefit.">i</span></div><input id="ssAge" type="number" min="62" max="70" value="67"></div>
+<div class="field"><div class="field-label">Your Full Retirement Age <span class="info" data-tooltip="Your Social Security full retirement age. Default is 67 for people born in 1960 or later.">i</span></div><input id="yourFraAge" type="number" min="65" max="67" value="67" step="0.01"></div>
+<div class="field"><div class="field-label">Spouse Social Security Start Age <span class="info" data-tooltip="Your spouse’s age when their own Social Security benefit starts. If Spouse Uses Spousal Benefit is Yes, spouse own benefit can begin at this age and any spousal top-up begins later when eligible.">i</span></div><input id="spouseSsAge" type="number" min="62" max="70" value="67"></div>
+<div class="field"><div class="field-label">Spouse Full Retirement Age <span class="info" data-tooltip="Your spouse’s Social Security full retirement age. Used to calculate the optimal spousal benefit start age without early-claiming reduction.">i</span></div><input id="spouseFraAge" type="number" min="65" max="67" value="67" step="0.01"></div>
+<div class="field"><div class="field-label">Spouse Social Security Benefit at Full Retirement Age $ <span class="info" data-tooltip="Spouse's own Social Security monthly benefit at full retirement age, also called spouse PIA. Used only when Spouse Uses Spousal Benefit is Yes, so the app can model spouse own benefit plus any spousal top-up. Leave blank if spouse has no own benefit.">i</span></div><input id="spousePiaMonthly" type="text" inputmode="decimal" value="" step="100"></div>
+<div class="field"><div class="field-label">Estimated Spouse Own SS Monthly $ <span class="info" data-tooltip="Estimated spouse own benefit. In conservative spousal mode, this is calculated as an unreduced FRA benefit because spouse own benefit is modeled as starting at the unreduced spousal start age. In approximate mode, it is adjusted using Spouse Social Security Start Age.">i</span></div><div id="calculatedSpouseOwnBenefit" class="calculated-text-value">—</div></div>
+<div class="field"><div class="field-label">Estimated Spousal Top-Up $ <span class="info" data-tooltip="Estimated spousal top-up equals max(0, 50% of your PIA minus spouse own PIA). Conservative mode starts it with spouse own benefit at the unreduced spousal start age. Approximate mode allows spouse own benefit first and top-up later.">i</span></div><div id="calculatedSpousalTopUp" class="calculated-text-value">—</div></div>
+<div class="field"><div class="field-label">Estimated Spouse Total at Top-Up Start $ <span class="info" data-tooltip="Spouse own monthly benefit plus any spousal top-up after the unreduced spousal top-up begins.">i</span></div><div id="calculatedSpouseTotalBenefit" class="calculated-text-value">—</div></div>
+
 <div class="field"><div class="field-label">Calculated Your SS Monthly $ <span class="info" data-tooltip="Automatically calculated monthly Social Security benefit based on your full-retirement-age benefit and selected claiming age.">i</span></div><input id="ssMonthly" type="text" inputmode="decimal" value="" step="100"></div>
 <div class="field"><div class="field-label">Spouse SS Monthly $ <span class="info" data-tooltip="Spouse's estimated monthly Social Security benefit in today's dollars.">i</span></div><input id="spouseSsMonthly" type="text" inputmode="decimal" value="" step="100"></div>
-<div class="field"><div class="field-label">Spouse Uses Spousal Benefit <span class="info" data-tooltip="If Yes, spouse Social Security is modeled as a spousal benefit based on your Social Security record. The benefit starts no earlier than your filing age, and the spouse amount is calculated automatically.">i</span></div><select id="spouseUsesSpousalBenefit"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+<div class="field"><div class="field-label">Spouse Uses Spousal Benefit <span class="info" data-tooltip="If Yes, spouse Social Security is modeled using spouse own benefit plus any available spousal top-up based on your record. The unreduced spousal portion starts no earlier than your filing age.">i</span></div><select id="spouseUsesSpousalBenefit"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+<div class="field"><div class="field-label">Spousal Top-Up Modeling <span class="info" data-tooltip="Conservative mode starts spouse own benefit and spousal top-up together at the unreduced spousal start age. Approximate mode allows spouse own benefit to start earlier, then adds an estimated spousal top-up later.">i</span></div><select id="spousalTopUpMode"><option value="conservative" selected>Conservative: start spouse benefit at unreduced spousal age</option><option value="split">Approximate: spouse own benefit first, top-up later</option></select></div>
+
 <div class="field"><div class="field-label">Your Social Security Benefit at Full Retirement Age $ <span class="info" data-tooltip="Your Social Security monthly benefit at full retirement age, also called Primary Insurance Amount / PIA. This is the basis for calculating your own claiming-age benefit and any spouse spousal benefit.">i</span></div><input id="yourPiaMonthly" type="text" inputmode="decimal" value="" step="100"></div>
 <div class="field"><div class="field-label">Calculated Spouse Spousal Benefit $ <span class="info" data-tooltip="Automatically calculated as 50% of Your FRA / PIA Monthly Benefit, or 50% of Your SS Monthly if the PIA field is blank. Starts when you file, assuming spouse is at least age 62.">i</span></div><div id="calculatedSpousalBenefit" class="calculated-text-value">$0</div></div>
-<div class="field"><div class="field-label">Spouse Spousal Benefit Starts at Your Age <span class="info" data-tooltip="Calculated as the later of your Social Security claiming age and the age when your spouse reaches full retirement age. This models the optimal unreduced spousal benefit timing.">i</span></div><div id="spouseSpousalBenefitStartAge" class="calculated-text-value">—</div></div>
+<div class="field"><div class="field-label">Unreduced Spousal Benefit Starts at Your Age <span class="info" data-tooltip="Calculated as the later of your Social Security claiming age and the age when your spouse reaches full retirement age. This avoids early spousal-benefit reduction, but it does not perform a full lifetime Social Security optimization.">i</span></div><div id="spouseSpousalBenefitStartAge" class="calculated-text-value">—</div></div>
 
 <div class="field"><div class="field-label">Rental Income Monthly $ <span class="info" data-tooltip="Net monthly rental income before any modeled property sale.">i</span></div><input id="rentalMonthly" type="text" inputmode="decimal" value="" step="50"></div>
 
 <h3>Taxes / Costs <span class="info" data-tooltip="Simplified tax and fee assumptions applied to withdrawals and investment returns.">i</span></h3>
+<div class="note" id="taxModelLimitationsNote"><strong>Tax model note:</strong> Detailed tax mode is still an estimate. It does not fully implement the IRS Social Security worksheet, qualified dividend/LTCG stacking, NIIT, age-65+ deductions, or IRMAA two-year MAGI lookback.</div>
+
 
 <div class="field"><div class="field-label">Retirement State <span class="info" data-tooltip="State where you plan to retire. Selecting a state pre-populates Effective Tax Rate % with a planning estimate that considers federal tax, state income tax treatment of retirement income, Social Security taxability, RMDs, withdrawals, and other taxable retirement income.">i</span></div><select id="retirementState"><option value="">— Select State —</option><option value="Alabama">Alabama</option><option value="Alaska">Alaska</option><option value="Arizona">Arizona</option><option value="Arkansas">Arkansas</option><option value="California">California</option><option value="Colorado">Colorado</option><option value="Connecticut">Connecticut</option><option value="Delaware">Delaware</option><option value="Florida">Florida</option><option value="Georgia">Georgia</option><option value="Hawaii">Hawaii</option><option value="Idaho">Idaho</option><option value="Illinois">Illinois</option><option value="Indiana">Indiana</option><option value="Iowa">Iowa</option><option value="Kansas">Kansas</option><option value="Kentucky">Kentucky</option><option value="Louisiana">Louisiana</option><option value="Maine">Maine</option><option value="Maryland">Maryland</option><option value="Massachusetts">Massachusetts</option><option value="Michigan">Michigan</option><option value="Minnesota">Minnesota</option><option value="Mississippi">Mississippi</option><option value="Missouri">Missouri</option><option value="Montana">Montana</option><option value="Nebraska">Nebraska</option><option value="Nevada">Nevada</option><option value="New Hampshire">New Hampshire</option><option value="New Jersey">New Jersey</option><option value="New Mexico">New Mexico</option><option value="New York">New York</option><option value="North Carolina">North Carolina</option><option value="North Dakota">North Dakota</option><option value="Ohio">Ohio</option><option value="Oklahoma">Oklahoma</option><option value="Oregon">Oregon</option><option value="Pennsylvania">Pennsylvania</option><option value="Rhode Island">Rhode Island</option><option value="South Carolina">South Carolina</option><option value="South Dakota">South Dakota</option><option value="Tennessee">Tennessee</option><option value="Texas">Texas</option><option value="Utah">Utah</option><option value="Vermont">Vermont</option><option value="Virginia">Virginia</option><option value="Washington">Washington</option><option value="West Virginia">West Virginia</option><option value="Wisconsin">Wisconsin</option><option value="Wyoming">Wyoming</option></select></div>
 <div class="field"><div class="field-label">Effective Tax Rate % <span class="info" data-tooltip="Approximate effective tax rate used to gross up retirement withdrawals. Selecting a Retirement State pre-populates this estimate, but you can override it manually.">i</span></div><input id="taxRate" type="number" value="" step="0.5"></div>
@@ -629,6 +644,8 @@ main {
 
 
 <h3>Monte Carlo Simulation <span class="info" data-tooltip="Runs 10,000 simulations using historical S&P 500 annual total return years sampled randomly with replacement. No user volatility inputs are required.">i</span></h3>
+<div class="note" id="monteCarloLimitationsNote"><strong>Monte Carlo note:</strong> The simulation uses paired historical return/inflation observations but does not yet preserve multi-year market regimes with block bootstrap or model full asset-class allocation.</div>
+
 <div class="note"><strong>Historical mode:</strong> Monte Carlo uses 10,000 simulations and samples annual stock returns from historical S&P 500 total-return data from 1928–2024. User-entered volatility, return floor, return cap, and trial count are not used.</div>
 
 
@@ -759,7 +776,9 @@ main {
 <div class="metric"><div class="metric-title">10th Percentile Ending <span class="info" data-tooltip="Downside outcome: 90% of simulations ended higher, 10% ended lower.">i</span></div><div id="mcP10" class="value">—</div></div>
 <div class="metric"><div class="metric-title">Worst Case Ending <span class="info" data-tooltip="Lowest ending portfolio value across the Monte Carlo simulations.">i</span></div><div id="mcWorst" class="value">—</div></div>
 
-<div class="metric"><div class="metric-title">Recommended Retirement Age <span class="info" data-tooltip="Earliest retirement age where the base projection does not deplete and Monte Carlo success rate is at least 85%. Calculated when Monte Carlo is run.">i</span></div><div id="recommendedRetirementAge" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Earliest Successful Age at or After Selected Retirement Age <span class="info" data-tooltip="Earliest retirement age at or after your selected retirement age where the base projection does not deplete and estimated Monte Carlo success rate is at least 85%. Calculated when Monte Carlo is run using a lower-trial search to reduce browser slowdown.">i</span></div><div id="recommendedRetirementAge" class="value">—</div></div>
+<button id="findRecommendedAgeBtn" type="button" class="secondary">Find Earliest Successful Age</button>
+<div class="note" id="recommendedRetirementAgeSearchNote">Recommended-age search uses fewer Monte Carlo trials than the main Monte Carlo run and only runs when you click the button. Treat it as directional.</div>
 </div>
 
 
@@ -1130,34 +1149,73 @@ function drawMonteCarloPercentileChart(id,paths){
 }
 
 function drawHistogram(id,values){const{ctx,w,h}=prepCanvas(id),p={left:70,right:18,top:24,bottom:42};const min=Math.min(...values),max=Math.max(...values),bins=30,range=max-min||1,counts=Array(bins).fill(0);values.forEach(v=>{let idx=Math.floor((v-min)/range*bins);if(idx>=bins)idx=bins-1;if(idx<0)idx=0;counts[idx]++});const maxCount=Math.max(...counts,1),barW=(w-p.left-p.right)/bins;ctx.strokeStyle="#e5e7eb";ctx.fillStyle="#6b7280";ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.lineWidth=1;for(let i=0;i<=5;i++){const y=p.top+(1-i/5)*(h-p.top-p.bottom);ctx.beginPath();ctx.moveTo(p.left,y);ctx.lineTo(w-p.right,y);ctx.stroke();ctx.textAlign="right";ctx.fillText(Math.round(maxCount*i/5),p.left-6,y+4)}ctx.fillStyle="#2563eb";counts.forEach((c,i)=>{const x=p.left+i*barW,y=p.top+(1-c/maxCount)*(h-p.top-p.bottom),bh=(c/maxCount)*(h-p.top-p.bottom);ctx.fillRect(x+1,y,Math.max(1,barW-2),bh)});ctx.strokeStyle="#111827";ctx.beginPath();ctx.moveTo(p.left,p.top);ctx.lineTo(p.left,h-p.bottom);ctx.lineTo(w-p.right,h-p.bottom);ctx.stroke();ctx.fillStyle="#111827";ctx.font="12px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="left";ctx.fillText("Ending Portfolio Distribution",p.left,17);ctx.fillStyle="#6b7280";ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="center";ctx.fillText(fmtMoney(min),p.left,h-20);ctx.fillText(fmtMoney(max),w-p.right,h-20);ctx.fillText("Ending Portfolio",w/2,h-20)}
-window.addEventListener("resize",()=>calculate());
-document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("input,select").forEach(input=>input.addEventListener("input",()=>{calculate();clearMC()}));calculate();clearMC()});
+let resizeRecalcTimer=null;
+window.addEventListener("resize",()=>{
+  clearTimeout(resizeRecalcTimer);
+  resizeRecalcTimer=setTimeout(()=>calculate(),200);
+});
+/* Legacy DOMContentLoaded initializer removed; single-source init below handles all setup. */
 
 /* === Single-source-of-truth runtime === */
 
 let INITIAL_PAGE_VALUES=null;
 
 const MONEY_FIELD_IDS = [
-  "portfolio","contrib","monthlyContribution","ssMonthly","spouseSsMonthly","rentalMonthly",
-  "propertyValue","mortgageBalance","mortgagePaydown","costBasis","capGainExclusion",
-  "property2Value","mortgage2Balance","mortgage2Paydown","cost2Basis","capGain2Exclusion","rental2Monthly",
-  "spend1Amt","spend2Amt","spend3Amt","constantRetirementSpending",
-  "inc1Amt","inc2Amt","inc3Amt","exp1Amt","exp2Amt","exp3Amt","college1Amt","college2Amt",
-  "tradYouBalance","tradSpouseBalance","rothYouBalance","rothSpouseBalance","taxableBalance","taxableCostBasis","cashBalance",
-  "annualRothConversion","preMedHealthcareAnnual","preMedicareHealthcareAnnual","medicareAnnualPerPerson","medicareHealthcareAnnual"
-,
-  
-  
-  
-  
-  
+  "portfolio",
+  "contrib",
+  "monthlyContribution",
+  "ssMonthly",
+  "spouseSsMonthly",
+  "rentalMonthly",
+  "propertyValue",
+  "mortgageBalance",
+  "mortgagePaydown",
+  "costBasis",
+  "capGainExclusion",
+  "property2Value",
+  "mortgage2Balance",
+  "mortgage2Paydown",
+  "cost2Basis",
+  "capGain2Exclusion",
+  "rental2Monthly",
+  "spend1Amt",
+  "spend2Amt",
+  "spend3Amt",
+  "constantRetirementSpending",
+  "inc1Amt",
+  "inc2Amt",
+  "inc3Amt",
+  "exp1Amt",
+  "exp2Amt",
+  "exp3Amt",
+  "college1Amt",
+  "college2Amt",
+  "tradYouBalance",
+  "tradSpouseBalance",
+  "rothYouBalance",
+  "rothSpouseBalance",
+  "taxableBalance",
+  "taxableCostBasis",
+  "cashBalance",
+  "annualRothConversion",
+  "preMedHealthcareAnnual",
+  "preMedicareHealthcareAnnual",
+  "medicareAnnualPerPerson",
+  "medicareHealthcareAnnual",
   "contribCashAnnual",
-  "yourPiaMonthly"];
+  "yourPiaMonthly",
+  "contribTradYouAnnual",
+  "contribTradSpouseAnnual",
+  "contribRothYouAnnual",
+  "contribRothSpouseAnnual",
+  "contribTaxableAnnual",
+  "spousePiaMonthly"
+];
 
 const ACCOUNT_FIELD_IDS=[
   "tradYouBalance","tradYouReturn","tradSpouseBalance","tradSpouseReturn",
   "rothYouBalance","rothYouReturn","rothSpouseBalance","rothSpouseReturn",
-  "taxableBalance","taxableReturn","taxableCostBasis","qualifiedDividendYield","nonqualifiedDividendYield","annualRealizedCapGainsPct","cashBalance","cashReturn",
+  "taxableBalance","taxableReturn","taxableCostBasis","taxableBasisLimitationsNote","qualifiedDividendYield","nonqualifiedDividendYield","annualRealizedCapGainsPct","cashBalance","cashReturn",
   "contribTradYouAnnual","contribTradSpouseAnnual","contribRothYouAnnual","contribRothSpouseAnnual","contribTaxableAnnual","contribCashAnnual",
   "rmdStartAge","spouseRmdStartAge","taxableWithdrawalTaxRate","withdrawalStrategy","totalAccounts"
 ];
@@ -1309,23 +1367,34 @@ function resetToInitialPageValues(){
 function closestField(id){const n=document.getElementById(id);return n?n.closest(".field"):null;}
 function showField(id){
   const n=document.getElementById(id); if(!n)return;
-  if(!("disabled" in n)){
+  const f=n.closest(".field");
+  if(f){
+    f.classList.remove("hidden-by-toggle","hidden-by-advanced-toggle","disabled-by-toggle","missing");
+    f.style.display="";
+  }else{
     n.classList.remove("hidden-by-toggle","hidden-by-advanced-toggle","disabled-by-toggle");
     n.style.display="";
-    return;
   }
-  const f=n.closest(".field"); if(f){f.classList.remove("hidden-by-toggle","hidden-by-advanced-toggle","disabled-by-toggle","missing");f.style.display="";}
-  n.disabled=false; n.readOnly=false; n.style.opacity="1";
+  if("disabled" in n){
+    n.disabled=false;
+    n.readOnly=false;
+    n.style.opacity="1";
+  }
 }
 function hideField(id,cls="hidden-by-toggle"){
   const n=document.getElementById(id); if(!n)return;
-  if(!("disabled" in n)){
+  const f=n.closest(".field");
+  if(f){
+    f.classList.add(cls);
+    f.classList.remove("missing");
+    f.style.display="none";
+  }else{
     n.classList.add(cls);
     n.style.display="none";
-    return;
   }
-  const f=n.closest(".field"); if(f){f.classList.add(cls);f.classList.remove("missing");}
-  n.disabled=true;
+  if("disabled" in n){
+    n.disabled=true;
+  }
 }
 function showMany(ids){ids.forEach(showField);}
 function hideMany(ids,cls){ids.forEach(id=>hideField(id,cls));}
@@ -1402,15 +1471,17 @@ function updateToggleDependentFields(){
   enforceSimpleModeAccountMutualExclusion();
   const simple=getSelect("simpleMode")==="yes",useMonthly=getSelect("useMonthlyContribution")==="yes",useAccounts=getSelect("useAccountModeling")==="yes",usePhases=getSelect("useAgeBasedSpending")==="yes",sellRental=getSelect("sellRealEstate")==="yes",sellPrimary=getSelect("sellRealEstate2")==="yes";
   const timeline=["currentAge","spouseAge","retireAge","endAge"];
-  const baseIncome=["ssAge","yourFraAge","spouseSsAge","spouseFraAge","ssMonthly","spouseSsMonthly","spouseUsesSpousalBenefit","yourPiaMonthly","calculatedSpousalBenefit","spouseSpousalBenefitStartAge","rentalMonthly"];
-  const taxes=["retirementState","taxRate","feeRate"];
+  const baseIncome=["socialSecurityEstimateNote","ssAge","yourFraAge","spouseSsAge","spouseFraAge","spousePiaMonthly","calculatedSpouseOwnBenefit","calculatedSpousalTopUp","calculatedSpouseTotalBenefit","ssMonthly","spouseSsMonthly","spouseUsesSpousalBenefit","spousalTopUpMode","yourPiaMonthly","calculatedSpousalBenefit","spouseSpousalBenefitStartAge","rentalMonthly"];
+  const taxes=["taxModelLimitationsNote","retirementState","taxRate","feeRate"];
   const rental=["propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","rentalAccumulatedDepreciation","rentalDepreciationRecaptureRate","rentalPassiveLossCarryforward","capGainExclusion","capGainTaxRate","stopRentalAfterSale"];
   const primary=["property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate","rental2Monthly","stopRental2AfterSale"];
-  showMany(["simpleYears","portfolio","contrib","monthlyContribution","accountContributionOverrideNote","useAgeBasedSpending","constantRetirementSpending","sellRealEstate","sellRealEstate2"].concat(timeline,baseIncome,taxes,ACCOUNT_FIELD_IDS,rental,primary));
+  showMany(["simpleModeNote","simpleYears","portfolio","contrib","monthlyContribution","accountContributionOverrideNote","useAgeBasedSpending","constantRetirementSpending","sellRealEstate","sellRealEstate2"].concat(timeline,baseIncome,taxes,ACCOUNT_FIELD_IDS,rental,primary));
   if(simple){
+    showField("simpleModeNote");
     hideMany(timeline.concat(baseIncome,taxes,["useAgeBasedSpending","constantRetirementSpending","sellRealEstate","sellRealEstate2"],rental,primary));
     showField("simpleYears");
   }else{
+    hideField("simpleModeNote");
     hideField("simpleYears");
   }
   if(useAccounts && !simple){
@@ -1499,6 +1570,54 @@ function validate(){
 }
 
 
+
+
+function estimateBirthYearFromCurrentAge(age){
+  const currentYear=new Date().getFullYear();
+  return currentYear-(parseFloat(age)||0);
+}
+
+function fraFromBirthYear(birthYear){
+  birthYear=parseInt(birthYear,10);
+  if(!birthYear)return 67;
+  if(birthYear<=1937)return 65;
+  if(birthYear===1938)return 65+2/12;
+  if(birthYear===1939)return 65+4/12;
+  if(birthYear===1940)return 65+6/12;
+  if(birthYear===1941)return 65+8/12;
+  if(birthYear===1942)return 65+10/12;
+  if(birthYear>=1943 && birthYear<=1954)return 66;
+  if(birthYear===1955)return 66+2/12;
+  if(birthYear===1956)return 66+4/12;
+  if(birthYear===1957)return 66+6/12;
+  if(birthYear===1958)return 66+8/12;
+  if(birthYear===1959)return 66+10/12;
+  return 67;
+}
+
+function formatFraAge(age){
+  const years=Math.floor(age);
+  const months=Math.round((age-years)*12);
+  return months ? (years + months/12).toFixed(2) : String(years);
+}
+
+function syncFraDefaults(){
+  const yourFra=document.getElementById("yourFraAge");
+  const spouseFra=document.getElementById("spouseFraAge");
+  if(yourFra && (!yourFra.value || yourFra.dataset.autoDefault==="true")){
+    yourFra.value=formatFraAge(fraFromBirthYear(estimateBirthYearFromCurrentAge(getVal("currentAge"))));
+    yourFra.dataset.autoDefault="true";
+  }
+  if(spouseFra && (!spouseFra.value || spouseFra.dataset.autoDefault==="true")){
+    spouseFra.value=formatFraAge(fraFromBirthYear(estimateBirthYearFromCurrentAge(getVal("spouseAge"))));
+    spouseFra.dataset.autoDefault="true";
+  }
+}
+
+function getSpousalTopUpMode(){
+  return getSelect("spousalTopUpMode") || "conservative";
+}
+
 function spouseUsesSpousalBenefit(){
   return getSelect("spouseUsesSpousalBenefit")==="yes";
 }
@@ -1530,6 +1649,30 @@ function getCalculatedSpousalBenefitMonthly(){
   return getSpousalBenefitBasisMonthly()*0.5;
 }
 
+
+function getEffectiveSpouseOwnClaimingAge(){
+  if(spouseUsesSpousalBenefit() && getSpousalTopUpMode()==="conservative"){
+    return getVal("spouseFraAge") || 67;
+  }
+  return getVal("spouseSsAge");
+}
+
+function getCalculatedSpouseOwnBenefitMonthly(){
+  const spousePia=safeMoneyValue("spousePiaMonthly");
+  if(spousePia<=0)return 0;
+  const claimAge=getEffectiveSpouseOwnClaimingAge();
+  return spousePia*socialSecurityClaimingFactor(claimAge,getVal("spouseFraAge")||67);
+}
+
+function getCalculatedSpousalTopUpMonthly(){
+  const spousePia=safeMoneyValue("spousePiaMonthly");
+  return Math.max(0,getCalculatedSpousalBenefitMonthly()-spousePia);
+}
+
+function getCalculatedSpouseTotalBenefitAtTopUpMonthly(){
+  return getCalculatedSpouseOwnBenefitMonthly()+getCalculatedSpousalTopUpMonthly();
+}
+
 function getSpouseOptimalSpousalStartAtYourAge(){
   const currentAge=getVal("currentAge");
   const spouseAge=getVal("spouseAge");
@@ -1550,6 +1693,21 @@ function updateCalculatedSocialSecurityDisplay(){
     spouseBenefitNode.textContent=spouseUsesSpousalBenefit()?fmtMoney(getCalculatedSpousalBenefitMonthly()):"—";
   }
 
+  const spouseOwnNode=document.getElementById("calculatedSpouseOwnBenefit");
+  if(spouseOwnNode){
+    spouseOwnNode.textContent=spouseUsesSpousalBenefit()?fmtMoney(getCalculatedSpouseOwnBenefitMonthly()):"—";
+  }
+
+  const topUpNode=document.getElementById("calculatedSpousalTopUp");
+  if(topUpNode){
+    topUpNode.textContent=spouseUsesSpousalBenefit()?fmtMoney(getCalculatedSpousalTopUpMonthly()):"—";
+  }
+
+  const spouseTotalNode=document.getElementById("calculatedSpouseTotalBenefit");
+  if(spouseTotalNode){
+    spouseTotalNode.textContent=spouseUsesSpousalBenefit()?fmtMoney(getCalculatedSpouseTotalBenefitAtTopUpMonthly()):"—";
+  }
+
   const spouseStartNode=document.getElementById("spouseSpousalBenefitStartAge");
   if(spouseStartNode){
     spouseStartNode.textContent=spouseUsesSpousalBenefit()?String(getSpouseOptimalSpousalStartAtYourAge()):"—";
@@ -1558,6 +1716,7 @@ function updateCalculatedSocialSecurityDisplay(){
 
 function updateSpousalBenefitFieldState(){
   const uses=spouseUsesSpousalBenefit();
+  const conservative=uses && getSpousalTopUpMode()==="conservative";
 
   const yourMonthly=document.getElementById("ssMonthly");
   if(yourMonthly){
@@ -1583,12 +1742,21 @@ function updateSpousalBenefitFieldState(){
   const spouseStartAge=document.getElementById("spouseSsAge");
   if(spouseStartAge){
     const field=spouseStartAge.closest(".field");
-    if(field)field.classList.toggle("age-phase-disabled",uses);
-    spouseStartAge.disabled=uses;
-    spouseStartAge.readOnly=uses;
-    spouseStartAge.style.backgroundColor=uses?"#e5e7eb":"";
-    spouseStartAge.style.color=uses?"#9ca3af":"";
-    spouseStartAge.style.cursor=uses?"not-allowed":"";
+    if(field)field.classList.toggle("age-phase-disabled",conservative);
+    spouseStartAge.disabled=conservative;
+    spouseStartAge.readOnly=conservative;
+    spouseStartAge.style.backgroundColor=conservative?"#e5e7eb":"";
+    spouseStartAge.style.color=conservative?"#9ca3af":"";
+    spouseStartAge.style.cursor=conservative?"not-allowed":"";
+  }
+
+  const spousePia=document.getElementById("spousePiaMonthly");
+  if(spousePia){
+    const field=spousePia.closest(".field");
+    if(field)field.classList.toggle("age-phase-disabled",!uses);
+    spousePia.disabled=false;
+    spousePia.readOnly=false;
+    spousePia.style.opacity=uses?"1":"0.75";
   }
 
   updateCalculatedSocialSecurityDisplay();
@@ -1611,7 +1779,7 @@ function readNormalizedModel(){
     currentAge:getVal("currentAge"),spouseAge:getVal("spouseAge"),retireAge:getVal("retireAge"),endAge:getVal("endAge"),
     portfolio:safeMoneyValue("portfolio"),baseReturn:getVal("returnRate")/100,inflation:getVal("inflation")/100,feeRate:getVal("feeRate")/100,compoundFreq:parseFloat(getSelect("compoundFreq"))||1,
     taxRate:getVal("taxRate")/100,taxableTaxRate:getVal("taxableWithdrawalTaxRate")/100,withdrawalStrategy:getSelect("withdrawalStrategy")||"taxAware",
-    ssAge:getVal("ssAge"),yourFraAge:getVal("yourFraAge")||67,spouseSsAge:getVal("spouseSsAge")||getVal("ssAge"),spouseFraAge:getVal("spouseFraAge")||67,spousalBenefitStartAge:getSpouseOptimalSpousalStartAtYourAge(),yourSsMonthly:getCalculatedYourSsMonthly(),spouseSsMonthly:(spouseUsesSpousalBenefit()?getCalculatedSpousalBenefitMonthly():safeMoneyValue("spouseSsMonthly")),spouseUsesSpousalBenefit:spouseUsesSpousalBenefit(),spousalBenefitBasisMonthly:getSpousalBenefitBasisMonthly(),rentalAnnual:safeMoneyValue("rentalMonthly")*12,
+    ssAge:getVal("ssAge"),yourFraAge:getVal("yourFraAge")||67,spouseSsAge:getVal("spouseSsAge")||getVal("ssAge"),spouseFraAge:getVal("spouseFraAge")||67,spousalBenefitStartAge:getSpouseOptimalSpousalStartAtYourAge(),yourSsMonthly:getCalculatedYourSsMonthly(),spouseSsMonthly:(spouseUsesSpousalBenefit()?getCalculatedSpouseOwnBenefitMonthly():safeMoneyValue("spouseSsMonthly")),spouseOwnBenefitMonthly:getCalculatedSpouseOwnBenefitMonthly(),spouseSpousalTopUpMonthly:getCalculatedSpousalTopUpMonthly(),spouseUsesSpousalBenefit:spouseUsesSpousalBenefit(),spousalTopUpMode:getSpousalTopUpMode(),spousalBenefitBasisMonthly:getSpousalBenefitBasisMonthly(),rentalAnnual:safeMoneyValue("rentalMonthly")*12,
     accounts:{tradYou:safeMoneyValue("tradYouBalance"),tradSpouse:safeMoneyValue("tradSpouseBalance"),rothYou:safeMoneyValue("rothYouBalance"),rothSpouse:safeMoneyValue("rothSpouseBalance"),taxable:safeMoneyValue("taxableBalance"),cash:safeMoneyValue("cashBalance")},
     taxableModel:{basis:(safeMoneyValue("taxableCostBasis")>0?safeMoneyValue("taxableCostBasis"):safeMoneyValue("taxableBalance")),qualifiedDividendYield:getVal("qualifiedDividendYield")/100,nonqualifiedDividendYield:getVal("nonqualifiedDividendYield")/100,realizedCapGainsPct:getVal("annualRealizedCapGainsPct")/100},
     accountReturns:{tradYou:(getVal("tradYouReturn")||getVal("returnRate"))/100,tradSpouse:(getVal("tradSpouseReturn")||getVal("returnRate"))/100,rothYou:(getVal("rothYouReturn")||getVal("returnRate"))/100,rothSpouse:(getVal("rothSpouseReturn")||getVal("returnRate"))/100,taxable:(getVal("taxableReturn")||getVal("returnRate"))/100,cash:(getVal("cashReturn")||0)/100},
@@ -1848,8 +2016,14 @@ function simulateFull(randomize=false,returnAdjustmentPct=0,options={}){
         let bs=baseSpending(age,infFactor),college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,month,infFactor),eeBase=extraExpenses(age,infFactor);
         if(survivorActive){bs*=model.advanced.survivorSpendingPct;eeBase*=model.advanced.survivorSpendingPct;}
         let bi=soldProperty?0:model.rentalAnnual*infFactor, yourSS=age>=model.ssAge?model.yourSsMonthly:0;
-        const spouseBenefitCanStart=model.spouseUsesSpousalBenefit ? (age>=model.spousalBenefitStartAge) : (spouseCurrent>=model.spouseSsAge);
-        let spouseSS=spouseBenefitCanStart?model.spouseSsMonthly:0;
+        let spouseSS=0;
+        if(model.spouseUsesSpousalBenefit){
+          const spousalTopUpStarted=age>=model.spousalBenefitStartAge;
+          const spouseOwnStarted=model.spousalTopUpMode==="split" ? (spouseCurrent>=model.spouseSsAge) : spousalTopUpStarted;
+          spouseSS=(spouseOwnStarted?model.spouseOwnBenefitMonthly:0)+(spousalTopUpStarted?model.spouseSpousalTopUpMonthly:0);
+        }else{
+          spouseSS=spouseCurrent>=model.spouseSsAge?model.spouseSsMonthly:0;
+        }
         if(survivorActive){const survivorSS=Math.max(yourSS,spouseSS);yourSS=survivorSS;spouseSS=0;}
         const monthlySsIncome=survivorActive?Math.max(yourSS,spouseSS):yourSS+spouseSS,ssGrowthFactor=Math.pow(1+(typeof SS_COLA_RATE==="number"?SS_COLA_RATE:.025),age-model.currentAge),annualSsIncome=monthlySsIncome*12*ssGrowthFactor; bi+=annualSsIncome;
         const ei=extraIncome(age,infFactor),healthAnnual=estimateHealthcareCostNormalized(age,spouseCurrent,filingStatus,ordinaryIncomeAnnual+annualSsIncome*.85,annualSsIncome,taxableGainIncomeAnnual,survivorActive),healthMonthly=healthAnnual/12; healthcareAnnual+=healthMonthly;
@@ -1897,6 +2071,7 @@ function simulateFull(randomize=false,returnAdjustmentPct=0,options={}){
 function simulate(randomize,returnAdjustmentPct=0){return getSelect("simpleMode")==="yes"?simulateSimple(randomize):simulateFull(randomize,returnAdjustmentPct);}
 function calculate(){
   try{
+    if(typeof syncFraDefaults==="function") syncFraDefaults();
     if(typeof updateCalculatedSocialSecurityDisplay==="function") updateCalculatedSocialSecurityDisplay();
     el("errorBox").style.display="none";
     if(!validateRequiredFields()){renderEmptyState();return;}
@@ -1927,7 +2102,7 @@ function renderTable(rows,lowRows=[],highRows=[]){
 }
 
 const RECOMMENDED_RETIREMENT_MC_THRESHOLD = 0.85;
-const RECOMMENDED_RETIREMENT_TRIALS = 1000;
+const RECOMMENDED_RETIREMENT_TRIALS = 500;
 
 function setRecommendedRetirementAgeDisplay(value, className="value"){
   const node=el("recommendedRetirementAge");
@@ -2016,7 +2191,6 @@ function runMonteCarlo(){
     endings.sort((a,b)=>a-b); const successRate=endings.length?successes/endings.length:0,median=percentile(endings,.5),p10=percentile(endings,.1),worst=endings[0]||0;
     el("mcSuccess").textContent=fmtPct(successRate); el("mcSuccess").className=successRate>=.85?"value success":successRate>=.70?"value warn":"value danger"; el("mcMedian").textContent=fmtMoney(median); el("mcMedian").className=median>=0?"value success":"value danger"; el("mcP10").textContent=fmtMoney(p10); el("mcP10").className=p10>=0?"value success":"value danger"; el("mcWorst").textContent=fmtMoney(worst); el("mcWorst").className=worst>=0?"value success":"value danger"; drawMonteCarloPercentileChart("mcPercentileChart",allPaths);
     const avgFailure=failureAges.length?failureAges.reduce((a,b)=>a+b,0)/failureAges.length:null; if(el("mcNote"))el("mcNote").textContent=failureAges.length?("Failures: "+failureAges.length+" of "+endings.length+". Average failure age among failed trials: "+avgFailure.toFixed(1)+"."):"No failures in "+endings.length+" trials.";
-    updateRecommendedRetirementAge();
   }catch(e){el("errorBox").textContent=e.message;el("errorBox").style.display="block";}
 }
 function clearMC(){["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el(id)){el(id).textContent="—";el(id).className="value"}}); if(el("mcNote"))el("mcNote").textContent=""; setRecommendedRetirementAgeDisplay("—","value"); clearCanvas("mcPercentileChart");}
@@ -2035,6 +2209,42 @@ function markRequiredFields(){
   document.querySelectorAll(".required-star").forEach(e=>e.remove());
   requiredFields().forEach(id=>{const field=closestField(id);const label=field?field.querySelector(".field-label"):null;if(label&&!label.querySelector(".required-star")){const s=document.createElement("span");s.className="required-star";s.textContent=" *";label.appendChild(s);}});
 }
+
+function validateSocialSecurityAges(missing){
+  const claimingAgeFields=[
+    {id:"ssAge", label:"Your Social Security Claiming Age", always:true},
+    {id:"spouseSsAge", label:"Spouse Social Security Start Age", always:false}
+  ];
+
+  claimingAgeFields.forEach(item=>{
+    const node=document.getElementById(item.id);
+    const field=closestField(item.id);
+    const modelUsesSpouseStart = item.id!=="spouseSsAge" || !spouseUsesSpousalBenefit() || getSpousalTopUpMode()==="split";
+    if(!node || (!item.always && !modelUsesSpouseStart)) return;
+    const value=getVal(item.id);
+    if(value>0 && (value<62 || value>70)){
+      if(field) field.classList.add("missing");
+      missing.push(item.label+" must be between 62 and 70");
+    }
+  });
+
+  const fraFields=[
+    {id:"yourFraAge", label:"Your Full Retirement Age"},
+    {id:"spouseFraAge", label:"Spouse Full Retirement Age"}
+  ];
+
+  fraFields.forEach(item=>{
+    const node=document.getElementById(item.id);
+    const field=closestField(item.id);
+    if(!node) return;
+    const value=getVal(item.id);
+    if(value>0 && (value<65 || value>67)){
+      if(field) field.classList.add("missing");
+      missing.push(item.label+" must be between 65 and 67");
+    }
+  });
+}
+
 function validateRequiredFields(){
   markRequiredFields(); let missing=[]; document.querySelectorAll(".field.missing").forEach(f=>f.classList.remove("missing"));
   requiredFields().forEach(id=>{const node=document.getElementById(id);if(!node||node.disabled)return;const field=node.closest(".field");if(field&&(window.getComputedStyle(field).display==="none"||field.classList.contains("hidden-by-toggle")||field.classList.contains("hidden-by-advanced-toggle")))return;const miss=String(node.value||"").trim()===""; if(miss){if(field)field.classList.add("missing");const label=field?field.querySelector(".field-label"):null;missing.push(label?label.textContent.replace("*","").trim():id);}});
@@ -2048,6 +2258,7 @@ function validateRequiredFields(){
         missing.push((label?label.textContent.replace("*","").trim():id)+" cannot be negative");
       }
     });}
+  validateSocialSecurityAges(missing);
   const box=document.getElementById("validationBox"); if(box){if(missing.length){box.style.display="block";box.innerHTML="<strong>Required fields missing or invalid:</strong> "+missing.join(", ")+".";}else box.style.display="none";} return missing.length===0;
 }
 
@@ -2061,8 +2272,19 @@ function removeMiscExpenseRow(button){const row=button?button.closest("tr"):null
 document.addEventListener("DOMContentLoaded",()=>{
   setupMoneyFormatting();
 
+  ["yourFraAge","spouseFraAge"].forEach(id=>{
+    const n=document.getElementById(id);
+    if(n)n.addEventListener("input",()=>{n.dataset.autoDefault="false";});
+  });
+  ["currentAge","spouseAge"].forEach(id=>{
+    const n=document.getElementById(id);
+    if(n)n.addEventListener("change",()=>{syncFraDefaults();updateSpousalBenefitFieldState();calculate();clearMC();});
+  });
+  syncFraDefaults();
+
+
   // Spousal benefit controls
-  ["spouseUsesSpousalBenefit","yourPiaMonthly","ssAge","yourFraAge","spouseFraAge","spouseSsAge","currentAge","spouseAge"].forEach(id=>{
+  ["spouseUsesSpousalBenefit","spousalTopUpMode","yourPiaMonthly","spousePiaMonthly","ssAge","yourFraAge","spouseFraAge","spouseSsAge","currentAge","spouseAge"].forEach(id=>{
     const n=document.getElementById(id);
     if(n){
       n.addEventListener("input",()=>{updateSpousalBenefitFieldState();validateRequiredFields();calculate();clearMC();});
@@ -2087,6 +2309,14 @@ document.addEventListener("DOMContentLoaded",()=>{
     const n=document.getElementById(id);
     if(n)n.addEventListener("input",()=>{n.dataset.autoDefault="false";});
   });
+
+  
+  const recommendedAgeBtn=document.getElementById("findRecommendedAgeBtn");
+  if(recommendedAgeBtn){
+    recommendedAgeBtn.addEventListener("click",()=>{
+      updateRecommendedRetirementAge();
+    });
+  }
 
   document.querySelectorAll("button").forEach(btn=>{if(btn.textContent&&btn.textContent.toLowerCase().includes("reset"))btn.onclick=e=>{if(e)e.preventDefault();resetToInitialPageValues();};});
   updateToggleDependentFields();
