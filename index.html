@@ -581,10 +581,17 @@ main {
 <div class="field"><div class="field-label">Withdrawal Strategy <span class="info" data-tooltip="Tax-aware default uses RMDs first, then cash, taxable investments, pre-tax accounts, and Roth last.">i</span></div><select id="withdrawalStrategy"><option value="taxAware">Tax-Aware Default</option><option value="proRata">Pro Rata</option></select></div>
 
 <h3>Base Income <span class="info" data-tooltip="Recurring income sources that reduce required portfolio withdrawals.">i</span></h3>
-<div class="field"><div class="field-label">Social Security Start Age <span class="info" data-tooltip="Your age when Social Security benefits begin in the model.">i</span></div><input id="ssAge" value="67"></div>
-<div class="field"><div class="field-label">Spouse Social Security Start Age <span class="info" data-tooltip="Your spouse’s age when their Social Security benefit begins in the model.">i</span></div><input id="spouseSsAge" type="number" value="67"></div>
-<div class="field"><div class="field-label">Your SS Monthly $ <span class="info" data-tooltip="Your estimated monthly Social Security benefit in today's dollars.">i</span></div><input id="ssMonthly" type="text" inputmode="decimal" value="" step="100"></div>
+<div class="field"><div class="field-label">Your Social Security Claiming Age <span class="info" data-tooltip="Your age when you plan to claim Social Security. Your monthly benefit is automatically adjusted from your full-retirement-age benefit.">i</span></div><input id="ssAge" value="67"></div>
+<div class="field"><div class="field-label">Your Full Retirement Age <span class="info" data-tooltip="Your Social Security full retirement age. Default is 67 for people born in 1960 or later.">i</span></div><input id="yourFraAge" type="number" value="67" step="1"></div>
+<div class="field"><div class="field-label">Spouse Social Security Start Age <span class="info" data-tooltip="Your spouse’s age when their own Social Security benefit begins. If Spouse Uses Spousal Benefit is Yes, this field is ignored and the spousal benefit starts when you file, assuming spouse is at least age 62.">i</span></div><input id="spouseSsAge" type="number" value="67"></div>
+<div class="field"><div class="field-label">Spouse Full Retirement Age <span class="info" data-tooltip="Your spouse’s Social Security full retirement age. Used to calculate the optimal spousal benefit start age without early-claiming reduction.">i</span></div><input id="spouseFraAge" type="number" value="67" step="1"></div>
+<div class="field"><div class="field-label">Calculated Your SS Monthly $ <span class="info" data-tooltip="Automatically calculated monthly Social Security benefit based on your full-retirement-age benefit and selected claiming age.">i</span></div><input id="ssMonthly" type="text" inputmode="decimal" value="" step="100"></div>
 <div class="field"><div class="field-label">Spouse SS Monthly $ <span class="info" data-tooltip="Spouse's estimated monthly Social Security benefit in today's dollars.">i</span></div><input id="spouseSsMonthly" type="text" inputmode="decimal" value="" step="100"></div>
+<div class="field"><div class="field-label">Spouse Uses Spousal Benefit <span class="info" data-tooltip="If Yes, spouse Social Security is modeled as a spousal benefit based on your Social Security record. The benefit starts no earlier than your filing age, and the spouse amount is calculated automatically.">i</span></div><select id="spouseUsesSpousalBenefit"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+<div class="field"><div class="field-label">Your Social Security Benefit at Full Retirement Age $ <span class="info" data-tooltip="Your Social Security monthly benefit at full retirement age, also called Primary Insurance Amount / PIA. This is the basis for calculating your own claiming-age benefit and any spouse spousal benefit.">i</span></div><input id="yourPiaMonthly" type="text" inputmode="decimal" value="" step="100"></div>
+<div class="field"><div class="field-label">Calculated Spouse Spousal Benefit $ <span class="info" data-tooltip="Automatically calculated as 50% of Your FRA / PIA Monthly Benefit, or 50% of Your SS Monthly if the PIA field is blank. Starts when you file, assuming spouse is at least age 62.">i</span></div><div id="calculatedSpousalBenefit" class="calculated-text-value">$0</div></div>
+<div class="field"><div class="field-label">Spouse Spousal Benefit Starts at Your Age <span class="info" data-tooltip="Calculated as the later of your Social Security claiming age and the age when your spouse reaches full retirement age. This models the optimal unreduced spousal benefit timing.">i</span></div><div id="spouseSpousalBenefitStartAge" class="calculated-text-value">—</div></div>
+
 <div class="field"><div class="field-label">Rental Income Monthly $ <span class="info" data-tooltip="Net monthly rental income before any modeled property sale.">i</span></div><input id="rentalMonthly" type="text" inputmode="decimal" value="" step="50"></div>
 
 <h3>Taxes / Costs <span class="info" data-tooltip="Simplified tax and fee assumptions applied to withdrawals and investment returns.">i</span></h3>
@@ -1144,7 +1151,8 @@ const MONEY_FIELD_IDS = [
   
   
   
-  "contribCashAnnual"];
+  "contribCashAnnual",
+  "yourPiaMonthly"];
 
 const ACCOUNT_FIELD_IDS=[
   "tradYouBalance","tradYouReturn","tradSpouseBalance","tradSpouseReturn",
@@ -1279,6 +1287,14 @@ function resetToInitialPageValues(){
   });
   setupMoneyFormatting();
 
+  ["spouseUsesSpousalBenefit","yourPiaMonthly","ssMonthly","ssAge","yourFraAge","spouseFraAge","currentAge","spouseAge"].forEach(id=>{
+    const n=document.getElementById(id);
+    if(n)n.addEventListener("input",()=>{updateSpousalBenefitFieldState();validateRequiredFields();calculate();});
+    if(n)n.addEventListener("change",()=>{updateSpousalBenefitFieldState();validateRequiredFields();calculate();});
+  });
+  updateSpousalBenefitFieldState();
+
+
   const agePhaseToggle=document.getElementById("useAgeBasedSpending");
   if(agePhaseToggle){
     agePhaseToggle.addEventListener("change",()=>setAgeBasedSpendingFieldsDisabled(agePhaseToggle.value!=="yes"));
@@ -1386,7 +1402,7 @@ function updateToggleDependentFields(){
   enforceSimpleModeAccountMutualExclusion();
   const simple=getSelect("simpleMode")==="yes",useMonthly=getSelect("useMonthlyContribution")==="yes",useAccounts=getSelect("useAccountModeling")==="yes",usePhases=getSelect("useAgeBasedSpending")==="yes",sellRental=getSelect("sellRealEstate")==="yes",sellPrimary=getSelect("sellRealEstate2")==="yes";
   const timeline=["currentAge","spouseAge","retireAge","endAge"];
-  const baseIncome=["ssAge","spouseSsAge","ssMonthly","spouseSsMonthly","rentalMonthly"];
+  const baseIncome=["ssAge","yourFraAge","spouseSsAge","spouseFraAge","ssMonthly","spouseSsMonthly","spouseUsesSpousalBenefit","yourPiaMonthly","calculatedSpousalBenefit","spouseSpousalBenefitStartAge","rentalMonthly"];
   const taxes=["retirementState","taxRate","feeRate"];
   const rental=["propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","rentalAccumulatedDepreciation","rentalDepreciationRecaptureRate","rentalPassiveLossCarryforward","capGainExclusion","capGainTaxRate","stopRentalAfterSale"];
   const primary=["property2SaleAge","property2Value","property2Growth","mortgage2Balance","mortgage2Paydown","selling2Costs","cost2Basis","capGain2Exclusion","capGain2TaxRate","rental2Monthly","stopRental2AfterSale"];
@@ -1423,8 +1439,10 @@ function updateToggleDependentFields(){
   updateAccountTotal();
   syncSpendingPhaseStarts();
   updateReturnRateLabelForAccountMode();
+  updateSpousalBenefitFieldState();
   validateRequiredFields();
   setAgeBasedSpendingFieldsDisabled(getSelect("useAgeBasedSpending")!=="yes");
+  updateSpousalBenefitFieldState();
 }
 
 function updateReturnRateLabelForAccountMode(){
@@ -1480,6 +1498,102 @@ function validate(){
   if(getVal("returnRate")<-99)throw new Error("Return rate is too low.");
 }
 
+
+function spouseUsesSpousalBenefit(){
+  return getSelect("spouseUsesSpousalBenefit")==="yes";
+}
+
+function socialSecurityClaimingFactor(claimAge,fraAge){
+  claimAge=parseFloat(claimAge)||fraAge;
+  fraAge=parseFloat(fraAge)||67;
+  const months=Math.round((claimAge-fraAge)*12);
+  if(months<0){
+    const earlyMonths=Math.abs(months);
+    const first36=Math.min(36,earlyMonths);
+    const additional=Math.max(0,earlyMonths-36);
+    const reduction=first36*(5/9/100)+additional*(5/12/100);
+    return Math.max(0,1-reduction);
+  }
+  const delayedMonths=Math.min(Math.max(0,months),Math.max(0,Math.round((70-fraAge)*12)));
+  return 1+delayedMonths*(2/3/100);
+}
+
+function getSpousalBenefitBasisMonthly(){
+  return safeMoneyValue("yourPiaMonthly");
+}
+
+function getCalculatedYourSsMonthly(){
+  return getSpousalBenefitBasisMonthly()*socialSecurityClaimingFactor(getVal("ssAge"),getVal("yourFraAge")||67);
+}
+
+function getCalculatedSpousalBenefitMonthly(){
+  return getSpousalBenefitBasisMonthly()*0.5;
+}
+
+function getSpouseOptimalSpousalStartAtYourAge(){
+  const currentAge=getVal("currentAge");
+  const spouseAge=getVal("spouseAge");
+  const yourClaimAge=getVal("ssAge");
+  const spouseFraAge=getVal("spouseFraAge")||67;
+  const yourAgeWhenSpouseReachesFra=currentAge+Math.max(0,spouseFraAge-spouseAge);
+  return Math.max(yourClaimAge,yourAgeWhenSpouseReachesFra);
+}
+
+function updateCalculatedSocialSecurityDisplay(){
+  const yourNode=document.getElementById("ssMonthly");
+  if(yourNode){
+    yourNode.value=formatMoneyInputValue(String(Math.round(getCalculatedYourSsMonthly())));
+  }
+
+  const spouseBenefitNode=document.getElementById("calculatedSpousalBenefit");
+  if(spouseBenefitNode){
+    spouseBenefitNode.textContent=spouseUsesSpousalBenefit()?fmtMoney(getCalculatedSpousalBenefitMonthly()):"—";
+  }
+
+  const spouseStartNode=document.getElementById("spouseSpousalBenefitStartAge");
+  if(spouseStartNode){
+    spouseStartNode.textContent=spouseUsesSpousalBenefit()?String(getSpouseOptimalSpousalStartAtYourAge()):"—";
+  }
+}
+
+function updateSpousalBenefitFieldState(){
+  const uses=spouseUsesSpousalBenefit();
+
+  const yourMonthly=document.getElementById("ssMonthly");
+  if(yourMonthly){
+    const field=yourMonthly.closest(".field");
+    if(field)field.classList.add("age-phase-disabled");
+    yourMonthly.readOnly=true;
+    yourMonthly.style.backgroundColor="#e5e7eb";
+    yourMonthly.style.color="#6b7280";
+    yourMonthly.style.cursor="not-allowed";
+  }
+
+  const spouseMonthly=document.getElementById("spouseSsMonthly");
+  if(spouseMonthly){
+    const field=spouseMonthly.closest(".field");
+    if(field)field.classList.toggle("age-phase-disabled",uses);
+    spouseMonthly.disabled=uses;
+    spouseMonthly.readOnly=uses;
+    spouseMonthly.style.backgroundColor=uses?"#e5e7eb":"";
+    spouseMonthly.style.color=uses?"#9ca3af":"";
+    spouseMonthly.style.cursor=uses?"not-allowed":"";
+  }
+
+  const spouseStartAge=document.getElementById("spouseSsAge");
+  if(spouseStartAge){
+    const field=spouseStartAge.closest(".field");
+    if(field)field.classList.toggle("age-phase-disabled",uses);
+    spouseStartAge.disabled=uses;
+    spouseStartAge.readOnly=uses;
+    spouseStartAge.style.backgroundColor=uses?"#e5e7eb":"";
+    spouseStartAge.style.color=uses?"#9ca3af":"";
+    spouseStartAge.style.cursor=uses?"not-allowed":"";
+  }
+
+  updateCalculatedSocialSecurityDisplay();
+}
+
 function readNormalizedModel(){
   const accountMode=(getSelect("simpleMode")!=="yes" && getSelect("useAccountModeling")==="yes");
   const useAdvanced=getSelect("useAdvancedPlanning")==="yes";
@@ -1497,7 +1611,7 @@ function readNormalizedModel(){
     currentAge:getVal("currentAge"),spouseAge:getVal("spouseAge"),retireAge:getVal("retireAge"),endAge:getVal("endAge"),
     portfolio:safeMoneyValue("portfolio"),baseReturn:getVal("returnRate")/100,inflation:getVal("inflation")/100,feeRate:getVal("feeRate")/100,compoundFreq:parseFloat(getSelect("compoundFreq"))||1,
     taxRate:getVal("taxRate")/100,taxableTaxRate:getVal("taxableWithdrawalTaxRate")/100,withdrawalStrategy:getSelect("withdrawalStrategy")||"taxAware",
-    ssAge:getVal("ssAge"),spouseSsAge:getVal("spouseSsAge")||getVal("ssAge"),yourSsMonthly:safeMoneyValue("ssMonthly"),spouseSsMonthly:safeMoneyValue("spouseSsMonthly"),rentalAnnual:safeMoneyValue("rentalMonthly")*12,
+    ssAge:getVal("ssAge"),yourFraAge:getVal("yourFraAge")||67,spouseSsAge:getVal("spouseSsAge")||getVal("ssAge"),spouseFraAge:getVal("spouseFraAge")||67,spousalBenefitStartAge:getSpouseOptimalSpousalStartAtYourAge(),yourSsMonthly:getCalculatedYourSsMonthly(),spouseSsMonthly:(spouseUsesSpousalBenefit()?getCalculatedSpousalBenefitMonthly():safeMoneyValue("spouseSsMonthly")),spouseUsesSpousalBenefit:spouseUsesSpousalBenefit(),spousalBenefitBasisMonthly:getSpousalBenefitBasisMonthly(),rentalAnnual:safeMoneyValue("rentalMonthly")*12,
     accounts:{tradYou:safeMoneyValue("tradYouBalance"),tradSpouse:safeMoneyValue("tradSpouseBalance"),rothYou:safeMoneyValue("rothYouBalance"),rothSpouse:safeMoneyValue("rothSpouseBalance"),taxable:safeMoneyValue("taxableBalance"),cash:safeMoneyValue("cashBalance")},
     taxableModel:{basis:(safeMoneyValue("taxableCostBasis")>0?safeMoneyValue("taxableCostBasis"):safeMoneyValue("taxableBalance")),qualifiedDividendYield:getVal("qualifiedDividendYield")/100,nonqualifiedDividendYield:getVal("nonqualifiedDividendYield")/100,realizedCapGainsPct:getVal("annualRealizedCapGainsPct")/100},
     accountReturns:{tradYou:(getVal("tradYouReturn")||getVal("returnRate"))/100,tradSpouse:(getVal("tradSpouseReturn")||getVal("returnRate"))/100,rothYou:(getVal("rothYouReturn")||getVal("returnRate"))/100,rothSpouse:(getVal("rothSpouseReturn")||getVal("returnRate"))/100,taxable:(getVal("taxableReturn")||getVal("returnRate"))/100,cash:(getVal("cashReturn")||0)/100},
@@ -1733,7 +1847,9 @@ function simulateFull(randomize=false,returnAdjustmentPct=0,options={}){
       }else{
         let bs=baseSpending(age,infFactor),college=collegeExpenses(age,infFactor),misc=miscOneTimeExpensesAtMonth(age,month,infFactor),eeBase=extraExpenses(age,infFactor);
         if(survivorActive){bs*=model.advanced.survivorSpendingPct;eeBase*=model.advanced.survivorSpendingPct;}
-        let bi=soldProperty?0:model.rentalAnnual*infFactor, yourSS=age>=model.ssAge?model.yourSsMonthly:0, spouseSS=spouseCurrent>=model.spouseSsAge?model.spouseSsMonthly:0;
+        let bi=soldProperty?0:model.rentalAnnual*infFactor, yourSS=age>=model.ssAge?model.yourSsMonthly:0;
+        const spouseBenefitCanStart=model.spouseUsesSpousalBenefit ? (age>=model.spousalBenefitStartAge) : (spouseCurrent>=model.spouseSsAge);
+        let spouseSS=spouseBenefitCanStart?model.spouseSsMonthly:0;
         if(survivorActive){const survivorSS=Math.max(yourSS,spouseSS);yourSS=survivorSS;spouseSS=0;}
         const monthlySsIncome=survivorActive?Math.max(yourSS,spouseSS):yourSS+spouseSS,ssGrowthFactor=Math.pow(1+(typeof SS_COLA_RATE==="number"?SS_COLA_RATE:.025),age-model.currentAge),annualSsIncome=monthlySsIncome*12*ssGrowthFactor; bi+=annualSsIncome;
         const ei=extraIncome(age,infFactor),healthAnnual=estimateHealthcareCostNormalized(age,spouseCurrent,filingStatus,ordinaryIncomeAnnual+annualSsIncome*.85,annualSsIncome,taxableGainIncomeAnnual,survivorActive),healthMonthly=healthAnnual/12; healthcareAnnual+=healthMonthly;
@@ -1781,6 +1897,7 @@ function simulateFull(randomize=false,returnAdjustmentPct=0,options={}){
 function simulate(randomize,returnAdjustmentPct=0){return getSelect("simpleMode")==="yes"?simulateSimple(randomize):simulateFull(randomize,returnAdjustmentPct);}
 function calculate(){
   try{
+    if(typeof updateCalculatedSocialSecurityDisplay==="function") updateCalculatedSocialSecurityDisplay();
     el("errorBox").style.display="none";
     if(!validateRequiredFields()){renderEmptyState();return;}
     validate(); const variance=Math.max(0,getVal("growthVariance"))/100,variancePct=Math.max(0,getVal("growthVariance"));
@@ -1907,7 +2024,7 @@ function clearMC(){["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el
 function requiredFields(){
   const m=readNormalizedModel(),useMonthly=getSelect("useMonthlyContribution")==="yes",usePhases=getSelect("useAgeBasedSpending")==="yes"; let fields=[];
   if(m.simple){fields=["simpleMode","simpleYears","returnRate","compoundFreq",useMonthly?"monthlyContribution":"contrib","portfolio"]; return fields;}
-  fields=["simpleMode","currentAge","retireAge","endAge","returnRate","growthVariance","compoundFreq","inflation","ssAge","taxRate"]; if(!m.accountMode)fields.push(useMonthly?"monthlyContribution":"contrib"); if(document.getElementById("spouseSsAge"))fields.push("spouseSsAge");
+  fields=["simpleMode","currentAge","retireAge","endAge","returnRate","growthVariance","compoundFreq","inflation","ssAge","yourFraAge","yourPiaMonthly","taxRate"]; if(!m.accountMode)fields.push(useMonthly?"monthlyContribution":"contrib"); if(document.getElementById("spouseSsAge") && !spouseUsesSpousalBenefit())fields.push("spouseSsAge"); if(document.getElementById("spouseFraAge"))fields.push("spouseFraAge");
   if(m.accountMode)fields=fields.concat(["tradYouReturn","tradSpouseReturn","rothYouReturn","rothSpouseReturn","taxableReturn","cashReturn","rmdStartAge","spouseRmdStartAge","taxableWithdrawalTaxRate"]); else fields.push("portfolio");
   if(usePhases)fields=fields.concat(["spend1Amt","spend2Amt","spend3Amt"]); else if(document.getElementById("constantRetirementSpending"))fields.push("constantRetirementSpending");
   if(getSelect("sellRealEstate")==="yes")fields=fields.concat(["propertySaleAge","propertyValue","propertyGrowth","mortgageBalance","mortgagePaydown","sellingCosts","costBasis","capGainExclusion","capGainTaxRate"]);
@@ -1943,13 +2060,28 @@ function removeMiscExpenseRow(button){const row=button?button.closest("tr"):null
 
 document.addEventListener("DOMContentLoaded",()=>{
   setupMoneyFormatting();
+
+  // Spousal benefit controls
+  ["spouseUsesSpousalBenefit","yourPiaMonthly","ssAge","yourFraAge","spouseFraAge","spouseSsAge","currentAge","spouseAge"].forEach(id=>{
+    const n=document.getElementById(id);
+    if(n){
+      n.addEventListener("input",()=>{updateSpousalBenefitFieldState();validateRequiredFields();calculate();clearMC();});
+      n.addEventListener("change",()=>{updateSpousalBenefitFieldState();validateRequiredFields();calculate();clearMC();});
+    }
+  });
+  updateSpousalBenefitFieldState();
+
   document.querySelectorAll("#miscExpenseBody tr").forEach(wireMiscRowInputs);
   const addBtn=document.getElementById("addMiscExpenseBtn"); if(addBtn)addBtn.addEventListener("click",e=>{e.preventDefault();addMiscExpenseRow();});
   const miscBody=document.getElementById("miscExpenseBody"); if(miscBody)miscBody.addEventListener("click",e=>{if(e.target&&e.target.classList&&e.target.classList.contains("misc-remove-btn")){e.preventDefault();removeMiscExpenseRow(e.target);}});
   const stateNode=document.getElementById("retirementState"); if(stateNode)stateNode.addEventListener("change",updateEffectiveTaxRateFromState);
   ["simpleMode","useMonthlyContribution","useAccountModeling","useAgeBasedSpending","sellRealEstate","sellRealEstate2","useAdvancedPlanning"].forEach(id=>{const n=document.getElementById(id);if(n)n.addEventListener("change",()=>{updateToggleDependentFields();calculate();});});
   ["currentAge","spouseAge","retireAge","endAge","spend1End","spend2End"].forEach(id=>{const n=document.getElementById(id);if(n){n.addEventListener("input",()=>{syncSpendingPhaseStarts();validateRequiredFields();});n.addEventListener("blur",()=>{syncSpendingPhaseStarts();calculate();});}});
-  document.querySelectorAll("input,select").forEach(n=>n.addEventListener("input",()=>{updateAccountTotal();validateRequiredFields();}));
+  document.querySelectorAll("input,select").forEach(n=>n.addEventListener("input",()=>{
+    updateCalculatedSocialSecurityDisplay();
+    updateAccountTotal();
+    validateRequiredFields();
+  }));
   
   ["rmdStartAge","spouseRmdStartAge"].forEach(id=>{
     const n=document.getElementById(id);
