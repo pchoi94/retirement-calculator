@@ -12,7 +12,7 @@ header{padding:20px 24px;background:#111827;color:#fff}
 header h1{margin:0 0 6px;font-size:clamp(21px,3vw,28px)} header p{margin:0;color:#d1d5db;font-size:14px;line-height:1.4}
 main{padding:16px;display:grid;grid-template-columns:minmax(0,450px) minmax(0,1fr);gap:16px;max-width:1520px;margin:0 auto;width:100%;min-width:0}
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.04);min-width:0}
-.inputs{height:fit-content;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow-y:auto;overflow-x:hidden;width:100%;max-width:100%;min-width:0}
+.inputs{height:fit-content;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow-y:auto;overflow-x:hidden!important;width:100%;max-width:100%;min-width:0;contain:inline-size}
 h2{font-size:18px;margin:0 0 12px;display:flex;align-items:center;gap:6px} 
 h3{font-size:14px;margin:18px 0 9px;border-bottom:1px solid var(--border);padding-bottom:5px;color:#374151;display:flex;align-items:center;gap:6px}
 .field{display:grid;grid-template-columns:minmax(0,1fr) minmax(96px,132px);gap:8px;align-items:center;margin:8px 0}
@@ -923,6 +923,63 @@ canvas {
     max-height: none;
     overflow: visible;
     scrollbar-gutter: auto;
+  }
+}
+
+
+/* Left input panel horizontal overflow hard fix */
+.inputs {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden !important;
+  contain: inline-size;
+}
+
+.inputs .field,
+.inputs .note,
+.inputs .error,
+.inputs .mini-table-wrap,
+.inputs .buttons,
+.inputs h2,
+.inputs h3 {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.inputs .field {
+  grid-template-columns: minmax(0, 1fr) minmax(82px, min(128px, 34%));
+}
+
+.inputs .field-label {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.inputs input,
+.inputs select,
+.inputs textarea,
+.inputs button {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.inputs .mini-table-wrap {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+}
+
+.inputs .mini-table {
+  min-width: 100%;
+  width: max-content;
+}
+
+@media (max-width: 560px) {
+  .inputs .field {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
