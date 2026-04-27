@@ -403,22 +403,6 @@ main {
 }
 
 
-.chart-tooltip {
-  position: fixed;
-  display: none;
-  pointer-events: none;
-  background: #111827;
-  color: #fff;
-  border-radius: 8px;
-  padding: 8px 10px;
-  font-size: 12px;
-  line-height: 1.35;
-  z-index: 2147483647;
-  box-shadow: 0 8px 24px rgba(0,0,0,.30);
-  max-width: 260px;
-  white-space: nowrap;
-}
-
 
 .field.disabled-by-toggle .field-label {
   color: #6b7280 !important;
@@ -1758,6 +1742,115 @@ select:disabled {
 
 
 
+
+/* Monte Carlo distribution charts */
+/* Monte Carlo first-glance success/failure outcome bar */
+.monte-carlo-outcome-card {
+  margin-top: 14px;
+}
+
+.mc-outcome-summary {
+  display: grid;
+  gap: 12px;
+}
+
+.mc-outcome-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mc-outcome-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  margin-bottom: 3px;
+}
+
+.mc-outcome-headline {
+  color: var(--text);
+  font-size: clamp(20px, 3.2vw, 30px);
+  line-height: 1.05;
+  font-weight: 780;
+  letter-spacing: -0.04em;
+}
+
+.mc-outcome-headline.success { color: var(--success); }
+.mc-outcome-headline.warn { color: var(--warn); }
+.mc-outcome-headline.danger { color: var(--danger); }
+
+.mc-outcome-trials {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.mc-outcome-bar {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 24px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--muted) 14%, transparent);
+  border: 1px solid var(--border);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.08);
+}
+
+.mc-outcome-segment {
+  height: 100%;
+  min-width: 0;
+  transition: width 180ms ease;
+}
+
+.mc-outcome-segment.success {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--success) 82%, white), var(--success));
+}
+
+.mc-outcome-segment.failure {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--danger) 82%, white), var(--danger));
+}
+
+.mc-outcome-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.mc-outcome-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mc-outcome-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+}
+
+.mc-outcome-dot.success { background: var(--success); }
+.mc-outcome-dot.failure { background: var(--danger); }
+
+@media (max-width: 560px) {
+  .mc-outcome-topline {
+    display: grid;
+  }
+
+  .mc-outcome-trials {
+    text-align: left;
+  }
+}
+
+
 /* Clean SVG renderer for Monte Carlo Spaghetti Chart */
 .spaghetti-chart-container {
   position: relative;
@@ -1766,7 +1859,7 @@ select:disabled {
   min-height: 340px;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--card-solid);
   overflow: hidden;
 }
 
@@ -1774,6 +1867,7 @@ select:disabled {
   display: block;
   width: 100%;
   height: 100%;
+  background: var(--card-solid);
 }
 
 .spaghetti-svg-layer path.monte-carlo-path {
@@ -1800,9 +1894,128 @@ select:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: var(--muted);
   font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-  background: #ffffff;
+  background: var(--card-solid);
+}
+
+
+/* Portfolio projection band chart: jagged line + shaded scenario bands */
+.portfolio-band-chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 340px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--card-solid);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.portfolio-band-chart-container svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.portfolio-band-chart-container text {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+.portfolio-band-area-high { fill: rgba(21, 128, 61, 0.12); }
+.portfolio-band-area-medium { fill: rgba(37, 99, 235, 0.16); }
+.portfolio-band-area-low { fill: rgba(17, 24, 39, 0.16); }
+
+.portfolio-band-line-high,
+.portfolio-band-line-medium,
+.portfolio-band-line-low {
+  fill: none;
+  stroke-width: 1.35;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: geometricPrecision;
+}
+
+.portfolio-band-line-high { stroke: #15803d; }
+.portfolio-band-line-medium { stroke: #2563eb; }
+.portfolio-band-line-low { stroke: #111827; }
+
+.portfolio-band-retirement-line {
+  stroke: #0f172a;
+  stroke-width: 2.2;
+  stroke-dasharray: 6 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.portfolio-band-hover-line {
+  stroke: #111827;
+  stroke-width: 1.4;
+  stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+  display: none;
+}
+
+.portfolio-band-tooltip {
+  position: fixed;
+  display: none;
+  pointer-events: none;
+  background: rgba(255,255,255,.96);
+  color: #1f2937;
+  border: 1px solid rgba(0,0,0,.16);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.35;
+  z-index: 2147483647;
+  box-shadow: 0 10px 28px rgba(0,0,0,.18);
+  min-width: 210px;
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+}
+
+.portfolio-band-tooltip .band-tip-year {
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.portfolio-band-tooltip .band-tip-row {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  gap: 7px;
+  align-items: center;
+  margin: 3px 0;
+}
+
+.portfolio-band-tooltip .band-tip-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.portfolio-band-tooltip .high { background: #15803d; }
+.portfolio-band-tooltip .medium { background: #2563eb; }
+.portfolio-band-tooltip .low { background: #111827; }
+
+@media (prefers-color-scheme: dark) {
+  .portfolio-band-area-high { fill: rgba(48, 209, 88, 0.14); }
+  .portfolio-band-area-medium { fill: rgba(10, 132, 255, 0.18); }
+  .portfolio-band-area-low { fill: rgba(229, 231, 235, 0.16); }
+  .portfolio-band-line-high { stroke: #30d158; }
+  .portfolio-band-line-medium { stroke: #0a84ff; }
+  .portfolio-band-line-low { stroke: #e5e7eb; }
+  .portfolio-band-retirement-line,
+  .portfolio-band-hover-line { stroke: #f5f5f7; }
+  .portfolio-band-tooltip {
+    background: rgba(44, 44, 46, .96);
+    color: #f5f5f7;
+    border-color: rgba(255,255,255,.18);
+  }
+  .portfolio-band-tooltip .high { background: #30d158; }
+  .portfolio-band-tooltip .medium { background: #0a84ff; }
+  .portfolio-band-tooltip .low { background: #e5e7eb; }
 }
 
 </style>
@@ -2081,8 +2294,11 @@ select:disabled {
 <div class="metric"><div class="metric-title">Property 2 Estimated Sale Tax <span class="info" data-tooltip="Estimated capital-gains tax due from property 2 sale.">i</span></div><div id="sale2TaxMetric" class="value">—</div></div>
 </div>
 
+
+<div class="card monte-carlo-outcome-card"><h2>Monte Carlo Outcome Summary <span class="info" data-tooltip="A first-glance view of how many Monte Carlo simulations succeed versus fail. Success means the portfolio does not run out of money by the end of the plan.">i</span></h2><div id="mcOutcomeSummary" class="mc-outcome-summary"><div class="mc-outcome-topline"><div><div class="mc-outcome-label">Success vs failure</div><div id="mcOutcomeHeadline" class="mc-outcome-headline">Run Monte Carlo to see outcome odds</div></div><div id="mcOutcomeTrialCount" class="mc-outcome-trials">—</div></div><div id="mcOutcomeBar" class="mc-outcome-bar" role="img" aria-label="Monte Carlo success and failure rates"><div id="mcOutcomeSuccessBar" class="mc-outcome-segment success" style="width:0%"></div><div id="mcOutcomeFailureBar" class="mc-outcome-segment failure" style="width:0%"></div></div><div class="mc-outcome-legend"><span class="mc-outcome-legend-item"><span class="mc-outcome-dot success"></span><span id="mcOutcomeSuccessText">Success: —</span></span><span class="mc-outcome-legend-item"><span class="mc-outcome-dot failure"></span><span id="mcOutcomeFailureText">Failure: —</span></span></div></div><div class="note">This is the simplest view of Monte Carlo risk: green means simulations where the plan lasts, red means simulations where the portfolio depletes before the plan ends.</div></div>
+
 <div class="summary-grid monte-carlo-summary-grid">
-<div class="metric"><div class="metric-title">Monte Carlo Success Rate <span class="info" data-tooltip="Percentage of 10,000 historical-return simulations where the portfolio does not run out of money.">i</span></div><div id="mcSuccess" class="value">—</div></div>
+<div class="metric"><div class="metric-title">Monte Carlo Success Rate <span class="info" data-tooltip="Percentage of selected historical-return simulations where the portfolio does not run out of money.">i</span></div><div id="mcSuccess" class="value">—</div></div>
 <div class="metric"><div class="metric-title">Median Ending Portfolio <span class="info" data-tooltip="Middle outcome from the Monte Carlo simulations. Half of simulations ended higher and half lower.">i</span></div><div id="mcMedian" class="value">—</div></div>
 <div class="metric"><div class="metric-title">10th Percentile Ending <span class="info" data-tooltip="Downside outcome: 90% of simulations ended higher, 10% ended lower.">i</span></div><div id="mcP10" class="value">—</div></div>
 <div class="metric"><div class="metric-title">Worst Case Ending <span class="info" data-tooltip="Lowest ending portfolio value across the Monte Carlo simulations.">i</span></div><div id="mcWorst" class="value">—</div></div>
@@ -2107,7 +2323,7 @@ select:disabled {
 <div class="metric"><div class="metric-title">Survivor Depletion Age <span class="info" data-tooltip="First depletion age under the survivor scenario, if any.">i</span></div><div id="survivorDepletionAge" class="value">—</div></div>
 </div>
 
-<div class="card"><h2>Portfolio Projection <span class="info" data-tooltip="Chart of projected ending portfolio value by year or age. The y-axis includes space below $0 so depletion is visible; after depletion, chart lines continue as estimated unfunded deficit for visual clarity.">i</span></h2><div class="chart-wrap"><canvas id="portfolioChart"></canvas></div></div>
+<div class="card"><h2>Portfolio Projection <span class="info" data-tooltip="Shows low, medium, and high deterministic portfolio projection paths as jagged year-by-year lines with shaded ranges. The vertical marker shows retirement age. Hover anywhere horizontally over the chart to compare all three values for that age.">i</span></h2><div class="chart-wrap"><div id="portfolioBandChart" class="portfolio-band-chart-container" role="img" aria-label="Portfolio Projection"></div></div><div class="note">Shaded regions show the range between low, medium, and high deterministic scenarios. The vertical dashed line marks retirement age.</div></div>
 <div class="card" style="margin-top:14px"><h2>Monte Carlo Spaghetti Chart <span class="info" data-tooltip="Shows a readable sample of individual Monte Carlo paths. Each line represents one simulated retirement path, including paths that continue below $0 after depletion.">i</span></h2><div class="chart-wrap monte-carlo-fan-wrap"><div id="mcFanChart" class="spaghetti-chart-container" role="img" aria-label="Monte Carlo Spaghetti Chart"></div></div><div class="note">Each thin line shows one sampled Monte Carlo simulation path. The chart is intentionally sampled for readability so you can see the spread of possible outcomes without turning the chart into visual noise.</div></div>
 <div class="card" style="margin-top:14px"><h2>Annual Base Projection <span class="info" data-tooltip="Year-by-year table of the base-case calculation. On mobile, scroll sideways inside the table.">i</span></h2><div class="table-wrap"><table class="main-table"><thead><tr><th>Age/Year</th><th>Spouse Age</th><th>Start Portfolio</th><th>Property Sale</th><th>Property 2 Sale</th><th>Net Contribution</th><th>Interest</th><th>Base Spending</th><th>Extra Expenses</th><th>Total Spending</th><th>Base Income</th><th>Social Security Income</th><th>Healthcare</th><th>Est. Tax</th><th>Roth Conversion</th><th>Extra Income</th><th>Gross Withdrawal</th><th>RMD</th><th>401(k)/Trad End</th><th>Roth End</th><th>Taxable End</th><th>Cash End</th><th>Low End Portfolio</th><th>Medium End Portfolio</th><th>High End Portfolio</th><th>End Portfolio</th></tr></thead><tbody id="projectionBody"></tbody></table></div></div>
 </section>
@@ -2135,6 +2351,7 @@ select:disabled {
 <script>
 const defaults={};
 let LAST_MONTE_CARLO_PATHS=null;
+let LAST_MONTE_CARLO_OUTCOME=null;
 let MONTE_CARLO_PRESERVE_UNTIL=0;
 let MONTE_CARLO_IS_RUNNING=false;
 
@@ -2472,24 +2689,67 @@ function percentile(sorted,p){if(sorted.length===0)return 0;const idx=(sorted.le
 
 
 
+function resetMonteCarloOutcomeSummary(){
+  if(el("mcOutcomeHeadline")){
+    el("mcOutcomeHeadline").textContent="Run Monte Carlo to see outcome odds";
+    el("mcOutcomeHeadline").className="mc-outcome-headline";
+  }
+  if(el("mcOutcomeTrialCount"))el("mcOutcomeTrialCount").textContent="—";
+  if(el("mcOutcomeSuccessBar"))el("mcOutcomeSuccessBar").style.width="0%";
+  if(el("mcOutcomeFailureBar"))el("mcOutcomeFailureBar").style.width="0%";
+  if(el("mcOutcomeSuccessText"))el("mcOutcomeSuccessText").textContent="Success: —";
+  if(el("mcOutcomeFailureText"))el("mcOutcomeFailureText").textContent="Failure: —";
+  if(el("mcOutcomeBar"))el("mcOutcomeBar").setAttribute("aria-label","Monte Carlo success and failure rates");
+}
+
+function renderMonteCarloOutcomeSummary(successes,total){
+  successes=Math.max(0,Math.min(Number(successes)||0,Number(total)||0));
+  total=Math.max(0,Number(total)||0);
+  if(total<=0){
+    resetMonteCarloOutcomeSummary();
+    return;
+  }
+  const failures=total-successes;
+  const successRate=successes/total;
+  const failureRate=failures/total;
+  const successPct=(successRate*100).toFixed(1);
+  const failurePct=(failureRate*100).toFixed(1);
+  const headline=successPct+"% success / "+failurePct+"% failure";
+  const headlineClass=successRate>=.85?"mc-outcome-headline success":successRate>=.70?"mc-outcome-headline warn":"mc-outcome-headline danger";
+
+  if(el("mcOutcomeHeadline")){
+    el("mcOutcomeHeadline").textContent=headline;
+    el("mcOutcomeHeadline").className=headlineClass;
+  }
+  if(el("mcOutcomeTrialCount"))el("mcOutcomeTrialCount").textContent=total.toLocaleString()+" simulations";
+  if(el("mcOutcomeSuccessBar"))el("mcOutcomeSuccessBar").style.width=successPct+"%";
+  if(el("mcOutcomeFailureBar"))el("mcOutcomeFailureBar").style.width=failurePct+"%";
+  if(el("mcOutcomeSuccessText"))el("mcOutcomeSuccessText").textContent="Success: "+successPct+"% ("+successes.toLocaleString()+")";
+  if(el("mcOutcomeFailureText"))el("mcOutcomeFailureText").textContent="Failure: "+failurePct+"% ("+failures.toLocaleString()+")";
+  if(el("mcOutcomeBar"))el("mcOutcomeBar").setAttribute("aria-label",headline+" across "+total.toLocaleString()+" simulations");
+}
+
 function clearMC(force=false){
   if(!force && shouldPreserveMonteCarloChart()){
     redrawMonteCarloChartIfAvailable();
     return;
   }
   LAST_MONTE_CARLO_PATHS=null;
+  LAST_MONTE_CARLO_OUTCOME=null;
   MONTE_CARLO_PRESERVE_UNTIL=0;
   ["mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el(id)){el(id).textContent="—";el(id).className="value"}});
   if(el("mcNote"))el("mcNote").textContent="Run Monte Carlo to populate this chart using the selected number of simulations.";
   if(el("mcFanChart"))clearCanvas("mcFanChart");
+  resetMonteCarloOutcomeSummary();
 }
 
 function renderEmptyState(){
   setRecommendedRetirementAgeDisplay("—","value");
  ["result","endingPortfolio","lowestPortfolio","depletionAge","lowEndingPortfolio","mediumEndingPortfolio","highEndingPortfolio","varianceRangeMetric","saleProceedsMetric","saleValueMetric","mortgageMetric","saleTaxMetric","sale2ProceedsMetric","sale2ValueMetric","mortgage2Metric","sale2TaxMetric","mcSuccess","mcMedian","mcP10","mcWorst"].forEach(id=>{if(el(id)){el(id).textContent="—";el(id).className="value";}});
  if(el("projectionBody"))el("projectionBody").innerHTML="";
- if(el("portfolioChart"))clearCanvas("portfolioChart");
+ if(el("portfolioBandChart"))clearCanvas("portfolioBandChart");
  if(el("mcFanChart"))clearCanvas("mcFanChart");
+ resetMonteCarloOutcomeSummary();
  ;
  if(el("mcNote"))if(el("mcNote"))el("mcNote").textContent="Enter required fields to calculate.";
 }
@@ -2498,76 +2758,12 @@ function renderSummary(ending,lowest,depletionAge){const r=el("result"),e=el("en
 
 
 
-const CHART_INTERACTIVE_POINTS = {};
-function ensureChartTooltip(){
-  let tip=document.getElementById("chartHoverTooltip");
-  if(!tip){
-    tip=document.createElement("div");
-    tip.id="chartHoverTooltip";
-    tip.className="chart-tooltip";
-    document.body.appendChild(tip);
-  }
-  return tip;
-}
-function fmtChartValue(v){return fmtMoney(v);}
-function registerChartInteractivity(id,points){
-  CHART_INTERACTIVE_POINTS[id]=points||[];
-  const canvas=el(id);
-  if(!canvas || canvas.dataset.interactive==="true")return;
-  canvas.dataset.interactive="true";
-  canvas.addEventListener("mousemove",function(evt){
-    const pts=CHART_INTERACTIVE_POINTS[id]||[];
-    if(!pts.length)return;
-    const rect=canvas.getBoundingClientRect();
-    const x=evt.clientX-rect.left;
-    const y=evt.clientY-rect.top;
-    let nearest=null,best=Infinity;
-    pts.forEach(p=>{
-      const dx=p.cx-x,dy=p.cy-y;
-      const d=Math.sqrt(dx*dx+dy*dy);
-      if(d<best){best=d;nearest=p;}
-    });
-    const tip=ensureChartTooltip();
-    if(nearest && best<28){
-      tip.innerHTML=nearest.label;
-      tip.style.display="block";
-      tip.style.left=(evt.clientX+14)+"px";
-      tip.style.top=(evt.clientY+14)+"px";
-      const tr=tip.getBoundingClientRect();
-      if(tr.right>window.innerWidth-8)tip.style.left=(evt.clientX-tr.width-14)+"px";
-      if(tr.bottom>window.innerHeight-8)tip.style.top=(evt.clientY-tr.height-14)+"px";
-    } else {
-      tip.style.display="none";
-    }
-  });
-  canvas.addEventListener("mouseleave",function(){
-    ensureChartTooltip().style.display="none";
-  });
-}
-
-function prepCanvas(id){const canvas=el(id);if(!canvas){return {canvas:null,ctx:null,w:0,h:0};}const ctx=canvas.getContext("2d"),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,rect.width,rect.height);ctx.fillStyle="#fff";ctx.fillRect(0,0,rect.width,rect.height);return{canvas,ctx,w:rect.width,h:rect.height}}
 function clearCanvas(id){
   const node=el(id);
   const svg=document.getElementById(id+"Svg");
   if(svg)svg.remove();
   if(!node)return;
-  if(node.tagName && node.tagName.toLowerCase()==="canvas"){
-    node.style.visibility="";
-    prepCanvas(id);
-  }else{
-    node.innerHTML="";
-  }
-}
-
-function buildCenteredChartScale(values){
-  const finiteVals=(values||[]).filter(v=>Number.isFinite(v));
-  const maxPositive=Math.max(...finiteVals,1);
-  const minNegative=Math.min(...finiteVals,0);
-  const maxAbs=Math.max(Math.abs(maxPositive),Math.abs(minNegative),1);
-  const niceStep=Math.pow(10,Math.floor(Math.log10(maxAbs)));
-  const scaled=Math.ceil(maxAbs/niceStep*1.12)*niceStep;
-  const maxVal=Math.max(scaled,500000);
-  return {min:-maxVal,max:maxVal,range:maxVal*2};
+  node.innerHTML="";
 }
 
 function fmtAxisMoney(v){
@@ -2577,92 +2773,165 @@ function fmtAxisMoney(v){
   return sign+"$"+Math.round(abs/1000).toLocaleString()+"k";
 }
 
-function drawCenteredGrid(ctx,w,h,p,scale,xs,xAt,yAt){
-  ctx.strokeStyle="rgba(156,163,175,0.35)";
-  ctx.lineWidth=1;
-  ctx.fillStyle="#6b7280";
-  ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";
-
-  const ticks=[scale.min,scale.min/2,0,scale.max/2,scale.max];
-  ticks.forEach(val=>{
-    const y=yAt(val);
-    ctx.beginPath();ctx.moveTo(p.left,y);ctx.lineTo(w-p.right,y);ctx.stroke();
-    ctx.textAlign="right";
-    ctx.fillText(fmtAxisMoney(val),p.left-6,y+4);
+function portfolioBandPathFromPoints(points,xAt,yAt){
+  if(!Array.isArray(points)||!points.length)return "";
+  const commands=[];
+  points.forEach((pt,i)=>{
+    const x=xAt(i), y=yAt(pt.y);
+    if(!Number.isFinite(x)||!Number.isFinite(y))return;
+    commands.push((commands.length===0?"M":"L")+x.toFixed(2)+" "+y.toFixed(2));
   });
+  return commands.join(" ");
+}
 
-  const n=xs.length;
+function portfolioBandAreaBetween(upper,lower,xAt,yAt){
+  if(!Array.isArray(upper)||!Array.isArray(lower)||!upper.length||!lower.length)return "";
+  const n=Math.min(upper.length,lower.length);
+  const forward=[];
+  const backward=[];
+  for(let i=0;i<n;i++){
+    const x=xAt(i), y=yAt(upper[i].y);
+    if(Number.isFinite(x)&&Number.isFinite(y))forward.push((forward.length===0?"M":"L")+x.toFixed(2)+" "+y.toFixed(2));
+  }
+  for(let i=n-1;i>=0;i--){
+    const x=xAt(i), y=yAt(lower[i].y);
+    if(Number.isFinite(x)&&Number.isFinite(y))backward.push("L"+x.toFixed(2)+" "+y.toFixed(2));
+  }
+  return forward.concat(backward).join(" ")+" Z";
+}
+
+function ensurePortfolioBandTooltip(){
+  let tip=document.getElementById("portfolioBandTooltip");
+  if(!tip){
+    tip=document.createElement("div");
+    tip.id="portfolioBandTooltip";
+    tip.className="portfolio-band-tooltip";
+    document.body.appendChild(tip);
+  }
+  return tip;
+}
+
+function drawPortfolioBandChart(id,lowPoints,mediumPoints,highPoints,retirementAge){
+  const container=el(id);
+  if(!container)return;
+  container.innerHTML="";
+
+  const low=Array.isArray(lowPoints)?lowPoints:[];
+  const medium=Array.isArray(mediumPoints)?mediumPoints:[];
+  const high=Array.isArray(highPoints)?highPoints:[];
+  const n=Math.min(low.length,medium.length,high.length);
+  if(!n){
+    container.innerHTML='<div class="spaghetti-empty-state">Enter required fields to calculate this projection.</div>';
+    return;
+  }
+
+  const w=Math.max(720,Math.round(container.clientWidth||container.getBoundingClientRect().width||760));
+  const h=Math.max(340,Math.round(container.clientHeight||container.getBoundingClientRect().height||360));
+  const p={left:78,right:34,top:54,bottom:52};
+  const usableW=w-p.left-p.right;
+  const usableH=h-p.top-p.bottom;
+  const allVals=[];
+  for(let i=0;i<n;i++){allVals.push(low[i].y,medium[i].y,high[i].y,0);}
+  const minRaw=Math.min(...allVals);
+  const maxRaw=Math.max(...allVals);
+  const maxVal=niceAxisLimit(maxRaw,500000);
+  const minVal=minRaw<0?-niceAxisLimit(Math.abs(minRaw),500000):0;
+  const range=Math.max(1,maxVal-minVal);
+  const xAt=i=>n===1?p.left:p.left+(i/(n-1))*usableW;
+  const yAt=v=>p.top+(1-(v-minVal)/range)*usableH;
+  const xs=medium.slice(0,n).map(pt=>pt.x);
+  const baseline=medium.slice(0,n).map(pt=>({x:pt.x,y:0}));
+
+  const svg=createChartSvgNode("svg",{viewBox:"0 0 "+w+" "+h,preserveAspectRatio:"none",role:"img","aria-label":"Portfolio projection bands"});
+
+  const yTickCount=5;
+  for(let i=0;i<yTickCount;i++){
+    const val=minVal+(i/(yTickCount-1))*range;
+    const y=yAt(val);
+    svg.appendChild(createChartSvgNode("line",{x1:p.left,y1:y,x2:w-p.right,y2:y,stroke:"rgba(156,163,175,0.32)","stroke-width":"1"}));
+    const label=createChartSvgNode("text",{x:p.left-8,y:y+4,"text-anchor":"end","font-size":"11",fill:"currentColor",opacity:"0.78"});
+    label.textContent=fmtAxisMoney(val);
+    svg.appendChild(label);
+  }
+
   const ticksX=Math.min(6,n);
+  const usedIdx=new Set();
   for(let i=0;i<ticksX;i++){
-    const idx=Math.round(i*(n-1)/(ticksX-1||1)),x=xAt(idx);
-    ctx.beginPath();ctx.moveTo(x,p.top);ctx.lineTo(x,h-p.bottom);ctx.stroke();
-    ctx.textAlign="center";
-    ctx.fillText(xs[idx],x,h-22);
+    const idx=Math.round(i*(n-1)/(ticksX-1||1));
+    if(usedIdx.has(idx))continue;
+    usedIdx.add(idx);
+    const x=xAt(idx);
+    svg.appendChild(createChartSvgNode("line",{x1:x,y1:p.top,x2:x,y2:h-p.bottom,stroke:"rgba(156,163,175,0.22)","stroke-width":"1"}));
+    const label=createChartSvgNode("text",{x:x,y:h-20,"text-anchor":"middle","font-size":"11",fill:"currentColor",opacity:"0.78"});
+    label.textContent=xs[idx];
+    svg.appendChild(label);
   }
 
   const zeroY=yAt(0);
-  ctx.strokeStyle="#111827";
-  ctx.lineWidth=1.4;
-  ctx.beginPath();ctx.moveTo(p.left,zeroY);ctx.lineTo(w-p.right,zeroY);ctx.stroke();
-  ctx.fillStyle="#374151";
-  ctx.textAlign="left";
-  ctx.fillText("$0",w-p.right-18,zeroY-5);
+  svg.appendChild(createChartSvgNode("line",{x1:p.left,y1:zeroY,x2:w-p.right,y2:zeroY,stroke:"currentColor","stroke-width":"1.2","vector-effect":"non-scaling-stroke"}));
+  const zeroLabel=createChartSvgNode("text",{x:w-p.right-6,y:zeroY-7,"text-anchor":"end","font-size":"11",fill:"currentColor"});
+  zeroLabel.textContent="$0";
+  svg.appendChild(zeroLabel);
 
-  ctx.strokeStyle="#111827";
-  ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(p.left,p.top);ctx.lineTo(p.left,h-p.bottom);ctx.stroke();
-}
+  const retirementIndex=xs.findIndex(x=>Number(x)>=Number(retirementAge));
+  if(retirementIndex>=0){
+    const rx=xAt(retirementIndex);
+    svg.appendChild(createChartSvgNode("line",{class:"portfolio-band-retirement-line",x1:rx,y1:p.top,x2:rx,y2:h-p.bottom}));
+    const rText=createChartSvgNode("text",{x:rx+12,y:p.top+8,"font-size":"11",fill:"currentColor",transform:"rotate(90 "+(rx+12)+" "+(p.top+8)+")"});
+    rText.textContent="Retirement age";
+    svg.appendChild(rText);
+  }
 
-function drawLineChart(id,points,title){
- const{ctx,w,h}=prepCanvas(id),p={left:74,right:22,top:26,bottom:48};
- if(points.length===0)return;
- const vals=points.map(pt=>pt.y),xs=points.map(pt=>pt.x);
- const scale=buildCenteredChartScale(vals);
- const xAt=i=>points.length===1?p.left:p.left+(i/(points.length-1))*(w-p.left-p.right);
- const yAt=v=>p.top+(1-(v-scale.min)/scale.range)*(h-p.top-p.bottom);
+  svg.appendChild(createChartSvgNode("path",{class:"portfolio-band-area-high",d:portfolioBandAreaBetween(high.slice(0,n),medium.slice(0,n),xAt,yAt)}));
+  svg.appendChild(createChartSvgNode("path",{class:"portfolio-band-area-medium",d:portfolioBandAreaBetween(medium.slice(0,n),low.slice(0,n),xAt,yAt)}));
+  svg.appendChild(createChartSvgNode("path",{class:"portfolio-band-area-low",d:portfolioBandAreaBetween(low.slice(0,n),baseline,xAt,yAt)}));
 
- drawCenteredGrid(ctx,w,h,p,scale,xs,xAt,yAt);
+  svg.appendChild(createChartSvgNode("path",{class:"portfolio-band-line-high",d:portfolioBandPathFromPoints(high.slice(0,n),xAt,yAt)}));
+  svg.appendChild(createChartSvgNode("path",{class:"portfolio-band-line-medium",d:portfolioBandPathFromPoints(medium.slice(0,n),xAt,yAt)}));
+  svg.appendChild(createChartSvgNode("path",{class:"portfolio-band-line-low",d:portfolioBandPathFromPoints(low.slice(0,n),xAt,yAt)}));
 
- ctx.strokeStyle="#2563eb";ctx.lineWidth=2.5;ctx.beginPath();
- const interactivePoints=[];
- vals.forEach((v,i)=>{
-   const x=xAt(i),y=yAt(v);
-   if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
-   interactivePoints.push({cx:x,cy:y,label:"<strong>Portfolio</strong><br>Age/Year: "+xs[i]+"<br>Value: "+fmtChartValue(v)});
- });
- ctx.stroke();
- registerChartInteractivity(id,interactivePoints);
- ctx.fillStyle="#111827";ctx.font="12px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="left";ctx.fillText(title,p.left,17);
-}
-
-function drawMultiLineChart(id,series,title){
- const allPoints=series.flatMap(s=>s.points);
- if(allPoints.length===0){clearCanvas(id);return;}
- const{ctx,w,h}=prepCanvas(id),p={left:74,right:22,top:64,bottom:50};
- const vals=allPoints.map(pt=>pt.y),xs=series[0].points.map(pt=>pt.x);
- const scale=buildCenteredChartScale(vals);
- const n=series[0].points.length;
- const xAt=i=>n===1?p.left:p.left+(i/(n-1))*(w-p.left-p.right);
- const yAt=v=>p.top+(1-(v-scale.min)/scale.range)*(h-p.top-p.bottom);
-
- drawCenteredGrid(ctx,w,h,p,scale,xs,xAt,yAt);
-
- const interactivePoints=[];
- series.forEach(s=>{
-  ctx.strokeStyle=s.color;ctx.lineWidth=2.5;ctx.beginPath();
-  s.points.forEach((pt,i)=>{
-    const x=xAt(i),y=yAt(pt.y);
-    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
-    interactivePoints.push({cx:x,cy:y,label:"<strong>"+s.label+"</strong><br>Age/Year: "+pt.x+"<br>Value: "+fmtChartValue(pt.y)});
+  const legend=[{label:"High scenario",cls:"portfolio-band-line-high",color:"#15803d"},{label:"Medium scenario",cls:"portfolio-band-line-medium",color:"#2563eb"},{label:"Low scenario",cls:"portfolio-band-line-low",color:"#111827"}];
+  let lx=p.left, ly=26;
+  legend.forEach(item=>{
+    svg.appendChild(createChartSvgNode("line",{x1:lx,y1:ly,x2:lx+18,y2:ly,stroke:item.color,"stroke-width":"2","vector-effect":"non-scaling-stroke"}));
+    const label=createChartSvgNode("text",{x:lx+24,y:ly+4,"font-size":"12",fill:"currentColor",opacity:"0.86"});
+    label.textContent=item.label;
+    svg.appendChild(label);
+    lx+=132;
   });
-  ctx.stroke();
- });
- registerChartInteractivity(id,interactivePoints);
- ctx.fillStyle="#111827";ctx.font="12px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="left";ctx.fillText(title,p.left,18);
- let lx=p.left,ly=44;
- series.forEach(s=>{ctx.fillStyle=s.color;ctx.fillRect(lx,ly-8,10,3);ctx.fillStyle="#374151";ctx.fillText(s.label,lx+14,ly-4);lx+=78;});
-}
 
+  const hoverLine=createChartSvgNode("line",{class:"portfolio-band-hover-line",x1:p.left,y1:p.top,x2:p.left,y2:h-p.bottom});
+  svg.appendChild(hoverLine);
+
+  container.appendChild(svg);
+
+  const tip=ensurePortfolioBandTooltip();
+  function showTip(evt){
+    const rect=container.getBoundingClientRect();
+    const localX=Math.max(p.left,Math.min(w-p.right,evt.clientX-rect.left));
+    const idx=Math.max(0,Math.min(n-1,Math.round(((localX-p.left)/usableW)*(n-1))));
+    const x=xAt(idx);
+    hoverLine.setAttribute("x1",x);
+    hoverLine.setAttribute("x2",x);
+    hoverLine.style.display="block";
+    tip.innerHTML='<div class="band-tip-year">Age '+xs[idx]+'</div>'+
+      '<div class="band-tip-row"><span class="band-tip-swatch high"></span><span>High scenario</span><strong>'+fmtMoney(high[idx].y)+'</strong></div>'+
+      '<div class="band-tip-row"><span class="band-tip-swatch medium"></span><span>Medium scenario</span><strong>'+fmtMoney(medium[idx].y)+'</strong></div>'+
+      '<div class="band-tip-row"><span class="band-tip-swatch low"></span><span>Low scenario</span><strong>'+fmtMoney(low[idx].y)+'</strong></div>';
+    tip.style.display="block";
+    tip.style.left=(evt.clientX+14)+"px";
+    tip.style.top=(evt.clientY+14)+"px";
+    const tr=tip.getBoundingClientRect();
+    if(tr.right>window.innerWidth-8)tip.style.left=(evt.clientX-tr.width-14)+"px";
+    if(tr.bottom>window.innerHeight-8)tip.style.top=(evt.clientY-tr.height-14)+"px";
+  }
+  function hideTip(){
+    hoverLine.style.display="none";
+    tip.style.display="none";
+  }
+  container.addEventListener("mousemove",showTip);
+  container.addEventListener("mouseleave",hideTip);
+}
 
 
 
@@ -2683,6 +2952,36 @@ function chartSvgPathFromPoints(points,xAt,yAt){
     commands.push((commands.length===0?"M":"L")+x.toFixed(2)+" "+y.toFixed(2));
   });
   return commands.join(" ");
+}
+
+function niceAxisLimit(value, minimum=1){
+  const abs=Math.max(Math.abs(value)||0, minimum);
+  const step=Math.pow(10,Math.floor(Math.log10(abs)));
+  return Math.ceil((abs*1.12)/step)*step;
+}
+
+function clampNumber(value,min,max){
+  return Math.max(min,Math.min(max,value));
+}
+
+function computeMonteCarloSpaghettiScale(paths){
+  const values=(paths||[]).flatMap(path=>path.map(pt=>pt.y)).filter(Number.isFinite);
+  const positiveMax=Math.max(0,...values.filter(v=>v>0));
+  const negativeMin=Math.min(0,...values.filter(v=>v<0));
+  const hasNegative=negativeMin<0;
+  const positiveMagnitude=Math.max(positiveMax,1);
+  const negativeMagnitude=Math.abs(negativeMin);
+
+  const axisPositive=niceAxisLimit(positiveMagnitude,500000);
+  const axisNegative=hasNegative ? -niceAxisLimit(negativeMagnitude,100000) : -niceAxisLimit(axisPositive*0.08,100000);
+
+  // The vertical split is intentionally asymmetric. It still fits the displayed
+  // highest and lowest paths, but guarantees enough below-zero screen space for
+  // failed paths to remain readable when upside outliers are much larger.
+  const naturalNegativeShare=hasNegative ? negativeMagnitude/(positiveMagnitude+negativeMagnitude) : 0.14;
+  const negativePixelShare=hasNegative ? clampNumber(naturalNegativeShare,0.30,0.50) : 0.14;
+
+  return {axisPositive,axisNegative,hasNegative,negativePixelShare,positiveMax,negativeMin};
 }
 
 function drawMonteCarloFanChart(id,paths){
@@ -2707,16 +3006,21 @@ function drawMonteCarloFanChart(id,paths){
   const h=Math.max(340,Math.round(container.clientHeight||container.getBoundingClientRect().height||380));
   const p={left:84,right:32,top:74,bottom:62};
   const xs=sampledPaths[0].map(pt=>pt.x);
-  const allVals=sampledPaths.flatMap(path=>path.map(pt=>pt.y)).filter(Number.isFinite);
-  const maxAbs=Math.max(500000,...allVals.map(v=>Math.abs(v)));
-  const niceStep=Math.pow(10,Math.floor(Math.log10(maxAbs)));
-  const axisMax=Math.ceil((maxAbs*1.15)/niceStep)*niceStep;
-  const scale={min:-axisMax,max:axisMax,range:axisMax*2};
+  const scale=computeMonteCarloSpaghettiScale(sampledPaths);
+  const axisPositive=scale.axisPositive;
+  const axisNegative=scale.axisNegative;
+  const hasNegative=scale.hasNegative;
+  const chartHeight=h-p.top-p.bottom;
+  const zeroY=Math.round(p.top+chartHeight*(1-scale.negativePixelShare));
 
   const n=xs.length;
   const xAt=i=>n===1?p.left:p.left+(i/(n-1))*(w-p.left-p.right);
-  const yAt=v=>p.top+(1-(v-scale.min)/scale.range)*(h-p.top-p.bottom);
-  const zeroY=yAt(0);
+  const yAt=v=>{
+    if(v>=0){
+      return zeroY-(Math.min(v,axisPositive)/axisPositive)*(zeroY-p.top);
+    }
+    return zeroY+(Math.min(Math.abs(v),Math.abs(axisNegative))/Math.abs(axisNegative))*((h-p.bottom)-zeroY);
+  };
 
   const svg=createChartSvgNode("svg",{
     class:"spaghetti-svg-layer",
@@ -2726,12 +3030,12 @@ function drawMonteCarloFanChart(id,paths){
     "aria-label":"Monte Carlo Spaghetti Chart"
   });
 
-  svg.appendChild(createChartSvgNode("rect",{x:0,y:0,width:w,height:h,fill:"#ffffff"}));
+  svg.appendChild(createChartSvgNode("rect",{x:0,y:0,width:w,height:h,fill:"var(--card-solid)"}));
 
   function appendText(text,x,y,attrs={}){
     const node=createChartSvgNode("text",Object.assign({
       x,y,
-      fill:"#374151",
+      fill:"var(--muted)",
       "font-family":"-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif",
       "font-size":"12"
     },attrs));
@@ -2740,12 +3044,13 @@ function drawMonteCarloFanChart(id,paths){
     return node;
   }
 
-  appendText("Monte Carlo Spaghetti Chart",p.left,26,{fill:"#111827","font-size":"13","font-weight":"700"});
+  appendText("Monte Carlo Spaghetti Chart",p.left,26,{fill:"var(--text)","font-size":"13","font-weight":"700"});
 
-  const ticks=[scale.min,scale.min/2,0,scale.max/2,scale.max];
-  ticks.forEach(val=>{
+  const positiveTicks=[axisPositive,axisPositive/2,0];
+  const negativeTicks=hasNegative?[axisNegative/2,axisNegative]:[];
+  positiveTicks.concat(negativeTicks).forEach(val=>{
     const y=yAt(val);
-    svg.appendChild(createChartSvgNode("line",{x1:p.left,y1:y,x2:w-p.right,y2:y,stroke:val===0?"#111827":"#d1d5db","stroke-width":val===0?"2":"1"}));
+    svg.appendChild(createChartSvgNode("line",{x1:p.left,y1:y,x2:w-p.right,y2:y,stroke:val===0?"var(--text)":"color-mix(in srgb, var(--muted) 28%, transparent)","stroke-width":val===0?"2":"1"}));
     appendText(fmtAxisMoney(val),p.left-8,y+4,{"text-anchor":"end"});
   });
 
@@ -2753,12 +3058,12 @@ function drawMonteCarloFanChart(id,paths){
   for(let i=0;i<ticksX;i++){
     const idx=Math.round(i*(n-1)/(ticksX-1||1));
     const x=xAt(idx);
-    svg.appendChild(createChartSvgNode("line",{x1:x,y1:p.top,x2:x,y2:h-p.bottom,stroke:"#e5e7eb","stroke-width":"1"}));
+    svg.appendChild(createChartSvgNode("line",{x1:x,y1:p.top,x2:x,y2:h-p.bottom,stroke:"color-mix(in srgb, var(--muted) 18%, transparent)","stroke-width":"1"}));
     appendText(String(xs[idx]),x,h-28,{"text-anchor":"middle"});
   }
 
-  svg.appendChild(createChartSvgNode("line",{x1:p.left,y1:p.top,x2:p.left,y2:h-p.bottom,stroke:"#111827","stroke-width":"1.4"}));
-  appendText("$0",w-p.right-18,zeroY-8,{fill:"#111827","text-anchor":"end"});
+  svg.appendChild(createChartSvgNode("line",{x1:p.left,y1:p.top,x2:p.left,y2:h-p.bottom,stroke:"var(--text)","stroke-width":"1.4"}));
+  appendText("$0",w-p.right-18,zeroY-8,{fill:"var(--text)","text-anchor":"end"});
 
   sampledPaths.forEach((path,pathIndex)=>{
     const depleted=path.some(pt=>pt.y<0);
@@ -2773,23 +3078,20 @@ function drawMonteCarloFanChart(id,paths){
   });
 
   const legendY=45;
-  svg.appendChild(createChartSvgNode("rect",{x:p.left,y:legendY-10,width:15,height:5,rx:2,fill:"rgba(37,99,235,0.72)"}));
+  svg.appendChild(createChartSvgNode("rect",{x:p.left,y:legendY-10,width:15,height:5,rx:2,fill:"var(--accent)",opacity:"0.72"}));
   appendText("Positive sampled paths",p.left+21,legendY-5);
-  svg.appendChild(createChartSvgNode("rect",{x:p.left+184,y:legendY-10,width:15,height:5,rx:2,fill:"rgba(220,38,38,0.72)"}));
+  svg.appendChild(createChartSvgNode("rect",{x:p.left+184,y:legendY-10,width:15,height:5,rx:2,fill:"var(--danger)",opacity:"0.72"}));
   appendText("Depleted sampled paths",p.left+205,legendY-5);
+  appendText("Y-axis fits the displayed paths; below-zero space is protected so failed paths remain readable.",p.left,h-10,{fill:"var(--muted)","font-size":"11"});
 
   container.appendChild(svg);
 }
-
-
-
-
 
 function drawHistogram(id,values){const{ctx,w,h}=prepCanvas(id),p={left:70,right:18,top:24,bottom:42};const min=Math.min(...values),max=Math.max(...values),bins=30,range=max-min||1,counts=Array(bins).fill(0);values.forEach(v=>{let idx=Math.floor((v-min)/range*bins);if(idx>=bins)idx=bins-1;if(idx<0)idx=0;counts[idx]++});const maxCount=Math.max(...counts,1),barW=(w-p.left-p.right)/bins;ctx.strokeStyle="#e5e7eb";ctx.fillStyle="#6b7280";ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.lineWidth=1;for(let i=0;i<=5;i++){const y=p.top+(1-i/5)*(h-p.top-p.bottom);ctx.beginPath();ctx.moveTo(p.left,y);ctx.lineTo(w-p.right,y);ctx.stroke();ctx.textAlign="right";ctx.fillText(Math.round(maxCount*i/5),p.left-6,y+4)}ctx.fillStyle="#2563eb";counts.forEach((c,i)=>{const x=p.left+i*barW,y=p.top+(1-c/maxCount)*(h-p.top-p.bottom),bh=(c/maxCount)*(h-p.top-p.bottom);ctx.fillRect(x+1,y,Math.max(1,barW-2),bh)});ctx.strokeStyle="#111827";ctx.beginPath();ctx.moveTo(p.left,p.top);ctx.lineTo(p.left,h-p.bottom);ctx.lineTo(w-p.right,h-p.bottom);ctx.stroke();ctx.fillStyle="#111827";ctx.font="12px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="left";ctx.fillText("Ending Portfolio Distribution",p.left,17);ctx.fillStyle="#6b7280";ctx.font="11px -apple-system,BlinkMacSystemFont,Segoe UI,Arial";ctx.textAlign="center";ctx.fillText(fmtMoney(min),p.left,h-20);ctx.fillText(fmtMoney(max),w-p.right,h-20);ctx.fillText("Ending Portfolio",w/2,h-20)}
 let resizeRecalcTimer=null;
 window.addEventListener("resize",()=>{
   clearTimeout(resizeRecalcTimer);
-  resizeRecalcTimer=setTimeout(()=>{calculate(); if(LAST_MONTE_CARLO_PATHS){drawMonteCarloFanChart("mcFanChart",LAST_MONTE_CARLO_PATHS);}},200);
+  resizeRecalcTimer=setTimeout(()=>{calculate(); redrawMonteCarloChartIfAvailable();},200);
 });
 /* Legacy DOMContentLoaded initializer removed; single-source init below handles all setup. */
 
@@ -3801,7 +4103,8 @@ function calculate(){
     const lowRows=simulate(false,-variance),rows=simulate(false,0),highRows=simulate(false,variance);
     const ending=rows.length?rows[rows.length-1].endPortfolio:safeMoneyValue("portfolio"),lowest=rows.length?Math.min(...rows.map(r=>r.endPortfolio)):ending,depletion=rows.find(r=>r.endPortfolio<=0),saleRow=rows.find(r=>r.propertySale>0);
     updateSaleMetrics(saleRow?saleRow.propertyInfo:calcPropertySaleInfo(getVal("propertySaleAge"),null)); renderSummary(ending,lowest,depletion?depletion.age:null); renderSensitivitySummary(lowRows,rows,highRows,variancePct); renderAccountEndingMetrics(rows); renderTable(rows,lowRows,highRows);
-    drawMultiLineChart("portfolioChart",[{label:"Low",points:rowsToVisualContinuationPath(lowRows),color:"#b91c1c"},{label:"Medium",points:rowsToVisualContinuationPath(rows),color:"#2563eb"},{label:"High",points:rowsToVisualContinuationPath(highRows),color:"#15803d"}]);
+    const lowPath=rowsToVisualContinuationPath(lowRows), mediumPath=rowsToVisualContinuationPath(rows), highPath=rowsToVisualContinuationPath(highRows);
+    drawPortfolioBandChart("portfolioBandChart",lowPath,mediumPath,highPath,getVal("retireAge"));
   }catch(e){el("errorBox").textContent=e.message;el("errorBox").style.display="block";}
 }
 function runHistoricalSequenceStress(){
@@ -3947,6 +4250,8 @@ function runMonteCarlo(){
     el("mcWorst").className=worst>=0?"value success":"value danger";
 
     LAST_MONTE_CARLO_PATHS=allPaths;
+    LAST_MONTE_CARLO_OUTCOME={successes,total:endings.length};
+    renderMonteCarloOutcomeSummary(successes,endings.length);
     preserveMonteCarloChartBriefly(2000);
     drawMonteCarloFanChart("mcFanChart",allPaths);
 
@@ -4107,6 +4412,9 @@ function cancelPendingAutoRecalculations(){
 function redrawMonteCarloChartIfAvailable(){
   if(LAST_MONTE_CARLO_PATHS && el("mcFanChart")){
     drawMonteCarloFanChart("mcFanChart",LAST_MONTE_CARLO_PATHS);
+  }
+  if(LAST_MONTE_CARLO_OUTCOME){
+    renderMonteCarloOutcomeSummary(LAST_MONTE_CARLO_OUTCOME.successes,LAST_MONTE_CARLO_OUTCOME.total);
   }
 }
 
