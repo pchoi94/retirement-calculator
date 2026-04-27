@@ -2966,22 +2966,31 @@ function clampNumber(value,min,max){
 
 function computeMonteCarloSpaghettiScale(paths){
   const values=(paths||[]).flatMap(path=>path.map(pt=>pt.y)).filter(Number.isFinite);
-  const positiveMax=Math.max(0,...values.filter(v=>v>0));
-  const negativeMin=Math.min(0,...values.filter(v=>v<0));
+  const positiveValues=values.filter(v=>v>0).sort((a,b)=>a-b);
+  const negativeValues=values.filter(v=>v<0).sort((a,b)=>a-b);
+  const positiveMax=positiveValues.length?positiveValues[positiveValues.length-1]:0;
+  const negativeMin=negativeValues.length?negativeValues[0]:0;
   const hasNegative=negativeMin<0;
-  const positiveMagnitude=Math.max(positiveMax,1);
-  const negativeMagnitude=Math.abs(negativeMin);
 
-  const axisPositive=niceAxisLimit(positiveMagnitude,500000);
-  const axisNegative=hasNegative ? -niceAxisLimit(negativeMagnitude,100000) : -niceAxisLimit(axisPositive*0.08,100000);
+  // Use percentile-based display limits so a few extreme outliers do not flatten
+  // the readable part of the chart. Values outside the displayed range are not
+  // clamped; they are clipped by the plot area so paths can exit the top/bottom.
+  const positiveDisplayBase=positiveValues.length?percentile(positiveValues,0.95):Math.max(positiveMax,1);
+  const negativeMagnitudes=negativeValues.map(v=>Math.abs(v)).sort((a,b)=>a-b);
+  const negativeDisplayBase=negativeMagnitudes.length?percentile(negativeMagnitudes,0.95):0;
 
-  // The vertical split is intentionally asymmetric. It still fits the displayed
-  // highest and lowest paths, but guarantees enough below-zero screen space for
-  // failed paths to remain readable when upside outliers are much larger.
+  const axisPositive=niceAxisLimit(Math.max(positiveDisplayBase,positiveMax*0.12,1),500000);
+  const axisNegative=hasNegative ? -niceAxisLimit(Math.max(negativeDisplayBase,Math.abs(negativeMin)*0.12,100000),100000) : -niceAxisLimit(axisPositive*0.08,100000);
+
+  // The vertical split is intentionally asymmetric. Below-zero screen space is
+  // protected so failed paths stay legible, while upside outliers are allowed to
+  // leave the plot instead of forcing the whole graph to use a billion-dollar axis.
+  const positiveMagnitude=Math.max(axisPositive,1);
+  const negativeMagnitude=Math.abs(axisNegative);
   const naturalNegativeShare=hasNegative ? negativeMagnitude/(positiveMagnitude+negativeMagnitude) : 0.14;
   const negativePixelShare=hasNegative ? clampNumber(naturalNegativeShare,0.30,0.50) : 0.14;
 
-  return {axisPositive,axisNegative,hasNegative,negativePixelShare,positiveMax,negativeMin};
+  return {axisPositive,axisNegative,hasNegative,negativePixelShare,positiveMax,negativeMin,positiveDisplayBase,negativeDisplayBase};
 }
 
 function drawMonteCarloFanChart(id,paths){
@@ -3017,9 +3026,9 @@ function drawMonteCarloFanChart(id,paths){
   const xAt=i=>n===1?p.left:p.left+(i/(n-1))*(w-p.left-p.right);
   const yAt=v=>{
     if(v>=0){
-      return zeroY-(Math.min(v,axisPositive)/axisPositive)*(zeroY-p.top);
+      return zeroY-(v/axisPositive)*(zeroY-p.top);
     }
-    return zeroY+(Math.min(Math.abs(v),Math.abs(axisNegative))/Math.abs(axisNegative))*((h-p.bottom)-zeroY);
+    return zeroY+(Math.abs(v)/Math.abs(axisNegative))*((h-p.bottom)-zeroY);
   };
 
   const svg=createChartSvgNode("svg",{
@@ -3031,6 +3040,12 @@ function drawMonteCarloFanChart(id,paths){
   });
 
   svg.appendChild(createChartSvgNode("rect",{x:0,y:0,width:w,height:h,fill:"var(--card-solid)"}));
+  const clipId="mcSpaghettiPlotClip-"+Math.random().toString(36).slice(2);
+  const defs=createChartSvgNode("defs");
+  const clipPath=createChartSvgNode("clipPath",{id:clipId});
+  clipPath.appendChild(createChartSvgNode("rect",{x:p.left,y:p.top,width:w-p.left-p.right,height:h-p.top-p.bottom}));
+  defs.appendChild(clipPath);
+  svg.appendChild(defs);
 
   function appendText(text,x,y,attrs={}){
     const node=createChartSvgNode("text",Object.assign({
@@ -3065,6 +3080,7 @@ function drawMonteCarloFanChart(id,paths){
   svg.appendChild(createChartSvgNode("line",{x1:p.left,y1:p.top,x2:p.left,y2:h-p.bottom,stroke:"var(--text)","stroke-width":"1.4"}));
   appendText("$0",w-p.right-18,zeroY-8,{fill:"var(--text)","text-anchor":"end"});
 
+  const plotGroup=createChartSvgNode("g",{"clip-path":"url(#"+clipId+")"});
   sampledPaths.forEach((path,pathIndex)=>{
     const depleted=path.some(pt=>pt.y<0);
     const pathNode=createChartSvgNode("path",{
@@ -3074,15 +3090,16 @@ function drawMonteCarloFanChart(id,paths){
     const title=createChartSvgNode("title");
     title.textContent="Sample path "+(pathIndex+1)+(depleted?" — depleted":" — positive");
     pathNode.appendChild(title);
-    svg.appendChild(pathNode);
+    plotGroup.appendChild(pathNode);
   });
+  svg.appendChild(plotGroup);
 
   const legendY=45;
   svg.appendChild(createChartSvgNode("rect",{x:p.left,y:legendY-10,width:15,height:5,rx:2,fill:"var(--accent)",opacity:"0.72"}));
   appendText("Positive sampled paths",p.left+21,legendY-5);
   svg.appendChild(createChartSvgNode("rect",{x:p.left+184,y:legendY-10,width:15,height:5,rx:2,fill:"var(--danger)",opacity:"0.72"}));
   appendText("Depleted sampled paths",p.left+205,legendY-5);
-  appendText("Y-axis fits the displayed paths; below-zero space is protected so failed paths remain readable.",p.left,h-10,{fill:"var(--muted)","font-size":"11"});
+  appendText("Y-axis uses a 95th-percentile display scale; outlier paths may exit the top or bottom while downside remains readable.",p.left,h-10,{fill:"var(--muted)","font-size":"11"});
 
   container.appendChild(svg);
 }
