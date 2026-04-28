@@ -1900,6 +1900,7 @@ select:disabled {
 }
 
 
+
 /* Portfolio projection band chart: jagged line + shaded scenario bands */
 .portfolio-band-chart-container {
   position: relative;
@@ -2016,6 +2017,93 @@ select:disabled {
   .portfolio-band-tooltip .high { background: #30d158; }
   .portfolio-band-tooltip .medium { background: #0a84ff; }
   .portfolio-band-tooltip .low { background: #e5e7eb; }
+}
+
+
+
+/* Prominent global output-dollar control at top of output panel */
+.output-dollar-control-card {
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--card-solid) 88%, var(--accent-soft)), var(--card));
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--border));
+}
+
+.output-dollar-control-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.output-dollar-control-copy {
+  min-width: 0;
+}
+
+.output-dollar-eyebrow {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 760;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.output-dollar-title {
+  color: var(--text);
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 780;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+.output-dollar-subtitle {
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.35;
+  margin-top: 5px;
+  max-width: 760px;
+}
+
+.output-dollar-select-wrap {
+  flex: 0 0 auto;
+  display: grid;
+  gap: 6px;
+  min-width: min(240px, 100%);
+}
+
+.output-dollar-select-wrap label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 680;
+  letter-spacing: -0.01em;
+}
+
+.output-dollar-select-wrap select {
+  min-height: 42px;
+  border-radius: 999px;
+  padding: 9px 36px 9px 14px;
+  font-weight: 720;
+  text-align: left;
+  background: var(--control-bg-focus);
+  border-color: color-mix(in srgb, var(--accent) 36%, var(--control-border));
+  box-shadow: 0 0 0 4px var(--accent-soft), var(--shadow-sm);
+}
+
+.output-dollar-control-card .note {
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 720px) {
+  .output-dollar-control-main {
+    display: grid;
+  }
+
+  .output-dollar-select-wrap {
+    width: 100%;
+  }
 }
 
 </style>
@@ -2259,6 +2347,22 @@ select:disabled {
 <div id="errorBox" class="error"></div>
 <div id="validationBox" class="error" style="display:none"></div>
 
+
+<div class="card output-dollar-control-card" aria-label="Global output dollar display mode">
+  <div class="output-dollar-control-main">
+    <div class="output-dollar-control-copy">
+      <div class="output-dollar-eyebrow">Global display setting</div>
+      <div class="output-dollar-title">Output Dollar View</div>
+      <div class="output-dollar-subtitle">Applies to summary numbers, charts, Monte Carlo dollar outputs, property metrics, and the annual projection table.</div>
+    </div>
+    <div class="output-dollar-select-wrap">
+      <label for="portfolioDollarView">Display values as</label>
+      <select id="portfolioDollarView" aria-label="Output dollar view"><option value="future" selected>Future dollars</option><option value="today">Today's dollars</option></select>
+    </div>
+  </div>
+  <div class="note" id="portfolioDollarViewNote">Future dollars show nominal projected values. Today's dollars discount displayed output values using the Inflation % input, without changing the underlying calculations.</div>
+</div>
+
 <div class="summary-grid output-primary-summary">
 <div class="metric base-status-metric"><div class="metric-title">Base Case Result <span class="info" data-tooltip="Whether the deterministic base-case projection lasts through the plan period.">i</span></div><div id="result" class="value">—</div></div>
 <div class="metric compact-base-metric"><div class="metric-title">Base Ending Portfolio <span class="info" data-tooltip="Final portfolio value at the end of the base-case projection.">i</span></div><div id="endingPortfolio" class="value">—</div></div>
@@ -2323,7 +2427,7 @@ select:disabled {
 <div class="metric"><div class="metric-title">Survivor Depletion Age <span class="info" data-tooltip="First depletion age under the survivor scenario, if any.">i</span></div><div id="survivorDepletionAge" class="value">—</div></div>
 </div>
 
-<div class="card"><h2>Portfolio Projection <span class="info" data-tooltip="Shows low, medium, and high deterministic portfolio projection paths as jagged year-by-year lines with shaded ranges. The vertical marker shows retirement age. Hover anywhere horizontally over the chart to compare all three values for that age.">i</span></h2><div class="chart-wrap"><div id="portfolioBandChart" class="portfolio-band-chart-container" role="img" aria-label="Portfolio Projection"></div></div><div class="note">Shaded regions show the range between low, medium, and high deterministic scenarios. The vertical dashed line marks retirement age.</div></div>
+<div class="card"><h2>Portfolio Projection <span class="info" data-tooltip="Shows low, medium, and high deterministic portfolio projection paths as jagged year-by-year lines with shaded ranges. The vertical marker shows retirement age. Hover anywhere horizontally over the chart to compare all three values for that age. Values follow the global Output Dollar View control at the top of the output panel.">i</span></h2><div class="chart-wrap"><div id="portfolioBandChart" class="portfolio-band-chart-container" role="img" aria-label="Portfolio Projection"></div></div><div class="note">Shaded regions show the range between low, medium, and high deterministic scenarios. The vertical dashed line marks retirement age.</div></div>
 <div class="card" style="margin-top:14px"><h2>Monte Carlo Spaghetti Chart <span class="info" data-tooltip="Shows a readable sample of individual Monte Carlo paths. Each line represents one simulated retirement path, including paths that continue below $0 after depletion.">i</span></h2><div class="chart-wrap monte-carlo-fan-wrap"><div id="mcFanChart" class="spaghetti-chart-container" role="img" aria-label="Monte Carlo Spaghetti Chart"></div></div><div class="note">Each thin line shows one sampled Monte Carlo simulation path. The chart is intentionally sampled for readability so you can see the spread of possible outcomes without turning the chart into visual noise.</div></div>
 <div class="card" style="margin-top:14px"><h2>Annual Base Projection <span class="info" data-tooltip="Year-by-year table of the base-case calculation. On mobile, scroll sideways inside the table.">i</span></h2><div class="table-wrap"><table class="main-table"><thead><tr><th>Age/Year</th><th>Spouse Age</th><th>Start Portfolio</th><th>Property Sale</th><th>Property 2 Sale</th><th>Net Contribution</th><th>Interest</th><th>Base Spending</th><th>Extra Expenses</th><th>Total Spending</th><th>Base Income</th><th>Social Security Income</th><th>Healthcare</th><th>Est. Tax</th><th>Roth Conversion</th><th>Extra Income</th><th>Gross Withdrawal</th><th>RMD</th><th>401(k)/Trad End</th><th>Roth End</th><th>Taxable End</th><th>Cash End</th><th>Low End Portfolio</th><th>Medium End Portfolio</th><th>High End Portfolio</th><th>End Portfolio</th></tr></thead><tbody id="projectionBody"></tbody></table></div></div>
 </section>
@@ -2395,7 +2499,26 @@ function getAliasSelect(primary, aliases, fallback=""){
 
 function getVal(id){const node=document.getElementById(id);if(!node)return 0;const raw=String(node.value||"").replace(/[$,\s]/g,"");return parseFloat(raw)||0}
 function getSelect(id){const node=document.getElementById(id);return node?node.value:""}
-function fmtMoney(n){if(!isFinite(n))return"—";const s=n<0?"-":"";return s+"$"+Math.abs(n).toLocaleString(undefined,{maximumFractionDigits:0})}
+function fmtMoneyRaw(n){if(!isFinite(n))return"—";const s=n<0?"-":"";return s+"$"+Math.abs(n).toLocaleString(undefined,{maximumFractionDigits:0})}
+function globalDollarView(){const node=document.getElementById("portfolioDollarView");return node?node.value:"future";}
+function displayInflationRate(){return Math.max(-0.99,getVal("inflation")/100);}
+function dollarDisplayYears(ageOrYears=null){
+  if(ageOrYears===null || ageOrYears===undefined || ageOrYears==="")return 0;
+  const n=Number(ageOrYears);
+  if(!Number.isFinite(n))return 0;
+  if(getSelect("simpleMode")==="yes")return Math.max(0,n);
+  const currentAge=getVal("currentAge");
+  return Math.max(0,n-currentAge);
+}
+function toDisplayDollars(value,ageOrYears=null){
+  const n=Number(value);
+  if(!Number.isFinite(n))return n;
+  if(globalDollarView()!=="today")return n;
+  const years=dollarDisplayYears(ageOrYears);
+  const discount=Math.pow(1+displayInflationRate(),years);
+  return n/(discount||1);
+}
+function fmtMoney(n,ageOrYears=null){return fmtMoneyRaw(toDisplayDollars(n,ageOrYears));}
 function fmtPct(n){return isFinite(n)?(n*100).toFixed(1)+"%":"—"}
 
 
@@ -2577,7 +2700,7 @@ function calcPropertySaleInfo(age, factorOverride=null){
   return {saleProceeds,saleValue,remainingMortgage:mortgage,sellingCost,tax,gain:capitalGain,recaptureGain,recaptureTax,capitalGainTax,totalGain};
 }
 
-function updateSaleMetrics(info){el("saleProceedsMetric").textContent=fmtMoney(info.saleProceeds);el("saleValueMetric").textContent=fmtMoney(info.saleValue);el("mortgageMetric").textContent=fmtMoney(info.remainingMortgage);el("saleTaxMetric").textContent=fmtMoney(info.tax)}
+function updateSaleMetrics(info){const saleAge=getVal("propertySaleAge");el("saleProceedsMetric").textContent=fmtMoney(info.saleProceeds,saleAge);el("saleValueMetric").textContent=fmtMoney(info.saleValue,saleAge);el("mortgageMetric").textContent=fmtMoney(info.remainingMortgage,saleAge);el("saleTaxMetric").textContent=fmtMoney(info.tax,saleAge)}
 function calcPropertySaleInfo2(age, propertyFactor){
  if(getSelect("sellRealEstate2")!=="yes")return{saleProceeds:0,saleValue:0,remainingMortgage:0,sellingCost:0,tax:0,gain:0};
  const currentAge=getVal("currentAge"),saleAge=getVal("property2SaleAge");
@@ -2592,10 +2715,11 @@ function calcPropertySaleInfo2(age, propertyFactor){
  return{saleProceeds,saleValue,remainingMortgage,sellingCost,tax,gain:taxableGain}
 }
 function updateSaleMetrics2(info){
- if(el("sale2ProceedsMetric"))el("sale2ProceedsMetric").textContent=fmtMoney(info.saleProceeds);
- if(el("sale2ValueMetric"))el("sale2ValueMetric").textContent=fmtMoney(info.saleValue);
- if(el("mortgage2Metric"))el("mortgage2Metric").textContent=fmtMoney(info.remainingMortgage);
- if(el("sale2TaxMetric"))el("sale2TaxMetric").textContent=fmtMoney(info.tax);
+ const saleAge=getVal("property2SaleAge");
+ if(el("sale2ProceedsMetric"))el("sale2ProceedsMetric").textContent=fmtMoney(info.saleProceeds,saleAge);
+ if(el("sale2ValueMetric"))el("sale2ValueMetric").textContent=fmtMoney(info.saleValue,saleAge);
+ if(el("mortgage2Metric"))el("mortgage2Metric").textContent=fmtMoney(info.remainingMortgage,saleAge);
+ if(el("sale2TaxMetric"))el("sale2TaxMetric").textContent=fmtMoney(info.tax,saleAge);
 }
 
 
@@ -2664,10 +2788,11 @@ function rmdDivisor(age){
 
 function renderAccountEndingMetrics(rows){
  const r=rows&&rows.length?rows[rows.length-1]:null;
- if(el("endingTradBalance"))el("endingTradBalance").textContent=fmtMoney(r?r.tradEnd||0:0);
- if(el("endingRothBalance"))el("endingRothBalance").textContent=fmtMoney(r?r.rothEnd||0:0);
- if(el("endingTaxableBalance"))el("endingTaxableBalance").textContent=fmtMoney(r?r.taxableEnd||0:0);
- if(el("endingCashBalance"))el("endingCashBalance").textContent=fmtMoney(r?r.cashEnd||0:0);
+ const age=r?r.age:null;
+ if(el("endingTradBalance"))el("endingTradBalance").textContent=fmtMoney(r?r.tradEnd||0:0,age);
+ if(el("endingRothBalance"))el("endingRothBalance").textContent=fmtMoney(r?r.rothEnd||0:0,age);
+ if(el("endingTaxableBalance"))el("endingTaxableBalance").textContent=fmtMoney(r?r.taxableEnd||0:0,age);
+ if(el("endingCashBalance"))el("endingCashBalance").textContent=fmtMoney(r?r.cashEnd||0:0,age);
 }
 
 
@@ -2677,9 +2802,10 @@ function renderSensitivitySummary(lowRows,medRows,highRows,variancePct){
  const low=lowRows.length?lowRows[lowRows.length-1].endPortfolio:0;
  const med=medRows.length?medRows[medRows.length-1].endPortfolio:0;
  const high=highRows.length?highRows[highRows.length-1].endPortfolio:0;
- if(el("lowEndingPortfolio")){el("lowEndingPortfolio").textContent=fmtMoney(low);el("lowEndingPortfolio").className=low>=0?"value success":"value danger";}
- if(el("mediumEndingPortfolio")){el("mediumEndingPortfolio").textContent=fmtMoney(med);el("mediumEndingPortfolio").className=med>=0?"value success":"value danger";}
- if(el("highEndingPortfolio")){el("highEndingPortfolio").textContent=fmtMoney(high);el("highEndingPortfolio").className=high>=0?"value success":"value danger";}
+ const age=medRows.length?medRows[medRows.length-1].age:null;
+ if(el("lowEndingPortfolio")){el("lowEndingPortfolio").textContent=fmtMoney(low,age);el("lowEndingPortfolio").className=low>=0?"value success":"value danger";}
+ if(el("mediumEndingPortfolio")){el("mediumEndingPortfolio").textContent=fmtMoney(med,age);el("mediumEndingPortfolio").className=med>=0?"value success":"value danger";}
+ if(el("highEndingPortfolio")){el("highEndingPortfolio").textContent=fmtMoney(high,age);el("highEndingPortfolio").className=high>=0?"value success":"value danger";}
  if(el("varianceRangeMetric")){el("varianceRangeMetric").textContent="±"+variancePct.toFixed(2)+"%";el("varianceRangeMetric").className="value";}
 }
 
@@ -2754,7 +2880,7 @@ function renderEmptyState(){
  if(el("mcNote"))if(el("mcNote"))el("mcNote").textContent="Enter required fields to calculate.";
 }
 
-function renderSummary(ending,lowest,depletionAge){const r=el("result"),e=el("endingPortfolio"),l=el("lowestPortfolio"),d=el("depletionAge");if(depletionAge===null){r.textContent="Funds Last";r.className="value success";d.textContent="None";d.className="value success"}else{r.textContent="Depletes";r.className="value danger";d.textContent=depletionAge;d.className="value danger"}e.textContent=fmtMoney(ending);e.className=ending>=0?"value success":"value danger";l.textContent=fmtMoney(lowest);l.className=lowest>=0?"value success":"value danger"}
+function renderSummary(ending,lowest,depletionAge,endingAge=null,lowestAge=null){const r=el("result"),e=el("endingPortfolio"),l=el("lowestPortfolio"),d=el("depletionAge");if(depletionAge===null){r.textContent="Funds Last";r.className="value success";d.textContent="None";d.className="value success"}else{r.textContent="Depletes";r.className="value danger";d.textContent=depletionAge;d.className="value danger"}e.textContent=fmtMoney(ending,endingAge);e.className=ending>=0?"value success":"value danger";l.textContent=fmtMoney(lowest,lowestAge);l.className=lowest>=0?"value success":"value danger"}
 
 
 
@@ -2811,14 +2937,50 @@ function ensurePortfolioBandTooltip(){
   return tip;
 }
 
+function getPortfolioDollarView(){
+  const node=document.getElementById("portfolioDollarView");
+  return node ? node.value : "future";
+}
+
+function portfolioProjectionInflationYears(point,index){
+  const x=Number(point && point.x);
+  if(getSelect("simpleMode")==="yes"){
+    return Number.isFinite(x) ? Math.max(0,x) : Math.max(0,index+1);
+  }
+  const currentAge=getVal("currentAge");
+  return Number.isFinite(x) ? Math.max(0,x-currentAge) : Math.max(0,index);
+}
+
+function convertPortfolioPointsForDollarView(points){
+  const view=getPortfolioDollarView();
+  const inflation=Math.max(-0.99,getVal("inflation")/100);
+  if(view!=="today" || !Array.isArray(points))return points;
+  return points.map((pt,index)=>{
+    const years=portfolioProjectionInflationYears(pt,index);
+    const discount=Math.pow(1+inflation,years);
+    return {x:pt.x,y:(Number(pt.y)||0)/(discount||1)};
+  });
+}
+
+function updatePortfolioDollarViewNote(){
+  const note=document.getElementById("portfolioDollarViewNote");
+  if(!note)return;
+  if(getPortfolioDollarView()==="today"){
+    note.textContent="Today's dollars discount displayed output values using the Inflation % input, so future balances, income, spending, withdrawals, taxes, and Monte Carlo dollar results are shown in current purchasing power. This does not change the underlying calculations or success/failure logic.";
+  }else{
+    note.textContent="Future dollars show nominal projected values. Today's dollars discount displayed output values using the Inflation % input, without changing the underlying calculations.";
+  }
+}
+
 function drawPortfolioBandChart(id,lowPoints,mediumPoints,highPoints,retirementAge){
   const container=el(id);
   if(!container)return;
   container.innerHTML="";
 
-  const low=Array.isArray(lowPoints)?lowPoints:[];
-  const medium=Array.isArray(mediumPoints)?mediumPoints:[];
-  const high=Array.isArray(highPoints)?highPoints:[];
+  updatePortfolioDollarViewNote();
+  const low=convertPortfolioPointsForDollarView(Array.isArray(lowPoints)?lowPoints:[]);
+  const medium=convertPortfolioPointsForDollarView(Array.isArray(mediumPoints)?mediumPoints:[]);
+  const high=convertPortfolioPointsForDollarView(Array.isArray(highPoints)?highPoints:[]);
   const n=Math.min(low.length,medium.length,high.length);
   if(!n){
     container.innerHTML='<div class="spaghetti-empty-state">Enter required fields to calculate this projection.</div>';
@@ -2842,7 +3004,12 @@ function drawPortfolioBandChart(id,lowPoints,mediumPoints,highPoints,retirementA
   const xs=medium.slice(0,n).map(pt=>pt.x);
   const baseline=medium.slice(0,n).map(pt=>({x:pt.x,y:0}));
 
-  const svg=createChartSvgNode("svg",{viewBox:"0 0 "+w+" "+h,preserveAspectRatio:"none",role:"img","aria-label":"Portfolio projection bands"});
+  const dollarViewLabel=getPortfolioDollarView()==="today"?"Today's dollars":"Future dollars";
+  const svg=createChartSvgNode("svg",{viewBox:"0 0 "+w+" "+h,preserveAspectRatio:"none",role:"img","aria-label":"Portfolio projection bands in "+dollarViewLabel.toLowerCase()});
+
+  const titleText=createChartSvgNode("text",{x:p.left,y:26,"font-size":"13",fill:"currentColor","font-weight":"700"});
+  titleText.textContent="Portfolio Projection — "+dollarViewLabel;
+  svg.appendChild(titleText);
 
   const yTickCount=5;
   for(let i=0;i<yTickCount;i++){
@@ -2891,7 +3058,7 @@ function drawPortfolioBandChart(id,lowPoints,mediumPoints,highPoints,retirementA
   svg.appendChild(createChartSvgNode("path",{class:"portfolio-band-line-low",d:portfolioBandPathFromPoints(low.slice(0,n),xAt,yAt)}));
 
   const legend=[{label:"High scenario",cls:"portfolio-band-line-high",color:"#15803d"},{label:"Medium scenario",cls:"portfolio-band-line-medium",color:"#2563eb"},{label:"Low scenario",cls:"portfolio-band-line-low",color:"#111827"}];
-  let lx=p.left, ly=26;
+  let lx=p.left, ly=45;
   legend.forEach(item=>{
     svg.appendChild(createChartSvgNode("line",{x1:lx,y1:ly,x2:lx+18,y2:ly,stroke:item.color,"stroke-width":"2","vector-effect":"non-scaling-stroke"}));
     const label=createChartSvgNode("text",{x:lx+24,y:ly+4,"font-size":"12",fill:"currentColor",opacity:"0.86"});
@@ -2914,7 +3081,7 @@ function drawPortfolioBandChart(id,lowPoints,mediumPoints,highPoints,retirementA
     hoverLine.setAttribute("x1",x);
     hoverLine.setAttribute("x2",x);
     hoverLine.style.display="block";
-    tip.innerHTML='<div class="band-tip-year">Age '+xs[idx]+'</div>'+
+    tip.innerHTML='<div class="band-tip-year">Age '+xs[idx]+' · '+dollarViewLabel+'</div>'+
       '<div class="band-tip-row"><span class="band-tip-swatch high"></span><span>High scenario</span><strong>'+fmtMoney(high[idx].y)+'</strong></div>'+
       '<div class="band-tip-row"><span class="band-tip-swatch medium"></span><span>Medium scenario</span><strong>'+fmtMoney(medium[idx].y)+'</strong></div>'+
       '<div class="band-tip-row"><span class="band-tip-swatch low"></span><span>Low scenario</span><strong>'+fmtMoney(low[idx].y)+'</strong></div>';
@@ -2998,7 +3165,8 @@ function drawMonteCarloFanChart(id,paths){
   if(!container)return;
   container.innerHTML="";
 
-  const validPaths=(paths||[]).filter(path=>Array.isArray(path)&&path.length&&path.every(pt=>pt&&Number.isFinite(pt.y)));
+  const displayPaths=globalDollarView()==="today" ? (paths||[]).map(path=>convertPortfolioPointsForDollarView(path)) : (paths||[]);
+  const validPaths=displayPaths.filter(path=>Array.isArray(path)&&path.length&&path.every(pt=>pt&&Number.isFinite(pt.y)));
   if(!validPaths.length){
     container.innerHTML='<div class="spaghetti-empty-state">Run Monte Carlo to populate this chart.</div>';
     return;
@@ -3059,7 +3227,7 @@ function drawMonteCarloFanChart(id,paths){
     return node;
   }
 
-  appendText("Monte Carlo Spaghetti Chart",p.left,26,{fill:"var(--text)","font-size":"13","font-weight":"700"});
+  appendText("Monte Carlo Spaghetti Chart — "+(globalDollarView()==="today"?"Today's dollars":"Future dollars"),p.left,26,{fill:"var(--text)","font-size":"13","font-weight":"700"});
 
   const positiveTicks=[axisPositive,axisPositive/2,0];
   const negativeTicks=hasNegative?[axisNegative/2,axisNegative]:[];
@@ -4118,8 +4286,8 @@ function calculate(){
     if(!validateRequiredFields()){renderEmptyState();return;}
     validate(); const variance=Math.max(0,getVal("growthVariance"))/100,variancePct=Math.max(0,getVal("growthVariance"));
     const lowRows=simulate(false,-variance),rows=simulate(false,0),highRows=simulate(false,variance);
-    const ending=rows.length?rows[rows.length-1].endPortfolio:safeMoneyValue("portfolio"),lowest=rows.length?Math.min(...rows.map(r=>r.endPortfolio)):ending,depletion=rows.find(r=>r.endPortfolio<=0),saleRow=rows.find(r=>r.propertySale>0);
-    updateSaleMetrics(saleRow?saleRow.propertyInfo:calcPropertySaleInfo(getVal("propertySaleAge"),null)); renderSummary(ending,lowest,depletion?depletion.age:null); renderSensitivitySummary(lowRows,rows,highRows,variancePct); renderAccountEndingMetrics(rows); renderTable(rows,lowRows,highRows);
+    const ending=rows.length?rows[rows.length-1].endPortfolio:safeMoneyValue("portfolio"),lowest=rows.length?Math.min(...rows.map(r=>r.endPortfolio)):ending,depletion=rows.find(r=>r.endPortfolio<=0),saleRow=rows.find(r=>r.propertySale>0),saleRow2=rows.find(r=>r.propertySale2>0);
+    updateSaleMetrics(saleRow?saleRow.propertyInfo:calcPropertySaleInfo(getVal("propertySaleAge"),null)); updateSaleMetrics2(saleRow2?saleRow2.propertyInfo2:calcPropertySaleInfo2(getVal("property2SaleAge"),null)); renderSummary(ending,lowest,depletion?depletion.age:null,rows.length?rows[rows.length-1].age:null,(rows.find(r=>r.endPortfolio===lowest)||{}).age); renderSensitivitySummary(lowRows,rows,highRows,variancePct); renderAccountEndingMetrics(rows); renderTable(rows,lowRows,highRows);
     const lowPath=rowsToVisualContinuationPath(lowRows), mediumPath=rowsToVisualContinuationPath(rows), highPath=rowsToVisualContinuationPath(highRows);
     drawPortfolioBandChart("portfolioBandChart",lowPath,mediumPath,highPath,getVal("retireAge"));
   }catch(e){el("errorBox").textContent=e.message;el("errorBox").style.display="block";}
@@ -4132,14 +4300,29 @@ function runHistoricalSequenceStress(){
   return{worstEnding,worstStart,successRate:count?successes/count:0};
 }
 function renderAdvancedMetrics(rows){
-  const last=rows&&rows.length?rows[rows.length-1]:null; if(el("lastYearTaxEstimate"))el("lastYearTaxEstimate").textContent=fmtMoney(last?last.estimatedTax||0:0); if(el("lastYearHealthcareEstimate"))el("lastYearHealthcareEstimate").textContent=fmtMoney(last?last.healthcare||0:0); if(el("totalRothConversions"))el("totalRothConversions").textContent=fmtMoney(last?last.totalRothConversions||0:0);
-  const stress=runHistoricalSequenceStress(); if(el("historicalWorstSequence"))el("historicalWorstSequence").textContent=stress?fmtMoney(stress.worstEnding):"—"; if(el("historicalWorstStartYear"))el("historicalWorstStartYear").textContent=stress?String(stress.worstStart):"—"; if(el("historicalSequenceSuccess"))el("historicalSequenceSuccess").textContent=stress?fmtPct(stress.successRate):"—";
-  if(getSelect("enableSurvivorScenario")==="yes"){const survivorRows=simulateFull(false,0,{survivor:true}),survivorLast=survivorRows.length?survivorRows[survivorRows.length-1]:null,dep=survivorRows.find(r=>r.endPortfolio<=0);if(el("survivorScenarioEnding"))el("survivorScenarioEnding").textContent=survivorLast?fmtMoney(survivorLast.endPortfolio):"—";if(el("survivorDepletionAge"))el("survivorDepletionAge").textContent=dep?String(dep.age):"None";}else{if(el("survivorScenarioEnding"))el("survivorScenarioEnding").textContent="—";if(el("survivorDepletionAge"))el("survivorDepletionAge").textContent="—";}
+  const last=rows&&rows.length?rows[rows.length-1]:null;
+  const lastAge=last?last.age:null;
+  if(el("lastYearTaxEstimate"))el("lastYearTaxEstimate").textContent=fmtMoney(last?last.estimatedTax||0:0,lastAge);
+  if(el("lastYearHealthcareEstimate"))el("lastYearHealthcareEstimate").textContent=fmtMoney(last?last.healthcare||0:0,lastAge);
+  if(el("totalRothConversions"))el("totalRothConversions").textContent=fmtMoney(last?last.totalRothConversions||0:0,lastAge);
+  const stress=runHistoricalSequenceStress();
+  if(el("historicalWorstSequence"))el("historicalWorstSequence").textContent=stress?fmtMoney(stress.worstEnding,getVal("endAge")):"—";
+  if(el("historicalWorstStartYear"))el("historicalWorstStartYear").textContent=stress?String(stress.worstStart):"—";
+  if(el("historicalSequenceSuccess"))el("historicalSequenceSuccess").textContent=stress?fmtPct(stress.successRate):"—";
+  if(getSelect("enableSurvivorScenario")==="yes"){
+    const survivorRows=simulateFull(false,0,{survivor:true}),survivorLast=survivorRows.length?survivorRows[survivorRows.length-1]:null,dep=survivorRows.find(r=>r.endPortfolio<=0);
+    if(el("survivorScenarioEnding"))el("survivorScenarioEnding").textContent=survivorLast?fmtMoney(survivorLast.endPortfolio,survivorLast.age):"—";
+    if(el("survivorDepletionAge"))el("survivorDepletionAge").textContent=dep?String(dep.age):"None";
+  }else{
+    if(el("survivorScenarioEnding"))el("survivorScenarioEnding").textContent="—";
+    if(el("survivorDepletionAge"))el("survivorDepletionAge").textContent="—";
+  }
 }
 function renderTable(rows,lowRows=[],highRows=[]){
   const body=el("projectionBody"); if(!body)return; body.innerHTML="";
   rows.forEach((r,i)=>{const low=(lowRows&&lowRows[i])?lowRows[i].endPortfolio:r.endPortfolio,med=r.endPortfolio,high=(highRows&&highRows[i])?highRows[i].endPortfolio:r.endPortfolio;const tr=document.createElement("tr");
-    [r.age,r.spouseAge,fmtMoney(r.startPortfolio),fmtMoney(r.propertySale),fmtMoney(r.propertySale2),fmtMoney(r.contribution),fmtMoney(r.growth),fmtMoney(r.bs),fmtMoney(r.ee),fmtMoney(r.totalSpend),fmtMoney(r.bi),fmtMoney(r.ssIncome||0),fmtMoney(r.healthcare||0),fmtMoney(r.estimatedTax||0),fmtMoney(r.rothConversion||0),fmtMoney(r.ei),fmtMoney(r.withdrawal),fmtMoney(r.rmd||0),fmtMoney(r.tradEnd||0),fmtMoney(r.rothEnd||0),fmtMoney(r.taxableEnd||0),fmtMoney(r.cashEnd||0),fmtMoney(low),fmtMoney(med),fmtMoney(high),fmtMoney(r.endPortfolio)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td);}); body.appendChild(tr);});
+    const age=r.age;
+    [r.age,r.spouseAge,fmtMoney(r.startPortfolio,age),fmtMoney(r.propertySale,age),fmtMoney(r.propertySale2,age),fmtMoney(r.contribution,age),fmtMoney(r.growth,age),fmtMoney(r.bs,age),fmtMoney(r.ee,age),fmtMoney(r.totalSpend,age),fmtMoney(r.bi,age),fmtMoney(r.ssIncome||0,age),fmtMoney(r.healthcare||0,age),fmtMoney(r.estimatedTax||0,age),fmtMoney(r.rothConversion||0,age),fmtMoney(r.ei,age),fmtMoney(r.withdrawal,age),fmtMoney(r.rmd||0,age),fmtMoney(r.tradEnd||0,age),fmtMoney(r.rothEnd||0,age),fmtMoney(r.taxableEnd||0,age),fmtMoney(r.cashEnd||0,age),fmtMoney(low,age),fmtMoney(med,age),fmtMoney(high,age),fmtMoney(r.endPortfolio,age)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td);}); body.appendChild(tr);});
   renderAdvancedMetrics(rows);
 }
 
@@ -4259,11 +4442,11 @@ function runMonteCarlo(){
 
     el("mcSuccess").textContent=fmtPct(successRate);
     el("mcSuccess").className=successRate>=.85?"value success":successRate>=.70?"value warn":"value danger";
-    el("mcMedian").textContent=fmtMoney(median);
+    el("mcMedian").textContent=fmtMoney(median,getVal("endAge"));
     el("mcMedian").className=median>=0?"value success":"value danger";
-    el("mcP10").textContent=fmtMoney(p10);
+    el("mcP10").textContent=fmtMoney(p10,getVal("endAge"));
     el("mcP10").className=p10>=0?"value success":"value danger";
-    el("mcWorst").textContent=fmtMoney(worst);
+    el("mcWorst").textContent=fmtMoney(worst,getVal("endAge"));
     el("mcWorst").className=worst>=0?"value success":"value danger";
 
     LAST_MONTE_CARLO_PATHS=allPaths;
@@ -4659,6 +4842,9 @@ document.addEventListener("DOMContentLoaded",()=>{
   });
   const monteCarloTrialsNode=document.getElementById("monteCarloTrials");
   if(monteCarloTrialsNode)monteCarloTrialsNode.addEventListener("change",()=>clearMC(true));
+  const portfolioDollarViewNode=document.getElementById("portfolioDollarView");
+  if(portfolioDollarViewNode)portfolioDollarViewNode.addEventListener("change",()=>{updatePortfolioDollarViewNote();calculate();redrawMonteCarloChartIfAvailable();});
+  updatePortfolioDollarViewNote();
   syncFraDefaults();
 
 
